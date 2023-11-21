@@ -20,7 +20,6 @@
 #
 ###
 title: "Peering API"
-abbrev: "TODO - Abbreviation"
 category: info
 
 docname: draft-peering-api-ramseyer-protocol-latest
