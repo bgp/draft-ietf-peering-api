@@ -42,11 +42,16 @@ TODO Abstract
 
 # Introduction
 
-The Peering API will be developed as a methodology for removing obstacles for connecting people.  By automating interconnections, any network which implements the API will automatically be able to peer with any network in public or private scenarios in a time faster than it would take to configure sessions manually.  By speeding up peering and removing the need to get another person involved in peering, the API and automation will ensure that networks can get as interconnected as possible, as fast as possible.  This improves end-user performance for all applications using networks supporting the peering API.  
+Introduction
+The Peering API is a mechanism that allows to automate the interconnection process between two entities. Using the API networks will be able to automatically request and accept peering interconnections in public or private scenarios in a time faster than it would take to configure sessions manually. By speeding up the peering turn up process and removing the need to get manual involvement in peering, the API and automation will ensure that networks can get interconnected as fast, reliable, cost effective and efficiently as possible. As result, this improves end-user performance for all applications using networks interconnection and supporting the peering API.
 
 Business Justification:
-1.  Reduction in person-hours spent configuring peering
-2.  Reducing network latency through expansion of peering relationships
+
+By using the Peering API, entities requesting and accepting peering can significantly improve the process to turn up interconnections by:
+
+* Reducing in person-hours spent configuring peering
+* Reducing configuration mistakes by reducing human interaction
+* And by peering, reducing network latency through expansion of interconneciton relationships
 
 
 
