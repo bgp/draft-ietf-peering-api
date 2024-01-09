@@ -42,7 +42,10 @@ TODO Abstract
 
 # Introduction
 
-The Peering API will be developed as a methodology for removing obstacles for connecting people.  By automating interconnections, any network which implements the API will automatically be able to peer with any network in public or private scenarios in a time faster than it would take to configure sessions manually.  By speeding up peering and removing the need to get another person involved in peering, the API and automation will ensure that networks can get as interconnected as possible, as fast as possible.  This improves end-user performance for all applications using networks supporting the peering API.  
+The Peering API will be developed as a methodology to remove obstacles for interdomain interconnection through global Internet Routing.
+By automating interconnections between Autonomous Systems, any network which implements the API will automatically be able to peer with any network participating in public or private scenarios in a time faster than it would take to configure sessions manually.
+The proposed API and automation will ensure that networks can get as interconnected as possible, as fast as possible, with as little manual work as possible.
+This improves end-user performance for all applications using networks supporting the Peering API.
 
 Business Justification:
 1.  Reduction in person-hours spent configuring peering
@@ -69,7 +72,7 @@ PeeringDB OAuth will be the minimum requirement for authorization of API request
 (Jenny--this is not up-to-date, but I pasted in what we had in the google doc and will revise)
 TODO: Update this spec, include API endpoints
 
-## full list of endpoints: 
+## full list of endpoints:
 * ADD IX PEER
 * Augment IX PEER
 * TOPUP IX
@@ -89,7 +92,7 @@ TODO: Update this spec, include API endpoints
 
 ## Request flow
 1. AUTH phase: initiator makes an authenticated request to receiver via PeeringDB OAUTH.  This provides the receiver with initiator’s credentials to verify who they say they are
-2. REQUEST phase: 
+2. REQUEST phase:
     1. ADD: What is the initial information provided
         * Your ASN
           1. Can use internal tools to check traffic levels
@@ -112,8 +115,8 @@ TODO: Update this spec, include API endpoints
              * Counterproposal: suggest different configuration option.  (in VLater)
     2. Prefix limit counters (optional value)
     3. TimeWindow: Time window indicating when sessions will be configured after being notified (may be 0 if sessions are already configured on receiver side)
-    4. isInboundFiltered: optional bool that indicates whether prefixes will be filtered inbound.  If this is set to true the time window should be set to how long the prefixes will be filtered for.  
-    5. isOutboundFiltered: optional bool that indicates whether prefixes will be filtered outbound.  If this is set to true, the time window should be set to how long the prefixes will be filtered for.  If the outbound limit is longer than the inbound limit time, the time window should be set to the max of inbound versus outbound.  
+    4. isInboundFiltered: optional bool that indicates whether prefixes will be filtered inbound.  If this is set to true the time window should be set to how long the prefixes will be filtered for.
+    5. isOutboundFiltered: optional bool that indicates whether prefixes will be filtered outbound.  If this is set to true, the time window should be set to how long the prefixes will be filtered for.  If the outbound limit is longer than the inbound limit time, the time window should be set to the max of inbound versus outbound.
 4. Initiator removes sessions where receiver does not want to peer
     1. For every IXP ID where bool = false, remove sessions from the dictionary.  This handles the case where a user may initiate requests with all possible peering sessions and receiver only wants to peer in new locations.  The initiator will then filter out duplicates before entering the CONFIG/MONITOR state.
 5. CONFIG/MONITOR: Initiator waits for maximum time window and then notifies receiver for any outstanding sessions that have not been established
