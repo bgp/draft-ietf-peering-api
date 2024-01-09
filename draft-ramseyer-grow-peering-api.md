@@ -42,8 +42,11 @@ TODO Abstract
 
 # Introduction
 
-Introduction
-The Peering API is a mechanism that allows to automate the interconnection process between two entities. Using the API networks will be able to automatically request and accept peering interconnections in public or private scenarios in a time faster than it would take to configure sessions manually. By speeding up the peering turn up process and removing the need to get manual involvement in peering, the API and automation will ensure that networks can get interconnected as fast, reliable, cost effective and efficiently as possible. As result, this improves end-user performance for all applications using networks interconnection and supporting the peering API.
+The Peering API is a mechanism that allows networks to automate interdomain interconnection  between two entities through global Internet Routing.
+Using the API, networks will be able to automatically request and accept peering interconnections between Autonomous Systems in public or private scenarios in a time faster than it would take to configure sessions manually.
+By speeding up the peering turn-up process and removing the need for manual involvement in peering, the API and automation will ensure that networks can get interconnected as fast, reliably, cost-effectively, and efficiently as possible.
+As result, this improves end-user performance for all applications using networks interconnection supporting the Peering API.
+
 
 Business Justification:
 
@@ -74,7 +77,7 @@ PeeringDB OAuth will be the minimum requirement for authorization of API request
 (Jenny--this is not up-to-date, but I pasted in what we had in the google doc and will revise)
 TODO: Update this spec, include API endpoints
 
-## full list of endpoints: 
+## full list of endpoints:
 * ADD IX PEER
 * Augment IX PEER
 * TOPUP IX
@@ -94,7 +97,7 @@ TODO: Update this spec, include API endpoints
 
 ## Request flow
 1. AUTH phase: initiator makes an authenticated request to receiver via PeeringDB OAUTH.  This provides the receiver with initiator’s credentials to verify who they say they are
-2. REQUEST phase: 
+2. REQUEST phase:
     1. ADD: What is the initial information provided
         * Your ASN
           1. Can use internal tools to check traffic levels
@@ -117,8 +120,8 @@ TODO: Update this spec, include API endpoints
              * Counterproposal: suggest different configuration option.  (in VLater)
     2. Prefix limit counters (optional value)
     3. TimeWindow: Time window indicating when sessions will be configured after being notified (may be 0 if sessions are already configured on receiver side)
-    4. isInboundFiltered: optional bool that indicates whether prefixes will be filtered inbound.  If this is set to true the time window should be set to how long the prefixes will be filtered for.  
-    5. isOutboundFiltered: optional bool that indicates whether prefixes will be filtered outbound.  If this is set to true, the time window should be set to how long the prefixes will be filtered for.  If the outbound limit is longer than the inbound limit time, the time window should be set to the max of inbound versus outbound.  
+    4. isInboundFiltered: optional bool that indicates whether prefixes will be filtered inbound.  If this is set to true the time window should be set to how long the prefixes will be filtered for.
+    5. isOutboundFiltered: optional bool that indicates whether prefixes will be filtered outbound.  If this is set to true, the time window should be set to how long the prefixes will be filtered for.  If the outbound limit is longer than the inbound limit time, the time window should be set to the max of inbound versus outbound.
 4. Initiator removes sessions where receiver does not want to peer
     1. For every IXP ID where bool = false, remove sessions from the dictionary.  This handles the case where a user may initiate requests with all possible peering sessions and receiver only wants to peer in new locations.  The initiator will then filter out duplicates before entering the CONFIG/MONITOR state.
 5. CONFIG/MONITOR: Initiator waits for maximum time window and then notifies receiver for any outstanding sessions that have not been established
