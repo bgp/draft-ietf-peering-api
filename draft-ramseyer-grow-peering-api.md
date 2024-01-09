@@ -42,14 +42,19 @@ TODO Abstract
 
 # Introduction
 
-The Peering API will be developed as a methodology to remove obstacles for interdomain interconnection through global Internet Routing.
-By automating interconnections between Autonomous Systems, any network which implements the API will automatically be able to peer with any network participating in public or private scenarios in a time faster than it would take to configure sessions manually.
-The proposed API and automation will ensure that networks can get as interconnected as possible, as fast as possible, with as little manual work as possible.
-This improves end-user performance for all applications using networks supporting the Peering API.
+The Peering API is a mechanism that allows networks to automate interdomain interconnection  between two entities through global Internet Routing.
+Using the API, networks will be able to automatically request and accept peering interconnections between Autonomous Systems in public or private scenarios in a time faster than it would take to configure sessions manually.
+By speeding up the peering turn-up process and removing the need for manual involvement in peering, the API and automation will ensure that networks can get interconnected as fast, reliably, cost-effectively, and efficiently as possible.
+As result, this improves end-user performance for all applications using networks interconnection supporting the Peering API.
+
 
 Business Justification:
-1.  Reduction in person-hours spent configuring peering
-2.  Reducing network latency through expansion of peering relationships
+
+By using the Peering API, entities requesting and accepting peering can significantly improve the process to turn up interconnections by:
+
+* Reducing in person-hours spent configuring peering
+* Reducing configuration mistakes by reducing human interaction
+* And by peering, reducing network latency through expansion of interconneciton relationships
 
 
 
