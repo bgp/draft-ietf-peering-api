@@ -164,7 +164,7 @@ TODO: list endpoints, both v0 and vLater
 TODO: Include diagram and openapi spec?
 
 Section: "Public Peering Session Negotiation"
-TODO put in a section about how the client and server handshake which locations to configure peering.  
+TODO put in a section about how the client and server handshake which locations to configure peering.
 
 Each peer needs an API endpoint that will listen on this and implement the above protocol
 This API should be publicly listed in peeringDB and also as a potential expansion of RFC 9092 which provides endpoint integration to whois.
