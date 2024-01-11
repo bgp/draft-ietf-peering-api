@@ -85,14 +85,14 @@ Authentication provides the server with client's email (for potential manual dis
 ### REQUEST
 1. ADD SESSION (CLIENT REQUEST)
   * Client provides:
-    * Dictionary (multiple): 
+    * Dictionary (multiple):
         1. Local ASN (server)
         2. Local IP
         3. Peer ASN (client)
         4. Peer IP
         5. Peer Type
         6. MD5 (optional)
-        7. IXP ID 
+        7. IXP ID
         8. Status
         9: UUID
         10. Sent prefixes (0 if not Established) (optional)
@@ -129,7 +129,7 @@ The client will send a dictionary along with the request, as follows:
         4. Peer IP
         5. Peer Type
         6. MD5 (optional)
-        7. IXP ID 
+        7. IXP ID
         8. Status
         9: UUID
         10. Sent prefixes (0 if not Established) (optional)
