@@ -54,7 +54,7 @@ By using the Peering API, entities requesting and accepting peering can signific
 
 * Reducing in person-hours spent configuring peering
 * Reducing configuration mistakes by reducing human interaction
-* And by peering, reducing network latency through expansion of interconneciton relationships
+* And by peering, reducing network latency through expansion of interconnection relationships
 
 
 
@@ -71,7 +71,12 @@ All terms used in this document will be defined here:
 
 # Security Considerations
 
-PeeringDB OAuth will be the minimum requirement for authorization of API requests.
+As peering connections exchange real internet traffic, this API requires a security component to verify that the requestor is allowed to request peering on behalf of that ASN.
+In the initial proposal, this API intended to require PeeringDB-based authentication as the standard.
+After further discussion, it was proposed to offer different authentication options, to accomodate the security concerns of different parties.
+There are several possible extensions to the authentication model, including RPKI-based authentication, and additional OAuth providers.
+For RPKI-based authentication, this document refers to RFC9323.
+However, this document hopes that, through the RFC process, the Working Group can come to a consensus on a base "authentication standard," to ease adoption for peering partners.
 
 # Protocol
 (Jenny--this is not up-to-date, but I pasted in what we had in the google doc and will revise)
