@@ -72,11 +72,17 @@ All terms used in this document will be defined here:
 # Security Considerations
 
 As peering connections exchange real internet traffic, this API requires a security component to verify that the requestor is allowed to request peering on behalf of that ASN.
-In the initial proposal, this API intended to require PeeringDB-based authentication as the standard.
-After further discussion, it was proposed to offer different authentication options, to accomodate the security concerns of different parties.
-There are several possible extensions to the authentication model, including RPKI-based authentication, and additional OAuth providers.
+In this initial proposal, this API requires PeeringDB-based authentication as the standard.
+After further discussion, the authors decided to offer alternate authentication options to accomodate the security concerns of different parties.
+As peers may require varying security standards, this API will support PeeringDB OIDC as the base requirement, with optional security extensions in addition (RPKI or alternate OIDCs, for example)
+This document hopes that, through the RFC process, the Working Group can come to a consensus on a base "authentication standard," to ease adoption for peering partners.
+
+Of particular interest is RPKI.
+PeeringDB OIDC allows the API to verify who the requesting party is, while RPKI-signing allows the requesting party to prove that they can configure a request.
+The combination of both authorizations provides a strong security guarantee.
+This document recognizes that not all partners have the time or engineering resources to support all authorization standards, so the API will offer an extensible security platform to meet varying security requirements.
 For RPKI-based authentication, this document refers to RFC9323.
-However, this document hopes that, through the RFC process, the Working Group can come to a consensus on a base "authentication standard," to ease adoption for peering partners.
+
 
 # Protocol
 (Jenny--this is not up-to-date, but I pasted in what we had in the google doc and will revise)
@@ -101,7 +107,7 @@ TODO: Update this spec, include API endpoints
   * Request source
 
 ## Request flow
-1. AUTH phase: initiator makes an authenticated request to receiver via PeeringDB OAUTH.  This provides the receiver with initiator’s credentials to verify who they say they are
+1. AUTH phase: initiator makes an authenticated request to receiver via PeeringDB OIDC.  This provides the receiver with initiator’s credentials to verify who they say they are
 2. REQUEST phase:
     1. ADD: What is the initial information provided
         * Your ASN
