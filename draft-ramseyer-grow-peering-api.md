@@ -30,6 +30,7 @@ author:
 
 normative:
 Public Github with proposed API specification and diagrams: https://github.com/bgp/autopeer/
+
 informative:
 
 
@@ -168,6 +169,7 @@ For a programmatic specification of the API, please see the public Github here: 
 This initial draft fully specifies the Public Peering endpoints.  Private Peering and Maintenance are under discussion, and the authors invite collaboration and discussion from interested parties.
 ## DATA TYPES
 (As defined in https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
+```
 Location:
  title: Peering Location
  description: location for session, contains an object with fields id `pdb:ix:$ID` and type PUBLIC or PRIVATE
@@ -276,7 +278,7 @@ responses:
                 - name: peer_asn
                   messages:
                     - asn not available at that location
-
+```
 ## Endpoints:
 Public Peering over an Internet Exchange (IX):
 * ADD/AUGMENT IX PEER
