@@ -35,8 +35,10 @@ informative:
 
 --- abstract
 
-TODO Abstract
-
+We propose an API standard for BGP Peering, also known as interdomain interconnection through global Internet Routing.
+This API offers a standard way to request public (settlement-free) peering, verify the status of a request or BGP session, and list potential connection locations.
+The API is backed by PeeringDB OIDC, the industry standard for peering authentication.
+We also propose future work to cover private peering, and alternative authentication methods.
 
 --- middle
 
@@ -70,6 +72,7 @@ All terms used in this document will be defined here:
 
 
 # Security Considerations
+
 
 As peering connections exchange real internet traffic, this API requires a security component to verify that the requestor is allowed to request peering on behalf of that ASN.
 In this initial proposal, this API requires PeeringDB-based authentication as the standard.
@@ -112,14 +115,14 @@ TODO: Update this spec, include API endpoints
     1. ADD: What is the initial information provided
         * Your ASN
           1. Can use internal tools to check traffic levels
-          2. Cross reference with OAUTH data to verify ASN as the same one received in the OAUTH token
+          2. Cross reference with OIDC data to verify ASN as the same one received in the OIDC token
           3. Can get prefix limit counters
               1. Not needed in handshake but could be allowed as an optional flag
        * Peering Type: PNI or IX (Private or Public - however we want to brand it). This will be useful later when we want to differentiate between a public payload and a private one since they will look different
        * PeeringDB/IXP IDs that you want to peer on (this allows you to get the peering addresses)
     2. REMOVE: What is the initial information provided
         1. Your ASN
-            * Cross reference with OAUTH data to verify ASN as the same one received in the OAUTH token
+            * Cross reference with OIDC data to verify ASN as the same one received in the OIDC token
         2. IXP ID
 3. APPROVAL: What does the other side return?
     1. Dictionary
