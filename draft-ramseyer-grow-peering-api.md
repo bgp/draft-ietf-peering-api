@@ -197,6 +197,11 @@ SessionArray:
   type: array
   items:
     $ref: '#/components/schemas/Session'
+   uuid:
+     type: string
+     description: |-
+       unique identifier, request ID
+       Optional--server must provide UUID.  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID.  Request ID will not change across the request.
 
 Session:
   title: BGP Session
@@ -222,8 +227,8 @@ Session:
     uuid:
       type: string
       description: |-
-        unique identifier (also serves as request id)
-        Optional--server must provide UUID.  Client may provide initial UUID.
+        unique identifier 
+        Optional--server must provide UUID.  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID. 
 Error:
   title: Error
   type: object
@@ -281,6 +286,7 @@ responses:
 ```
 ## Endpoints:
 (As defined in https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
+On each call, there should be rate limits, allowed senders, and other optional restrictions.
 
 ### Public Peering over an Internet Exchange (IX):
 * ADD/AUGMENT IX PEER
@@ -312,6 +318,10 @@ responses:
         '400':
           $ref: '#/components/responses/ErrorResponse'
 ```
+* REMOVE IX PEER
+  * Given a list of SessionArrays, remove the sessions in that list.
+  * This API serves as a notification to the server, as the client may remove the sessions before sending the request to the server.
+  * Server replies back with request ID and deletion status (complete, in-progress).
 ### UTILITY API CALLS
 Endpoints which provide useful information for potential interconnections.
 * LIST POTENTIAL PEERING LOCATIONS
@@ -347,7 +357,8 @@ Endpoints which provide useful information for potential interconnections.
           $ref: '#/components/responses/ErrorResponse'
 ```
 * QUERY for request status
-  * Given a request ID, query for the status of that request.  
+  * Given a request ID, query for the status of that request.
+  * Given an ASN without request ID, query for status of all connections between client and server.
 ```
   /get_status:
     get:
@@ -374,33 +385,67 @@ Endpoints which provide useful information for potential interconnections.
         '400':
           $ref: '#/components/responses/ErrorResponse'
   ```
-* TOPUP IX
-* NEW IX
-* REMOVE IX PEER
-* ADD PNI
-* AUGMENT PNI
+### Private Peering
+* ADD/AUGMENT PNI
+ * Parameters:
+   * Peer ASN
+   * Facility
+   * email address (contact)
+   * Action type: add/augment
+   * LAG struct:
+     * IPv4
+     * IPv6
+     * Circuit ID
+   * Who provides LOA?  (and where to provide it).
+ * Response:
+   * 200:
+     * LAG struct, with server data populated
+     * LOA or way to recieve it
+     * Request ID
+   * 300:
+     * Proposed Modification: LAG struct, LOA, email address for further discussion
+   * 40x: rejections       
 * REMOVE PNI
-* STATUS of PNI/IX CONNECTIONS
-* MAINTENANCE (notification) (no tickets)
-* ADD ROUTE SERVER
-* DELETE RS
-
-* On each call, there should be:
-  * Rate limits, allowed senders, and other restriction options
-  * Request source
-
-TODO: list endpoints, both v0 and vLater
-TODO: Include diagram and openapi spec?
-
+  * As ADD/AUGMENT in parameters.  Responses will include a request ID and status.
 
 # Public Peering Session Negotiation
-TODO put in a section about how the client and server handshake which locations to configure peering.
+As part of public peering configuration, this draft must consider how the client and server should handshake at which sessions to configure peering.
+At first, a client will request sessions A, B, and C.
+The server may choose to accept all sessions A, B, and C.
+At this point, configuration proceeds as normal.
+However, the server may choose to rejest session B.
+At that point, the server will reply back with A and C marked as "Accepted," and B as "Rejected."
+The server will then configure A and C, and wait for the client to configure A and C.
+If the client configured B as well, it will not come up.
+
+This draft encourages peers to set up garbage collection for unconfigured or down peering sessions, to remove stale configs and maintain good router hygiene.
+
+Related to rejection, if the server would like to configure additional sessions with the client, the server may reply back with additional peering sessions D and E.
+The server will configure D and E on their side, and D and E will become part of the sessions requested in the UUID.
+The client may choose whether or not to accept those additional sessions.
+If they do, the client should configure D and E as well.
+If they do not, the client will not configure D and E, and the server should garbage-collect those pending sessions.
+
+As part of the IETF discussion, the authors would like to discuss how to coordinate which side unfilters first.  Perhaps this information could be conveyed over a preferences vector.
 
 # Private Peering
-TODO this is future work?
-Maybe here we touch on LOA negotiation, unfiltering, etc?
+Through future discussion with the IETF, the specification for private peering will be solidified.  Of interest for discussion includes Letter of Authorization (LOA) negotiation, and how to coordinate unfiltering and configuration checks.  
+
 # Maintenance
-TODO future work, is this worth mentioning?
+This draft does not want to invent a new ticketing system.  However, there is an opportunity in this API to provide maintenance notifications to peering partners.  If there is interest, this draft would extend to propose a maintenance endpoint, where the server could broadcast upcoming and current maintenance windows.  A maintenance message would follow a format like:
+```
+Title: string
+Start Date: date maintenance start(s/ed): UTC
+End Date: date maintenance ends: UTC
+Area: string or enum
+Details: freeform string
+```
+
+The "Area" field could be a freeform string, or could be a parseable ENUM, like (BGP, PublicPeering, PrivatePeering, Configuration, Caching, DNS, etc).  
+
+Past maintenances will not be advertised.  
+# Possible Extensions
+The authors acknowledge that route-server configuration may also be of interest for this proposed API, and look forward to future discussions in this area.
 
 # IANA Considerations
 
