@@ -56,7 +56,7 @@ By using the Peering API, entities requesting and accepting peering can signific
 
 * Reducing in person-hours spent configuring peering
 * Reducing configuration mistakes by reducing human interaction
-* And by peering, reducing network latency through expansion of interconneciton relationships
+* And by peering, reducing network latency through expansion of interconnection relationships
 
 
 
@@ -73,7 +73,19 @@ All terms used in this document will be defined here:
 
 # Security Considerations
 
-PeeringDB OIDC will be the minimum requirement for authorization of API requests.
+
+As peering connections exchange real internet traffic, this API requires a security component to verify that the requestor is allowed to request peering on behalf of that ASN.
+In this initial proposal, this API requires PeeringDB-based authentication as the standard.
+After further discussion, the authors decided to offer alternate authentication options to accomodate the security concerns of different parties.
+As peers may require varying security standards, this API will support PeeringDB OIDC as the base requirement, with optional security extensions in addition (RPKI or alternate OIDCs, for example)
+This document hopes that, through the RFC process, the Working Group can come to a consensus on a base "authentication standard," to ease adoption for peering partners.
+
+Of particular interest is RPKI.
+PeeringDB OIDC allows the API to verify who the requesting party is, while RPKI-signing allows the requesting party to prove that they can configure a request.
+The combination of both authorizations provides a strong security guarantee.
+This document recognizes that not all partners have the time or engineering resources to support all authorization standards, so the API will offer an extensible security platform to meet varying security requirements.
+For RPKI-based authentication, this document refers to RFC9323.
+
 
 # Protocol
 (Jenny--this is not up-to-date, but I pasted in what we had in the google doc and will revise)
