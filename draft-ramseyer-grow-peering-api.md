@@ -280,11 +280,100 @@ responses:
                     - asn not available at that location
 ```
 ## Endpoints:
-Public Peering over an Internet Exchange (IX):
+(As defined in https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
+
+### Public Peering over an Internet Exchange (IX):
 * ADD/AUGMENT IX PEER
   * Establish new BGP sessions between peers, at the desired exchange.
-  * Input: Session Array
-* Augment IX PEER
+ ```
+  /add_sessions:
+    post:
+      description: Request peering
+      requestBody:
+        description: Request to create peering sessions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionArray'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionArray'
+        '300':
+          description: Request modified or partially accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionArray'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+```
+### UTILITY API CALLS
+Endpoints which provide useful information for potential interconnections.
+* LIST POTENTIAL PEERING LOCATIONS
+  * List potential peering locations, both public and private. 
+```
+   /list_locations:
+    get:
+      parameters:
+        - name: asn
+          in: query
+          description: List avaible locations for peering with the given ASN
+          required: true
+          schema:
+            type: integer
+        - name: location_type
+          in: query
+          description: Optional filter for only querying locations able to
+                       establish public or private connections.
+          required: false
+          schema:
+            $ref: '#/components/schemas/LocationType'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+```
+* QUERY for request status
+  * Given a request ID, query for the status of that request.  
+```
+  /get_status:
+    get:
+      parameters:
+        - name: asn
+          in: query
+          description: asn of requester
+          required: true
+          schema:
+            type: integer
+        - name: request_id
+          in: query
+          description: request identifier
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionArray'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+  ```
 * TOPUP IX
 * NEW IX
 * REMOVE IX PEER
@@ -295,7 +384,7 @@ Public Peering over an Internet Exchange (IX):
 * MAINTENANCE (notification) (no tickets)
 * ADD ROUTE SERVER
 * DELETE RS
-* QUERY for request status
+
 * On each call, there should be:
   * Rate limits, allowed senders, and other restriction options
   * Request source
