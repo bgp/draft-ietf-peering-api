@@ -227,8 +227,8 @@ Session:
     uuid:
       type: string
       description: |-
-        unique identifier 
-        Optional--server must provide UUID.  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID. 
+        unique identifier
+        Optional--server must provide UUID.  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID.
 Error:
   title: Error
   type: object
@@ -263,7 +263,7 @@ FieldError:
   required:
     - name
     - errors
-    
+
 responses:
   ErrorResponse:
     description: API Error response
@@ -325,7 +325,7 @@ On each call, there should be rate limits, allowed senders, and other optional r
 ### UTILITY API CALLS
 Endpoints which provide useful information for potential interconnections.
 * LIST POTENTIAL PEERING LOCATIONS
-  * List potential peering locations, both public and private. 
+  * List potential peering locations, both public and private.
 ```
    /list_locations:
     get:
@@ -404,7 +404,7 @@ Endpoints which provide useful information for potential interconnections.
      * Request ID
    * 300:
      * Proposed Modification: LAG struct, LOA, email address for further discussion
-   * 40x: rejections       
+   * 40x: rejections   
 * REMOVE PNI
   * As ADD/AUGMENT in parameters.  Responses will include a request ID and status.
 
@@ -426,13 +426,18 @@ The client may choose whether or not to accept those additional sessions.
 If they do, the client should configure D and E as well.
 If they do not, the client will not configure D and E, and the server should garbage-collect those pending sessions.
 
-As part of the IETF discussion, the authors would like to discuss how to coordinate which side unfilters first.  Perhaps this information could be conveyed over a preferences vector.
+As part of the IETF discussion, the authors would like to discuss how to coordinate which side unfilters first.
+Perhaps this information could be conveyed over a preferences vector.
 
 # Private Peering
-Through future discussion with the IETF, the specification for private peering will be solidified.  Of interest for discussion includes Letter of Authorization (LOA) negotiation, and how to coordinate unfiltering and configuration checks.  
+Through future discussion with the IETF, the specification for private peering will be solidified.
+Of interest for discussion includes Letter of Authorization (LOA) negotiation, and how to coordinate unfiltering and configuration checks.
 
 # Maintenance
-This draft does not want to invent a new ticketing system.  However, there is an opportunity in this API to provide maintenance notifications to peering partners.  If there is interest, this draft would extend to propose a maintenance endpoint, where the server could broadcast upcoming and current maintenance windows.  A maintenance message would follow a format like:
+This draft does not want to invent a new ticketing system.
+However, there is an opportunity in this API to provide maintenance notifications to peering partners.
+If there is interest, this draft would extend to propose a maintenance endpoint, where the server could broadcast upcoming and current maintenance windows.
+A maintenance message would follow a format like:
 ```
 Title: string
 Start Date: date maintenance start(s/ed): UTC
