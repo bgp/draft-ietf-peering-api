@@ -38,7 +38,7 @@ informative:
 We propose an API standard for BGP Peering, also known as interdomain interconnection through global Internet Routing.
 This API offers a standard way to request public (settlement-free) peering, verify the status of a request or BGP session, and list potential connection locations.
 The API is backed by PeeringDB OIDC, the industry standard for peering authentication.
-We also propose future work to cover private (paid) peering, and alternative authentication methods.
+We also propose future work to cover private peering, and alternative authentication methods.
 
 --- middle
 
