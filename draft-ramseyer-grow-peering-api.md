@@ -29,7 +29,7 @@ author:
     email: "ramseyer@meta.com"
 
 normative:
-
+Public Github with proposed API specification and diagrams: https://github.com/bgp/autopeer/
 informative:
 
 
@@ -92,6 +92,7 @@ The Peering API follows the RESTful API mode.
 After authentication, a client can request to add or remove peering connections, list potential interconnection locations, and query for upcoming maintenance events.
 
 ## Example Request Flow
+For a diagram, please see: https://github.com/bgp/autopeer/?tab=readme-ov-file#sequence-diagram
 ### AUTH
 First, the client makes an authenticated request to the server.
 In this example, the client will use PeeringDB OAuth.
@@ -162,8 +163,125 @@ Each API endpoint should be fuzz-tested and protected against abuse.  Attackers 
 Every single request should come in with a unique guid called RequestID that maps to a peering request for later reference.  This guid format should be standardized across all requests.  This guid should be provided by the receiver once it receives the request and must be embedded in all communication.  If there is no RequestID present then that should be interpreted as a new request and the process starts again.
 An email address is needed for communication if the API fails or is not implemented properly (can be obtained through peeringdb).
 
+For a programmatic specification of the API, please see the public Github here: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
+
+This initial draft fully specifies the Public Peering endpoints.  Private Peering and Maintenance are under discussion, and the authors invite collaboration and discussion from interested parties.
+## DATA TYPES
+(As defined in https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
+Location:
+ title: Peering Location
+ description: location for session, contains an object with fields id `pdb:ix:$ID` and type PUBLIC or PRIVATE
+ type: object
+ properties:
+   id:
+     type: string
+   type:
+     $ref: '#/components/schemas/LocationType'
+LocationType:
+  type: string
+  enum:
+    - private
+    - public
+
+SessionStatus:
+  title: Session configuration status
+  description: |-
+    BGP Session Statuses
+  type: string
+
+SessionArray:
+  title: BGP Sessions
+  description: Array of BGP Sessions
+  type: array
+  items:
+    $ref: '#/components/schemas/Session'
+
+Session:
+  title: BGP Session
+  description: BGP Session
+  type: object
+  properties:
+    local_asn:
+      type: integer
+    local_ip:
+      type: string
+    peer_asn:
+      type: integer
+    peer_ip:
+      type: string
+    peer_type:
+      type: string
+    md5: (optional)
+      type: string
+    location:
+      $ref: '#/components/schemas/Location'
+    status:
+      $ref: '#/components/schemas/SessionStatus'
+    uuid:
+      type: string
+      description: |-
+        unique identifier (also serves as request id)
+        Optional--server must provide UUID.  Client may provide initial UUID.
+Error:
+  title: Error
+  type: object
+  description: Error object for API responses
+  properties:
+    errors:
+      type: array
+      description: |-
+        Entity field specific validation and operational error messages.
+
+        {field_name} will be substituted with the name of the field in which the validation error occured.
+      items:
+        $ref: '#/components/schemas/FieldError'
+      readOnly: true
+  required:
+    - field_errors
+FieldError:
+  title: FieldError
+  type: object
+  description: Error object for field-specific errors in API responses
+  properties:
+    name:
+      type: string
+      description: Field name
+      readOnly: true
+    errors:
+      type: array
+      description: List of error messages
+      items:
+        type: string
+      readOnly: true
+  required:
+    - name
+    - errors
+    
+responses:
+  ErrorResponse:
+    description: API Error response
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            errors:
+              $ref: '#/components/schemas/Error'
+          required:
+            - errors
+        examples:
+          error-example:
+            value:
+              errors:
+                - name: peer_asn
+                  messages:
+                    - asn not available at that location
+
 ## Endpoints:
-* ADD IX PEER
+Public Peering over an Internet Exchange (IX):
+* ADD/AUGMENT IX PEER
+  * Establish new BGP sessions between peers, at the desired exchange.
+  * Input: Session Array
 * Augment IX PEER
 * TOPUP IX
 * NEW IX
