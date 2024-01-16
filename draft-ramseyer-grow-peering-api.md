@@ -37,7 +37,7 @@ informative:
 
 We propose an API standard for BGP Peering, also known as interdomain interconnection through global Internet Routing.
 This API offers a standard way to request public (settlement-free) peering, verify the status of a request or BGP session, and list potential connection locations.
-The API is backed by PeeringDB OAuth, the industry standard for peering authentication.
+The API is backed by PeeringDB OIDC, the industry standard for peering authentication.
 We also propose future work to cover private (paid) peering, and alternative authentication methods.
 
 --- middle
@@ -73,7 +73,7 @@ All terms used in this document will be defined here:
 
 # Security Considerations
 
-PeeringDB OAuth will be the minimum requirement for authorization of API requests.
+PeeringDB OIDC will be the minimum requirement for authorization of API requests.
 
 # Protocol
 (Jenny--this is not up-to-date, but I pasted in what we had in the google doc and will revise)
@@ -98,19 +98,19 @@ TODO: Update this spec, include API endpoints
   * Request source
 
 ## Request flow
-1. AUTH phase: initiator makes an authenticated request to receiver via PeeringDB OAUTH.  This provides the receiver with initiator’s credentials to verify who they say they are
+1. AUTH phase: initiator makes an authenticated request to receiver via PeeringDB OIDC.  This provides the receiver with initiator’s credentials to verify who they say they are
 2. REQUEST phase:
     1. ADD: What is the initial information provided
         * Your ASN
           1. Can use internal tools to check traffic levels
-          2. Cross reference with OAUTH data to verify ASN as the same one received in the OAUTH token
+          2. Cross reference with OIDC data to verify ASN as the same one received in the OIDC token
           3. Can get prefix limit counters
               1. Not needed in handshake but could be allowed as an optional flag
        * Peering Type: PNI or IX (Private or Public - however we want to brand it). This will be useful later when we want to differentiate between a public payload and a private one since they will look different
        * PeeringDB/IXP IDs that you want to peer on (this allows you to get the peering addresses)
     2. REMOVE: What is the initial information provided
         1. Your ASN
-            * Cross reference with OAUTH data to verify ASN as the same one received in the OAUTH token
+            * Cross reference with OIDC data to verify ASN as the same one received in the OIDC token
         2. IXP ID
 3. APPROVAL: What does the other side return?
     1. Dictionary
