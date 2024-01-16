@@ -26,7 +26,7 @@ author:
  -
     fullname: "Jenny Ramseyer"
     organization: Meta
-    email: "ramseyer@fb.com"
+    email: "ramseyer@meta.com"
 
 normative:
 
@@ -155,6 +155,12 @@ If both sides report that the session is established, then peering is complete.
 If one side does not configure sessions within the server's acceptable configuration window (TimeWindow), then the server is entitled to remove the configured sessions and report "Unestablished" to the client.
 
 
+# API Endpoints and Specifications
+Each peer needs an API endpoint that will implement the API protocol.
+This API should be publicly listed in peeringDB and also as a potential expansion of RFC 9092 which provides endpoint integration to whois.
+Each API endpoint should be fuzz-tested and protected against abuse.  Attackers should not be able to access internal systems using the API.
+Every single request should come in with a unique guid called RequestID that maps to a peering request for later reference.  This guid format should be standardized across all requests.  This guid should be provided by the receiver once it receives the request and must be embedded in all communication.  If there is no RequestID present then that should be interpreted as a new request and the process starts again.
+An email address is needed for communication if the API fails or is not implemented properly (can be obtained through peeringdb).
 
 ## Endpoints:
 * ADD IX PEER
@@ -174,28 +180,19 @@ If one side does not configure sessions within the server's acceptable configura
   * Rate limits, allowed senders, and other restriction options
   * Request source
 
-# API Endpoints and Specifications
 TODO: list endpoints, both v0 and vLater
 TODO: Include diagram and openapi spec?
 
-Section: "Public Peering Session Negotiation"
+
+# Public Peering Session Negotiation
 TODO put in a section about how the client and server handshake which locations to configure peering.
 
-Each peer needs an API endpoint that will listen on this and implement the above protocol
-This API should be publicly listed in peeringDB and also as a potential expansion of RFC 9092 which provides endpoint integration to whois.
-Each API endpoint should be fuzz-tested and protected against abuse.  Attackers should not be able to access internal systems using the API.
-Every single request should come in with a unique guid called RequestID that maps to a peering request which can be referenced later.  This guid format should be standardized across all requests.  This guid should be provided by the receiver once it receives the request and must be embedded in all communication.  If there is no RequestID present then that should be interpreted as a new request and the process starts again.
-Email is needed for communication if API fails or is not implemented properly (can be obtained through peeringdb)
-# Public Peering
-TODO should we split them up?
 # Private Peering
 TODO this is future work?
 Maybe here we touch on LOA negotiation, unfiltering, etc?
 # Maintenance
 TODO future work, is this worth mentioning?
-# Authentication Considerations
-TODO discuss the different auth considerations
-do we mention listing endpoints in peeringDB?
+
 # IANA Considerations
 
 This document has no IANA actions.
