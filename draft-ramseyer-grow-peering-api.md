@@ -404,7 +404,7 @@ Endpoints which provide useful information for potential interconnections.
      * Request ID
    * 300:
      * Proposed Modification: LAG struct, LOA, email address for further discussion
-   * 40x: rejections   
+   * 40x: rejections
 * REMOVE PNI
   * As ADD/AUGMENT in parameters.  Responses will include a request ID and status.
 
@@ -446,9 +446,9 @@ Area: string or enum
 Details: freeform string
 ```
 
-The "Area" field could be a freeform string, or could be a parseable ENUM, like (BGP, PublicPeering, PrivatePeering, Configuration, Caching, DNS, etc).  
+The "Area" field could be a freeform string, or could be a parseable ENUM, like (BGP, PublicPeering, PrivatePeering, Configuration, Caching, DNS, etc).
 
-Past maintenances will not be advertised.  
+Past maintenances will not be advertised.
 # Possible Extensions
 The authors acknowledge that route-server configuration may also be of interest for this proposed API, and look forward to future discussions in this area.
 
