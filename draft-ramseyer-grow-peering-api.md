@@ -216,7 +216,7 @@ POST: /add_sessions
  Request body: Session Array
 Responses:
  200 OK:
-  Contents: Session Array
+  Contents: Session Array (all sessions in request accepted for configuration).
  300:
   Contents: Modified Session Array, with rejected or additional sessions.
  400:
