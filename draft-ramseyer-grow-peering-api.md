@@ -233,7 +233,7 @@ Responses:
   * Given a list of Session Arrays, remove the sessions in that list.
   * This API serves as a notification to the server, as the client may remove the sessions before sending the request to the server.
   * Server replies back with request ID and deletion status (complete, in-progress).
-    
+
 ### UTILITY API CALLS
 Endpoints which provide useful information for potential interconnections.
 * LIST POTENTIAL PEERING LOCATIONS
