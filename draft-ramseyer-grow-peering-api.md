@@ -102,6 +102,7 @@ Authentication provides the server with client's email (for potential manual dis
 
 ## REQUEST
 1. ADD SESSION (CLIENT REQUEST)
+
   * Client provides:
     * Dictionary (multiple):
         1. Local ASN (server)
@@ -120,9 +121,11 @@ Authentication provides the server with client's email (for potential manual dis
     * Server confirms requested clientASN in list of authorized ASN.
     * Optional: checks traffic levels, prefix limit counters, other desired internal checks.
 2.  ADD SESSION (SERVER RESPONSE)
+
   * APPROVAL CASE
     * Server returns dictionary of acceptable peering sessions.  Note: this dictionary may also contain additional sessions on which to peer.  See "Public Peering Session Negotiation" for details.
   * REJECTION CASE
+
     * Server returns dictionary of acceptable and rejected sessions.
   * Optional information:
     * The server may also include the following details:
@@ -197,16 +200,16 @@ Session Array
  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID.  Request ID will not change across the request.
 
 
-BGP Session
-* local_asn (ASN of requestor)
-* local_ip (IP of requestor, v4 or v6)
-* peer_asn (server ASN)
-* peer_ip (server-side IP)
-* peer_type (public or private)
-* md5 (optional string)
-* location (Peering Location, as defined above)
-* status (Session Status, as defined above)
-* UUID (of individual session.  Server must provide UUID.  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID)
+* BGP Session
+  * local_asn (ASN of requestor)
+  * local_ip (IP of requestor, v4 or v6)
+  * peer_asn (server ASN)
+  * peer_ip (server-side IP)
+  * peer_type (public or private)
+  * md5 (optional string)
+  * location (Peering Location, as defined above)
+  * status (Session Status, as defined above)
+  * UUID (of individual session.  Server must provide UUID.  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID)
 
 
 Error
@@ -283,25 +286,25 @@ GET: /list_locations
   * Given an ASN without request ID, query for status of all connections between client and server.
   * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
 
-```
 
-GET: /get_status
 
- Request parameters:
-  * asn (requesting client's asn)
-  * request_id (optional, UUID of request)
+    GET: /get_status
+    
+     Request parameters:
+      * asn (requesting client's asn)
+      * request_id (optional, UUID of request)
+    
+     Response:
+    
+      200: OK
+    
+       Contents: Session Array of sessions in request_id, if provided.  Else, all existing and in-progress sessions between client ASN and server.
+    
+      400:
+    
+       Error (example: request_id is invalid)
 
- Response:
 
-  200: OK
-
-   Contents: Session Array of sessions in request_id, if provided.  Else, all existing and in-progress sessions between client ASN and server.
-
-  400:
-
-   Error (example: request_id is invalid)
-
-```
 
 ### Private Peering
 * ADD/AUGMENT PNI
