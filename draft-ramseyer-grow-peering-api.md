@@ -224,31 +224,19 @@ The above is sourced largely from the linked OpenAPI specification.
 On each call, there should be rate limits, allowed senders, and other optional restrictions.
 
 ### Public Peering over an Internet Exchange (IX):
-* ADD/AUGMENT IX PEER
-* Establish new BGP sessions between peers, at the desired exchange.
-* Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
+* /add_sessions: ADD/AUGMENT IX PEER
+  * Establish new BGP sessions between peers, at the desired exchange.
+  * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
+  * POST: /add_sessions
+    * Request body: Session Array
+    * Responses:
+      * 200 OK:
+        * Contents: Session Array (all sessions in request accepted for configuration).
+      * 300:
+        * Contents: Modified Session Array, with rejected or additional sessions.
+      * 400:
+        * Error
 
-```
-
-POST: /add_sessions
-
- Request body: Session Array
-
-Responses:
-
- 200 OK:
-
-  Contents: Session Array (all sessions in request accepted for configuration).
-
- 300:
-
-  Contents: Modified Session Array, with rejected or additional sessions.
-
- 400:
-
-  Error
-
-```
 
 * REMOVE IX PEER
   * Given a list of Session Arrays, remove the sessions in that list.
@@ -257,53 +245,35 @@ Responses:
 
 ### UTILITY API CALLS
 Endpoints which provide useful information for potential interconnections.
-* LIST POTENTIAL PEERING LOCATIONS
+
+* /list_locations: LIST POTENTIAL PEERING LOCATIONS
   * List potential peering locations, both public and private.
   * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
+  * GET: /list_locations
+    * Request parameters:
+      * asn (Server ASN, with which to list potential connections)
+      * location_type (Optional: Peering Location)
+    * Response:
+      * 200: OK
+        * Contents: List of Peering Locations.
+      * 400:
+        * Error
 
-```
 
-GET: /list_locations
 
- Request parameters:
-  * asn (Server ASN, with which to list potential connections)
-  * location_type (Optional: Peering Location)
-
- Response:
-
-  200: OK
-
-   Contents: List of Peering Locations.
-
-  400:
-
-   Error
-
-```
-
-* QUERY for request status
+* /get_status: QUERY FOR REQUEST STATUS
   * Given a request ID, query for the status of that request.
   * Given an ASN without request ID, query for status of all connections between client and server.
   * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
-
-
-
-    GET: /get_status
-
-     Request parameters:
+  * GET: /get_status
+    * Request parameters:
       * asn (requesting client's asn)
       * request_id (optional, UUID of request)
-
-     Response:
-
-      200: OK
-
-       Contents: Session Array of sessions in request_id, if provided.  Else, all existing and in-progress sessions between client ASN and server.
-
-      400:
-
-       Error (example: request_id is invalid)
-
+    * Response:
+      * 200: OK
+        * Contents: Session Array of sessions in request_id, if provided.  Else, all existing and in-progress sessions between client ASN and server.
+      * 400:
+        * Error (example: request_id is invalid)
 
 
 ### Private Peering
