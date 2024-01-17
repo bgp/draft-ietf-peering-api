@@ -168,8 +168,8 @@ For a programmatic specification of the API, please see the public Github here: 
 
 This initial draft fully specifies the Public Peering endpoints.  Private Peering and Maintenance are under discussion, and the authors invite collaboration and discussion from interested parties.
 ## DATA TYPES
-As defined in https://github.com/bgp/autopeer/blob/main/api/openapi.yaml.  
-Please see specification for OpenAPI format.  
+As defined in https://github.com/bgp/autopeer/blob/main/api/openapi.yaml.
+Please see specification for OpenAPI format.
 ```
 Peering Location
  Contains string field listing the desired peering location in format `pdb:ix:$IX_ID`, and an enum specifying peering type (public or private).
@@ -215,7 +215,7 @@ On each call, there should be rate limits, allowed senders, and other optional r
 POST: /add_sessions
  Request body: Session Array
 Responses:
- 200 OK: 
+ 200 OK:
   Contents: Session Array
  300:
   Contents: Modified Session Array, with rejected or additional sessions.
@@ -336,7 +336,7 @@ This document has no IANA actions.
 
 # Acknowledgments
 This project is joint work between Meta, AWS, Cloudflare, FullCtl, and Google.
-Many thanks to my collaborators: Carlos Aguado (AWS), Ben Blaustein (Meta), Matt Griswold (FullCtl), Ben Ryall (Meta), Arturo Servin (Google), and Tom Strickx (Cloudflare).    
+Many thanks to my collaborators: Carlos Aguado (AWS), Ben Blaustein (Meta), Matt Griswold (FullCtl), Ben Ryall (Meta), Arturo Servin (Google), and Tom Strickx (Cloudflare).
 
 {:numbered="false"}
 
