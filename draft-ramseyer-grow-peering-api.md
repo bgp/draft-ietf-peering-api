@@ -289,19 +289,19 @@ GET: /list_locations
 
 
     GET: /get_status
-    
+
      Request parameters:
       * asn (requesting client's asn)
       * request_id (optional, UUID of request)
-    
+
      Response:
-    
+
       200: OK
-    
+
        Contents: Session Array of sessions in request_id, if provided.  Else, all existing and in-progress sessions between client ASN and server.
-    
+
       400:
-    
+
        Error (example: request_id is invalid)
 
 
