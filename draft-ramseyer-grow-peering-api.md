@@ -94,10 +94,12 @@ After authentication, a client can request to add or remove peering connections,
 
 # Example Request Flow
 For a diagram, please see: https://github.com/bgp/autopeer/?tab=readme-ov-file#sequence-diagram
+
 ## AUTH
 First, the client makes an authenticated request to the server.
 In this example, the client will use PeeringDB OAuth.
 Authentication provides the server with client's email (for potential manual discussion), along with client's entitlements, to confirm client is permitted to request on behalf of the proposed ASN.
+
 ## REQUEST
 1. ADD SESSION (CLIENT REQUEST)
   * Client provides:
@@ -128,12 +130,15 @@ Authentication provides the server with client's email (for potential manual dis
       2. TimeWindow: Time window indicating when sessions will be configured after being notified (may be 0 if sessions are already configured on receiver side)
       3. isInboundFiltered: optional bool that indicates whether prefixes will be filtered inbound.  If this is set to true, the time window should be set for how long the prefixes will be filtered.
       4. isOutboundFiltered: optional bool that indicates whether prefixes will be filtered outbound.  If this is set to true, the time window should be set for how long the prefixes will be filtered.  If the outbound limit is longer than the inbound limit time, the time window should be set to the max of inbound versus outbound.
+
 ## CLIENT CONFIGURATION
 The client then configures the chosen peering sessions.
 If the server added additional approved peering sessions, the client may choose whether or not to configure those sessions.
 For every session that the server rejected, the client removes that session from the list to be configured.
+
 ## SERVER CONFIGURATION
 The server configures all sessions that are in its list of approved peering sessions from its reply to the client.
+
 ## MONITORING
 Both client and server wait for sessions to establish.
 At any point, client may send a "GET STATUS" request to the server, to request the status of the original request (by UUID) or of a session (by session UUID).
@@ -152,6 +157,7 @@ The client will send a dictionary along with the request, as follows:
         11. Received prefixes (0 if not Established) (optional)
         12. Accepted Prefixes (optional)
 The server then responds with the same dictionary, with the information that it understands (status, etc).
+
 ## COMPLETION
 If both sides report that the session is established, then peering is complete.
 If one side does not configure sessions within the server's acceptable configuration window (TimeWindow), then the server is entitled to remove the configured sessions and report "Unestablished" to the client.
@@ -219,13 +225,21 @@ On each call, there should be rate limits, allowed senders, and other optional r
 
 ```
 POST: /add_sessions
+
  Request body: Session Array
+
 Responses:
+
  200 OK:
+
   Contents: Session Array (all sessions in request accepted for configuration).
+
  300:
+
   Contents: Modified Session Array, with rejected or additional sessions.
+
  400:
+
   Error
 ```
 
@@ -239,15 +253,22 @@ Endpoints which provide useful information for potential interconnections.
 * LIST POTENTIAL PEERING LOCATIONS
   * List potential peering locations, both public and private.
   * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
+
 ```
 GET: /list_locations
+
  Request parameters:
   * asn (Server ASN, with which to list potential connections)
   * location_type (Optional: Peering Location)
+
  Response:
+
   200: OK
+
    Contents: List of Peering Locations.
+
   400:
+
    Error
 ```
 
@@ -255,15 +276,22 @@ GET: /list_locations
   * Given a request ID, query for the status of that request.
   * Given an ASN without request ID, query for status of all connections between client and server.
   * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
+
 ```
 GET: /get_status
+
  Request parameters:
   * asn (requesting client's asn)
   * request_id (optional, UUID of request)
+
  Response:
+
   200: OK
+
    Contents: Session Array of sessions in request_id, if provided.  Else, all existing and in-progress sessions between client ASN and server.
+
   400:
+
    Error (example: request_id is invalid)
 ```
 
@@ -331,6 +359,7 @@ A maintenance message would follow a format like:
 The "Area" field could be a freeform string, or could be a parseable ENUM, like (BGP, PublicPeering, PrivatePeering, Configuration, Caching, DNS, etc).
 
 Past maintenances will not be advertised.
+
 # Possible Extensions
 The authors acknowledge that route-server configuration may also be of interest for this proposed API, and look forward to future discussions in this area.
 
