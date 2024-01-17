@@ -143,19 +143,21 @@ The server configures all sessions that are in its list of approved peering sess
 Both client and server wait for sessions to establish.
 At any point, client may send a "GET STATUS" request to the server, to request the status of the original request (by UUID) or of a session (by session UUID).
 The client will send a dictionary along with the request, as follows:
+
 * Dictionary:
-        1. Local ASN (server)
-        2. Local IP
-        3. Peer ASN (client)
-        4. Peer IP
-        5. Peer Type
-        6. MD5 (optional)
-        7. IXP ID
-        8. Status
-        9: UUID
-        10. Sent prefixes (0 if not Established) (optional)
-        11. Received prefixes (0 if not Established) (optional)
-        12. Accepted Prefixes (optional)
+  * Local ASN (server)
+  * Local IP
+  * Peer ASN (client)
+  * Peer IP
+  * Peer Type
+  * MD5 (optional)
+  * IXP ID
+  * Status
+  * UUID
+  * Sent prefixes (0 if not Established) (optional)
+  * Received prefixes (0 if not Established) (optional)
+  * Accepted Prefixes (optional)
+
 The server then responds with the same dictionary, with the information that it understands (status, etc).
 
 ## COMPLETION
@@ -224,6 +226,7 @@ On each call, there should be rate limits, allowed senders, and other optional r
 * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
 
 ```
+
 POST: /add_sessions
 
  Request body: Session Array
@@ -241,6 +244,7 @@ Responses:
  400:
 
   Error
+
 ```
 
 * REMOVE IX PEER
@@ -255,6 +259,7 @@ Endpoints which provide useful information for potential interconnections.
   * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
 
 ```
+
 GET: /list_locations
 
  Request parameters:
@@ -270,6 +275,7 @@ GET: /list_locations
   400:
 
    Error
+
 ```
 
 * QUERY for request status
@@ -278,6 +284,7 @@ GET: /list_locations
   * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
 
 ```
+
 GET: /get_status
 
  Request parameters:
@@ -293,6 +300,7 @@ GET: /get_status
   400:
 
    Error (example: request_id is invalid)
+
 ```
 
 ### Private Peering
