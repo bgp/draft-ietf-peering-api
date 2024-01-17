@@ -168,156 +168,61 @@ For a programmatic specification of the API, please see the public Github here: 
 
 This initial draft fully specifies the Public Peering endpoints.  Private Peering and Maintenance are under discussion, and the authors invite collaboration and discussion from interested parties.
 ## DATA TYPES
-(As defined in https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
+As defined in https://github.com/bgp/autopeer/blob/main/api/openapi.yaml.  
+Please see specification for OpenAPI format.  
 ```
-Location:
- title: Peering Location
- description: location for session, contains an object with fields id `pdb:ix:$ID` and type PUBLIC or PRIVATE
- type: object
- properties:
-   id:
-     type: string
-   type:
-     $ref: '#/components/schemas/LocationType'
-LocationType:
-  type: string
-  enum:
-    - private
-    - public
-
-SessionStatus:
-  title: Session configuration status
-  description: |-
-    BGP Session Statuses
-  type: string
-
-SessionArray:
-  title: BGP Sessions
-  description: Array of BGP Sessions
-  type: array
-  items:
-    $ref: '#/components/schemas/Session'
-   uuid:
-     type: string
-     description: |-
-       unique identifier, request ID
-       Optional--server must provide UUID.  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID.  Request ID will not change across the request.
-
-Session:
-  title: BGP Session
-  description: BGP Session
-  type: object
-  properties:
-    local_asn:
-      type: integer
-    local_ip:
-      type: string
-    peer_asn:
-      type: integer
-    peer_ip:
-      type: string
-    peer_type:
-      type: string
-    md5: (optional)
-      type: string
-    location:
-      $ref: '#/components/schemas/Location'
-    status:
-      $ref: '#/components/schemas/SessionStatus'
-    uuid:
-      type: string
-      description: |-
-        unique identifier
-        Optional--server must provide UUID.  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID.
-Error:
-  title: Error
-  type: object
-  description: Error object for API responses
-  properties:
-    errors:
-      type: array
-      description: |-
-        Entity field specific validation and operational error messages.
-
-        {field_name} will be substituted with the name of the field in which the validation error occured.
-      items:
-        $ref: '#/components/schemas/FieldError'
-      readOnly: true
-  required:
-    - field_errors
-FieldError:
-  title: FieldError
-  type: object
-  description: Error object for field-specific errors in API responses
-  properties:
-    name:
-      type: string
-      description: Field name
-      readOnly: true
-    errors:
-      type: array
-      description: List of error messages
-      items:
-        type: string
-      readOnly: true
-  required:
-    - name
-    - errors
-
-responses:
-  ErrorResponse:
-    description: API Error response
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            errors:
-              $ref: '#/components/schemas/Error'
-          required:
-            - errors
-        examples:
-          error-example:
-            value:
-              errors:
-                - name: peer_asn
-                  messages:
-                    - asn not available at that location
+Peering Location
+ Contains string field listing the desired peering location in format `pdb:ix:$IX_ID`, and an enum specifying peering type (public or private).
 ```
+```
+Session Status
+ Status of BGP Session, both as connection status and approval status (Established, Pending, Approved, Rejected, Down, etc)
+```
+```
+Session Array
+ Array of potential BGP sessions, with request UUID.
+ Request UUID is optional for client, and required for server.
+ Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID.  Request ID will not change across the request.
+```
+```
+BGP Session
+* local_asn (ASN of requestor)
+* local_ip (IP of requestor, v4 or v6)
+* peer_asn (server ASN)
+* peer_ip (server-side IP)
+* peer_type (public or private)
+* md5 (optional string)
+* location (Peering Location, as defined above)
+* status (Session Status, as defined above)
+* UUID (of individual session.  Server must provide UUID.  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID)
+```
+```
+Error
+ API Errors, for field validation errors in requests, and request-level errors.
+```
+The above is sourced largely from the linked OpenAPI specification.
+
 ## Endpoints:
 (As defined in https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
 On each call, there should be rate limits, allowed senders, and other optional restrictions.
 
 ### Public Peering over an Internet Exchange (IX):
 * ADD/AUGMENT IX PEER
-  * Establish new BGP sessions between peers, at the desired exchange.
- ```
-  /add_sessions:
-    post:
-      description: Request peering
-      requestBody:
-        description: Request to create peering sessions
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SessionArray'
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SessionArray'
-        '300':
-          description: Request modified or partially accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SessionArray'
-        '400':
-          $ref: '#/components/responses/ErrorResponse'
+* Establish new BGP sessions between peers, at the desired exchange.
+* Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
+
 ```
+POST: /add_sessions
+ Request body: Session Array
+Responses:
+ 200 OK: 
+  Contents: Session Array
+ 300:
+  Contents: Modified Session Array, with rejected or additional sessions.
+ 400:
+  Error
+```
+
 * REMOVE IX PEER
   * Given a list of SessionArrays, remove the sessions in that list.
   * This API serves as a notification to the server, as the client may remove the sessions before sending the request to the server.
@@ -326,65 +231,35 @@ On each call, there should be rate limits, allowed senders, and other optional r
 Endpoints which provide useful information for potential interconnections.
 * LIST POTENTIAL PEERING LOCATIONS
   * List potential peering locations, both public and private.
+  * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
 ```
-   /list_locations:
-    get:
-      parameters:
-        - name: asn
-          in: query
-          description: List avaible locations for peering with the given ASN
-          required: true
-          schema:
-            type: integer
-        - name: location_type
-          in: query
-          description: Optional filter for only querying locations able to
-                       establish public or private connections.
-          required: false
-          schema:
-            $ref: '#/components/schemas/LocationType'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Location'
+GET: /list_locations
+ Request parameters:
+  * asn (Server ASN, with which to list potential connections)
+  * location_type (Optional: Peering Location)
+ Response:
+  200: OK
+   Contents: List of Peering Locations.
+  400:
+   Error
+```
 
-        '400':
-          $ref: '#/components/responses/ErrorResponse'
-```
 * QUERY for request status
   * Given a request ID, query for the status of that request.
   * Given an ASN without request ID, query for status of all connections between client and server.
+  * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
 ```
-  /get_status:
-    get:
-      parameters:
-        - name: asn
-          in: query
-          description: asn of requester
-          required: true
-          schema:
-            type: integer
-        - name: request_id
-          in: query
-          description: request identifier
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SessionArray'
-        '400':
-          $ref: '#/components/responses/ErrorResponse'
-  ```
+GET: /get_status
+ Request parameters:
+  * asn (requesting client's asn)
+  * request_id (optional, UUID of request)
+ Response:
+  200: OK
+   Contents: Session Array of sessions in request_id, if provided.  Else, all existing and in-progress sessions between client ASN and server.
+  400:
+   Error (example: request_id is invalid)
+```
+
 ### Private Peering
 * ADD/AUGMENT PNI
  * Parameters:
@@ -460,6 +335,8 @@ This document has no IANA actions.
 --- back
 
 # Acknowledgments
+This project is joint work between Meta, AWS, Cloudflare, FullCtl, and Google.
+Many thanks to my collaborators: Carlos Aguado (AWS), Ben Blaustein (Meta), Matt Griswold (FullCtl), Ben Ryall (Meta), Arturo Servin (Google), and Tom Strickx (Cloudflare).    
+
 {:numbered="false"}
 
-TODO acknowledge.
