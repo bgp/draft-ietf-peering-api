@@ -92,13 +92,13 @@ For RPKI-based authentication, this document refers to RFC9323.
 The Peering API follows the RESTful API mode.
 After authentication, a client can request to add or remove peering connections, list potential interconnection locations, and query for upcoming maintenance events.
 
-## Example Request Flow
+# Example Request Flow
 For a diagram, please see: https://github.com/bgp/autopeer/?tab=readme-ov-file#sequence-diagram
-### AUTH
+## AUTH
 First, the client makes an authenticated request to the server.
 In this example, the client will use PeeringDB OAuth.
 Authentication provides the server with client's email (for potential manual discussion), along with client's entitlements, to confirm client is permitted to request on behalf of the proposed ASN.
-### REQUEST
+## REQUEST
 1. ADD SESSION (CLIENT REQUEST)
   * Client provides:
     * Dictionary (multiple):
@@ -128,13 +128,13 @@ Authentication provides the server with client's email (for potential manual dis
       2. TimeWindow: Time window indicating when sessions will be configured after being notified (may be 0 if sessions are already configured on receiver side)
       3. isInboundFiltered: optional bool that indicates whether prefixes will be filtered inbound.  If this is set to true, the time window should be set for how long the prefixes will be filtered.
       4. isOutboundFiltered: optional bool that indicates whether prefixes will be filtered outbound.  If this is set to true, the time window should be set for how long the prefixes will be filtered.  If the outbound limit is longer than the inbound limit time, the time window should be set to the max of inbound versus outbound.
-### CLIENT CONFIGURATION
+## CLIENT CONFIGURATION
 The client then configures the chosen peering sessions.
 If the server added additional approved peering sessions, the client may choose whether or not to configure those sessions.
 For every session that the server rejected, the client removes that session from the list to be configured.
-### SERVER CONFIGURATION
+## SERVER CONFIGURATION
 The server configures all sessions that are in its list of approved peering sessions from its reply to the client.
-### MONITORING
+## MONITORING
 Both client and server wait for sessions to establish.
 At any point, client may send a "GET STATUS" request to the server, to request the status of the original request (by UUID) or of a session (by session UUID).
 The client will send a dictionary along with the request, as follows:
@@ -152,7 +152,7 @@ The client will send a dictionary along with the request, as follows:
         11. Received prefixes (0 if not Established) (optional)
         12. Accepted Prefixes (optional)
 The server then responds with the same dictionary, with the information that it understands (status, etc).
-### COMPLETION
+## COMPLETION
 If both sides report that the session is established, then peering is complete.
 If one side does not configure sessions within the server's acceptable configuration window (TimeWindow), then the server is entitled to remove the configured sessions and report "Unestablished" to the client.
 
@@ -167,24 +167,28 @@ An email address is needed for communication if the API fails or is not implemen
 For a programmatic specification of the API, please see the public Github here: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
 
 This initial draft fully specifies the Public Peering endpoints.  Private Peering and Maintenance are under discussion, and the authors invite collaboration and discussion from interested parties.
+
 ## DATA TYPES
 As defined in https://github.com/bgp/autopeer/blob/main/api/openapi.yaml.
 Please see specification for OpenAPI format.
-```
+
+
 Peering Location
+
  Contains string field listing the desired peering location in format `pdb:ix:$IX_ID`, and an enum specifying peering type (public or private).
-```
-```
+
+
 Session Status
+
  Status of BGP Session, both as connection status and approval status (Established, Pending, Approved, Rejected, Down, etc)
-```
-```
+
 Session Array
+
  Array of potential BGP sessions, with request UUID.
  Request UUID is optional for client, and required for server.
  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID.  Request ID will not change across the request.
-```
-```
+
+
 BGP Session
 * local_asn (ASN of requestor)
 * local_ip (IP of requestor, v4 or v6)
@@ -195,11 +199,13 @@ BGP Session
 * location (Peering Location, as defined above)
 * status (Session Status, as defined above)
 * UUID (of individual session.  Server must provide UUID.  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID)
-```
-```
+
+
 Error
+
  API Errors, for field validation errors in requests, and request-level errors.
-```
+
+
 The above is sourced largely from the linked OpenAPI specification.
 
 ## Endpoints:
@@ -224,9 +230,10 @@ Responses:
 ```
 
 * REMOVE IX PEER
-  * Given a list of SessionArrays, remove the sessions in that list.
+  * Given a list of Session Arrays, remove the sessions in that list.
   * This API serves as a notification to the server, as the client may remove the sessions before sending the request to the server.
   * Server replies back with request ID and deletion status (complete, in-progress).
+    
 ### UTILITY API CALLS
 Endpoints which provide useful information for potential interconnections.
 * LIST POTENTIAL PEERING LOCATIONS
@@ -312,14 +319,14 @@ Of interest for discussion includes Letter of Authorization (LOA) negotiation, a
 This draft does not want to invent a new ticketing system.
 However, there is an opportunity in this API to provide maintenance notifications to peering partners.
 If there is interest, this draft would extend to propose a maintenance endpoint, where the server could broadcast upcoming and current maintenance windows.
+
 A maintenance message would follow a format like:
-```
-Title: string
-Start Date: date maintenance start(s/ed): UTC
-End Date: date maintenance ends: UTC
-Area: string or enum
-Details: freeform string
-```
+
+* Title: string
+* Start Date: date maintenance start(s/ed): UTC
+* End Date: date maintenance ends: UTC
+* Area: string or enum
+* Details: freeform string
 
 The "Area" field could be a freeform string, or could be a parseable ENUM, like (BGP, PublicPeering, PrivatePeering, Configuration, Caching, DNS, etc).
 
