@@ -120,6 +120,7 @@ Authentication provides the server with client's email (for potential manual dis
   * Server actions:
     * Server confirms requested clientASN in list of authorized ASN.
     * Optional: checks traffic levels, prefix limit counters, other desired internal checks.
+
 2.  ADD SESSION (SERVER RESPONSE)
 
   * APPROVAL CASE
