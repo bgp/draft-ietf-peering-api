@@ -45,10 +45,10 @@ We also propose future work to cover private peering, and alternative authentica
 
 # Introduction
 
-The Peering API is a mechanism that allows networks to automate interdomain interconnection  between two entities through global Internet Routing.
+The Peering API is a mechanism that allows networks to automate interdomain interconnection  between two Autonomous Systems (AS) through the Border Gateway Protocol 4 (BGP-4) ([RFC4271](https://datatracker.ietf.org/doc/html/rfc4271)).
 Using the API, networks will be able to automatically request and accept peering interconnections between Autonomous Systems in public or private scenarios in a time faster than it would take to configure sessions manually.
 By speeding up the peering turn-up process and removing the need for manual involvement in peering, the API and automation will ensure that networks can get interconnected as fast, reliably, cost-effectively, and efficiently as possible.
-As result, this improves end-user performance for all applications using networks interconnection supporting the Peering API.
+As a result, this improves end-user performance for all applications using networks interconnection supporting the Peering API.
 
 
 Business Justification:
@@ -68,24 +68,22 @@ All terms used in this document will be defined here:
 * Initiator: Network that wants to peer
 * Receiver: Network that is receiving communications about peering
 * Configured: peering session that is set up on one side
-* Established: session is already defined as per BGP4 specification (page 71)
+* Established: session is already defined as per BGP-4 specification ([page 71](https://datatracker.ietf.org/doc/html/rfc4271#page-71))
 
 
 
 # Security Considerations
-
-
-As peering connections exchange real internet traffic, this API requires a security component to verify that the requestor is allowed to request peering on behalf of that ASN.
-In this initial proposal, this API requires PeeringDB-based authentication as the standard.
+As peering connections exchange real Internet traffic, this API requires a security component to verify that the requestor is allowed to request peering on behalf of that AS.
+In this initial proposal, the API requires PeeringDB-based OAuth 2.0 ([RFC6749](https://datatracker.ietf.org/doc/html/rfc6749)) authentication as the standard.
 After further discussion, the authors decided to offer alternate authentication options to accomodate the security concerns of different parties.
-As peers may require varying security standards, this API will support PeeringDB OIDC as the base requirement, with optional security extensions in addition (RPKI or alternate OIDCs, for example)
+As peers may require varying security standards, this API will support PeeringDB OpenID Connect (OIDC) as the base requirement, with optional security extensions in addition (RPKI ([RFC6480](https://datatracker.ietf.org/doc/html/rfc6480)) or alternate OIDCs, for example)
 This document hopes that, through the RFC process, the Working Group can come to a consensus on a base "authentication standard," to ease adoption for peering partners.
 
 Of particular interest is RPKI.
 PeeringDB OIDC allows the API to verify who the requesting party is, while RPKI-signing allows the requesting party to prove that they can configure a request.
 The combination of both authorizations provides a strong security guarantee.
 This document recognizes that not all partners have the time or engineering resources to support all authorization standards, so the API will offer an extensible security platform to meet varying security requirements.
-For RPKI-based authentication, this document refers to RFC9323.
+For RPKI-based authentication, this document refers to RPKI Signed Checklists (RSCs) ([RFC9323](https://datatracker.ietf.org/doc/html/rfc9323)).
 
 
 # Protocol
@@ -93,12 +91,12 @@ The Peering API follows the RESTful API mode.
 After authentication, a client can request to add or remove peering connections, list potential interconnection locations, and query for upcoming maintenance events.
 
 # Example Request Flow
-For a diagram, please see: https://github.com/bgp/autopeer/?tab=readme-ov-file#sequence-diagram
+For a diagram, please see: https://github.com/bgp/autopeer/blob/main/README.md#sequence-diagram
 
 ## AUTH
 First, the client makes an authenticated request to the server.
-In this example, the client will use PeeringDB OAuth.
-Authentication provides the server with client's email (for potential manual discussion), along with client's entitlements, to confirm client is permitted to request on behalf of the proposed ASN.
+In this example, the client will use PeeringDB OAuth 2.0.
+Authentication provides the server with the client's email (for potential manual discussion), along with the client's entitlements, to confirm the client is permitted to request on behalf of the proposed AS.
 
 ## REQUEST
 1. ADD SESSION (CLIENT REQUEST)
@@ -109,16 +107,16 @@ Authentication provides the server with client's email (for potential manual dis
         2. Local IP
         3. Peer ASN (client)
         4. Peer IP
-        5. Peer Type
+        5. Peer Type (public or private)
         6. MD5 (optional)
-        7. IXP ID
+        7. IXP ID (PeeringDB Identifier)
         8. Status
         9: UUID
         10. Sent prefixes (0 if not Established) (optional)
         11. Received prefixes (0 if not Established) (optional)
         12. Accepted Prefixes (optional)
   * Server actions:
-    * Server confirms requested clientASN in list of authorized ASN.
+    * Server confirms requested clientASN in list of authorized ASNs.
     * Optional: checks traffic levels, prefix limit counters, other desired internal checks.
 
 2.  ADD SESSION (SERVER RESPONSE)
@@ -170,18 +168,18 @@ If one side does not configure sessions within the server's acceptable configura
 
 
 # API Endpoints and Specifications
-Each peer needs an API endpoint that will implement the API protocol.
-This API should be publicly listed in peeringDB and also as a potential expansion of RFC 9092 which provides endpoint integration to whois.
+Each peer needs a public API endpoint that will implement the API protocol.
+This API should be publicly listed in peeringDB and also as a potential expansion of [RFC9092](https://datatracker.ietf.org/doc/html/rfc9092) which could provide endpoint integration to WHOIS ([RFC3912](https://datatracker.ietf.org/doc/html/rfc3912)).
 Each API endpoint should be fuzz-tested and protected against abuse.  Attackers should not be able to access internal systems using the API.
-Every single request should come in with a unique guid called RequestID that maps to a peering request for later reference.  This guid format should be standardized across all requests.  This guid should be provided by the receiver once it receives the request and must be embedded in all communication.  If there is no RequestID present then that should be interpreted as a new request and the process starts again.
-An email address is needed for communication if the API fails or is not implemented properly (can be obtained through peeringdb).
+Every single request should come in with a unique GUID called RequestID that maps to a peering request for later reference.  This GUID format should be standardized across all requests.  This GUID should be provided by the receiver once it receives the request and must be embedded in all communication.  If there is no RequestID present then that should be interpreted as a new request and the process starts again.
+An email address is needed for communication if the API fails or is not implemented properly (can be obtained through PeeringDB).
 
-For a programmatic specification of the API, please see the public Github here: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
+For a programmatic specification of the API, please see the public Github here: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
 
 This initial draft fully specifies the Public Peering endpoints.  Private Peering and Maintenance are under discussion, and the authors invite collaboration and discussion from interested parties.
 
 ## DATA TYPES
-As defined in https://github.com/bgp/autopeer/blob/main/api/openapi.yaml.
+As defined in [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml).
 Please see specification for OpenAPI format.
 
 
@@ -192,13 +190,13 @@ Peering Location
 
 Session Status
 
- Status of BGP Session, both as connection status and approval status (Established, Pending, Approved, Rejected, Down, etc)
+ Status of BGP Session, both as connection status and approval status (Established, Pending, Approved, Rejected, Down, Unestablished, etc)
 
 Session Array
 
  Array of potential BGP sessions, with request UUID.
  Request UUID is optional for client, and required for server.
- Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID.  Request ID will not change across the request.
+ Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID.  RequestID will not change across the request.
 
 
 * BGP Session
@@ -221,13 +219,13 @@ Error
 The above is sourced largely from the linked OpenAPI specification.
 
 ## Endpoints:
-(As defined in https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
+(As defined in [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml))
 On each call, there should be rate limits, allowed senders, and other optional restrictions.
 
 ### Public Peering over an Internet Exchange (IX):
 * /add_sessions: ADD/AUGMENT IX PEER
   * Establish new BGP sessions between peers, at the desired exchange.
-  * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
+  * Below is based on OpenAPI specification: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
   * POST: /add_sessions
     * Request body: Session Array
     * Responses:
@@ -265,7 +263,7 @@ Endpoints which provide useful information for potential interconnections.
 * /get_status: QUERY FOR REQUEST STATUS
   * Given a request ID, query for the status of that request.
   * Given an ASN without request ID, query for status of all connections between client and server.
-  * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
+  * Below is based on OpenAPI specification: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
   * GET: /get_status
     * Request parameters:
       * asn (requesting client's asn)
@@ -277,7 +275,7 @@ Endpoints which provide useful information for potential interconnections.
         * Error (example: request_id is invalid)
 
 
-### Private Peering
+### Private Peering (DRAFT)
 * ADD/AUGMENT PNI
  * Parameters:
    * Peer ASN
@@ -298,7 +296,7 @@ Endpoints which provide useful information for potential interconnections.
      * Proposed Modification: LAG struct, LOA, email address for further discussion
    * 40x: rejections
 * REMOVE PNI
-  * As ADD/AUGMENT in parameters.  Responses will include a request ID and status.
+  * As ADD/AUGMENT in parameters.  Responses will include a requestID and status.
 
 # Public Peering Session Negotiation
 As part of public peering configuration, this draft must consider how the client and server should handshake at which sessions to configure peering.
@@ -310,7 +308,7 @@ At that point, the server will reply back with A and C marked as "Accepted," and
 The server will then configure A and C, and wait for the client to configure A and C.
 If the client configured B as well, it will not come up.
 
-This draft encourages peers to set up garbage collection for unconfigured or down peering sessions, to remove stale configs and maintain good router hygiene.
+This draft encourages peers to set up garbage collection for unconfigured or down peering sessions, to remove stale configuration and maintain good router hygiene.
 
 Related to rejection, if the server would like to configure additional sessions with the client, the server may reply back with additional peering sessions D and E.
 The server will configure D and E on their side, and D and E will become part of the sessions requested in the UUID.
