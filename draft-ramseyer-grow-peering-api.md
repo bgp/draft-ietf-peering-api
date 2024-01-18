@@ -75,7 +75,7 @@ All terms used in this document will be defined here:
 # Security Considerations
 As peering connections exchange real Internet traffic, this API requires a security component to verify that the requestor is allowed to request peering on behalf of that AS.
 In this initial proposal, the API requires PeeringDB-based OAuth 2.0 ([RFC6749](https://datatracker.ietf.org/doc/html/rfc6749)) authentication as the standard.
-After further discussion, the authors decided to offer alternate authentication options to accomodate the security concerns of different parties.
+After further discussion, the authors decided to offer alternate authentication options to accommodate the security concerns of different parties.
 As peers may require varying security standards, this API will support PeeringDB OpenID Connect (OIDC) as the base requirement, with optional security extensions in addition (RPKI ([RFC6480](https://datatracker.ietf.org/doc/html/rfc6480)) or alternate OIDCs, for example)
 This document hopes that, through the RFC process, the Working Group can come to a consensus on a base "authentication standard," to ease adoption for peering partners.
 
@@ -290,7 +290,7 @@ Endpoints which provide useful information for potential interconnections.
  * Response:
    * 200:
      * LAG struct, with server data populated
-     * LOA or way to recieve it
+     * LOA or way to receive it
      * Request ID
    * 300:
      * Proposed Modification: LAG struct, LOA, email address for further discussion
@@ -303,7 +303,7 @@ As part of public peering configuration, this draft must consider how the client
 At first, a client will request sessions A, B, and C.
 The server may choose to accept all sessions A, B, and C.
 At this point, configuration proceeds as normal.
-However, the server may choose to rejest session B.
+However, the server may choose to reject session B.
 At that point, the server will reply back with A and C marked as "Accepted," and B as "Rejected."
 The server will then configure A and C, and wait for the client to configure A and C.
 If the client configured B as well, it will not come up.
