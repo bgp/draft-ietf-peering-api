@@ -323,6 +323,10 @@ Perhaps this information could be conveyed over a preferences vector.
 Through future discussion with the IETF, the specification for private peering will be solidified.
 Of interest for discussion includes Letter of Authorization (LOA) negotiation, and how to coordinate unfiltering and configuration checks.
 
+# Automated Peering Policies
+TODO We should have something here.
+Split into: things that need to be handshaked between the two peers (LOA, etc) and things that do not (traffic levels)
+
 # Maintenance
 This draft does not want to invent a new ticketing system.
 However, there is an opportunity in this API to provide maintenance notifications to peering partners.
