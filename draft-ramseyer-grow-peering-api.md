@@ -96,7 +96,7 @@ For a diagram, please see: https://github.com/bgp/autopeer/blob/main/README.md#s
 ## AUTH
 First, the initiating OAuth2 Client is also the Resource Owner (RO) so it can follow the OAuth2 client credentials grant [RFC6749-section-4.4](https://datatracker.ietf.org/doc/html/rfc6749#section-4.4).
 In this example, the client will use PeeringDB OIDC credentials to acquire a JWT access token that is scoped for use with the receiving API.
-On successful authentication, PeeringDB provides the Resource Server (RS) with the client's email (for potential manual discussion), along with the client's usage entitlements (known as OAuth2 scopes), to confirm the client is permitted to make API request on behalf of the initiating AS.
+On successful authentication, PeeringDB provides the Resource Server (RS) with the client's email (for potential manual discussion), along with the client's usage entitlements (known as OAuth2 scopes), to confirm the client is permitted to make API requests on behalf of the initiating AS.
 
 ## REQUEST
 1. ADD SESSION (CLIENT REQUEST)
