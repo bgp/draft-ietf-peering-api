@@ -73,30 +73,30 @@ All terms used in this document will be defined here:
 
 
 # Security Considerations
-As peering connections exchange real Internet traffic, this API requires a security component to verify that the requestor is allowed to request peering on behalf of that AS.
-In this initial proposal, the API requires PeeringDB-based OAuth 2.0 ([RFC6749](https://datatracker.ietf.org/doc/html/rfc6749)) authentication as the standard.
+As peering connections exchange real Internet traffic, this API requires a security component to verify that the requestor is authorized to operate the interconnection on behalf of such AS.
+In this initial proposal, the API follows an authorization model based on OpenID Connect (OIDC) ([OpenID.Core](https://openid.net/specs/openid-connect-core-1_0.html)) and OAuth 2.0 ([RFC6749](https://datatracker.ietf.org/doc/html/rfc6749)) where the Authorization Server is PeeringDB. The choice of OpenID Connect is to use the standardized token exchange format based on JSON Web Tokens ([RFC7519](https://www.rfc-editor.org/rfc/rfc7519.html)) which allows interoperation with existing web-based application flows. JWT tokens also supply sufficient claims to implement receiver-side authorization decisions when used as bearer access tokens ([RFC9068](https://datatracker.ietf.org/doc/html/rfc9068)) and for which best common practices also exist ([RFC8725](https://www.rfc-editor.org/rfc/rfc8725.html)).
 After further discussion, the authors decided to offer alternate authentication options to accommodate the security concerns of different parties.
-As peers may require varying security standards, this API will support PeeringDB OpenID Connect (OIDC) as the base requirement, with optional security extensions in addition (RPKI ([RFC6480](https://datatracker.ietf.org/doc/html/rfc6480)) or alternate OIDCs, for example)
-This document hopes that, through the RFC process, the Working Group can come to a consensus on a base "authentication standard," to ease adoption for peering partners.
+As peers may require varying security standards, this document proposes to support PeeringDB OIDC as the base requirement, with optional security extensions in addition (RPKI ([RFC6480](https://datatracker.ietf.org/doc/html/rfc6480)) or alternative OIDC Authorization Servers, for example).
+This document hopes that, through the RFC process, the Working Group can come to a consensus on a base "authorization standard," to ease adoption for peering participants.
 
 Of particular interest is RPKI.
-PeeringDB OIDC allows the API to verify who the requesting party is, while RPKI-signing allows the requesting party to prove that they can configure a request.
-The combination of both authorizations provides a strong security guarantee.
-This document recognizes that not all partners have the time or engineering resources to support all authorization standards, so the API will offer an extensible security platform to meet varying security requirements.
+PeeringDB OIDC allows the API to identify who the requesting party is, while RPKI-signing allows such requesting party to prove that they own some of the Internet-assigned resources referenced in the request.
+This combination provides a low entry barrier to create an identity federation across the participating ASs' API with a stronger guarantee of resource ownership against potential for misattribution and repudiation.
+The authors recognize that not all partners have the time or engineering resources to support all authorization standards, so the API reference implementations will offer an extensible security mechanism to meet varying identity and security requirements.
 For RPKI-based authentication, this document refers to RPKI Signed Checklists (RSCs) ([RFC9323](https://datatracker.ietf.org/doc/html/rfc9323)).
 
 
 # Protocol
-The Peering API follows the RESTful API mode.
-After authentication, a client can request to add or remove peering connections, list potential interconnection locations, and query for upcoming maintenance events.
+The Peering API follows the Representational State Transfer ([REST](http://roy.gbiv.com/pubs/dissertation/top.htm)) architecture where sessions, locations, and maintenance events are the resources the API represents and is modeled after the OpenAPI standard [OpenAPI-v3.1.0](https://swagger.io/specification/).
+Using the token bearer model ([RFC6750](https://datatracker.ietf.org/doc/html/rfc6750)), a client application can request to add or remove peering sessions, list potential interconnection locations, and query for upcoming maintenance events on behalf of the AS resource owner.
 
 # Example Request Flow
 For a diagram, please see: https://github.com/bgp/autopeer/blob/main/README.md#sequence-diagram
 
 ## AUTH
-First, the client makes an authenticated request to the server.
-In this example, the client will use PeeringDB OAuth 2.0.
-Authentication provides the server with the client's email (for potential manual discussion), along with the client's entitlements, to confirm the client is permitted to request on behalf of the proposed AS.
+First, the initiating OAuth2 Client is also the Resource Owner (RO) so it can follow the OAuth2 client credentials grant [RFC6749-section-4.4](https://datatracker.ietf.org/doc/html/rfc6749#section-4.4).
+In this example, the client will use PeeringDB OIDC credentials to acquire a JWT access token that is scoped for use with the receiving API.
+On successful authentication, PeeringDB provides the Resource Server (RS) with the client's email (for potential manual discussion), along with the client's usage entitlements (known as OAuth2 scopes), to confirm the client is permitted to make API request on behalf of the initiating AS.
 
 ## REQUEST
 1. ADD SESSION (CLIENT REQUEST)
