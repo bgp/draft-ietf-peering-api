@@ -351,7 +351,7 @@ This document has no IANA actions.
 --- back
 
 # Acknowledgments
-The authors would like to thank their collaborators, who implemented API versions and provided valuable feedback on the design.  
+The authors would like to thank their collaborators, who implemented API versions and provided valuable feedback on the design.
 * Ben Blaustein (Meta)
 * Stefan Prattner (20c)
 * Ben Ryall (Meta)
