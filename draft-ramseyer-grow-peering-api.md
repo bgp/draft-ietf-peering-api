@@ -28,6 +28,10 @@ author:
     organization: AWS
     email: "crlsa@amazon.com"
  -
+    fullname: "Matt Griswold"
+    organization: FullCtl
+    email: "grizz@20c.com"
+ -
     fullname: "Jenny Ramseyer"
     organization: Meta
     email: "ramseyer@meta.com"
@@ -35,6 +39,10 @@ author:
     fullname: "Arturo Servin"
     organization: Google
     email: "arturolev@google.com"
+ -
+    fullname: "Tom Strickx"
+    organization: Cloudflare
+    email: "tstrickx@cloudflare.com"
 
 
 normative:
