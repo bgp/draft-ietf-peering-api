@@ -93,6 +93,62 @@ Using the token bearer model ([RFC6750](https://datatracker.ietf.org/doc/html/rf
 # Example Request Flow
 For a diagram, please see: https://github.com/bgp/autopeer/blob/main/README.md#sequence-diagram
 
+OIDC Authentication
+
++-----------+                 +-------+                    +-----------+
+| Initiator |                 | Peer  |                    | PeeringDB |
++-----------+                 +-------+                    +-----------+
+      |                           |                              |
+      | OIDC Authentication       |                              |
+      |--------------------------------------------------------->|
+      |                           |                              |
+      |                                        Provide auth code |
+      |<---------------------------------------------------------|
+      |                           |                              |
+      | Send auth code to Peer    |                              |
+      |--------------------------------------------------------->|
+      |                           |                              |
+      |                           | Exchange auth code for token |
+      |                           |----------------------------->|
+      |                           |                              |
+      |                           |                 Return token |
+      |                           |<-----------------------------|
+      |                           |
+      | Peer determines permissions based on token
+      |                           |
+      | Send OK back to Initiator |
+      |<--------------------------|
+
+Operations, loop until peering is complete.
+
+List Locations
+
++-----------+                                                  +-------+
+| Initiator |                                                  | Peer  |
++-----------+                                                  +-------+
+      |                                                            |
+      | QUERY peering locations (peer type, ASN, auth code)        |
+      |----------------------------------------------------------->|
+      |                                                            |
+      |                               Reply with peering locations |
+      |                            or errors (401, 406, 451, etc.) |
+      |<-----------------------------------------------------------|
+
+
+Request session status
+
++-----------+                                                  +-------+
+| Initiator |                                                  | Peer  |
++-----------+                                                  +-------+
+      |                                                            |
+      | QUERY request status using request ID & auth code          |
+      |----------------------------------------------------------->|
+      |                                                            |
+      |                                  Reply with session status |
+      |                                      (200, 404, 202, etc.) |
+      |<-----------------------------------------------------------|
+
+
 ## AUTH
 First, the initiating OAuth2 Client is also the Resource Owner (RO) so it can follow the OAuth2 client credentials grant [RFC6749-section-4.4](https://datatracker.ietf.org/doc/html/rfc6749#section-4.4).
 In this example, the client will use PeeringDB OIDC credentials to acquire a JWT access token that is scoped for use with the receiving API.
