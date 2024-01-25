@@ -373,6 +373,7 @@ The authors would like to thank their collaborators, who implemented API version
 * Stefan Prattner (20c)
 * Ben Ryall (Meta)
 * Erica Salvaneschi (Cloudflare)
+* Job Snijders (Fastly)
 
 
 {:numbered="false"}
