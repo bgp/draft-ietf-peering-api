@@ -24,9 +24,15 @@ venue:
 
 author:
  -
+    fullname: "Carlos Aguado"
+    organization: AWS
+    email: "crlsa@amazon.com"
+ -
     fullname: "Jenny Ramseyer"
     organization: Meta
     email: "ramseyer@meta.com"
+
+
 
 normative:
 Public Github with proposed API specification and diagrams: https://github.com/bgp/autopeer/
