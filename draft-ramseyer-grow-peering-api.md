@@ -370,10 +370,12 @@ This document has no IANA actions.
 # Acknowledgments
 The authors would like to thank their collaborators, who implemented API versions and provided valuable feedback on the design.
 * Ben Blaustein (Meta)
+* Jakub Heichman (Meta)
 * Stefan Prattner (20c)
 * Ben Ryall (Meta)
 * Erica Salvaneschi (Cloudflare)
 * Job Snijders (Fastly)
+* David Tuber (Cloudflare)
 
 
 {:numbered="false"}
