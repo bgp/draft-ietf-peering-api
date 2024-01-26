@@ -118,7 +118,7 @@ On successful authentication, PeeringDB provides the Resource Server (RS) with t
   * PARTIAL APPROVAL CASE
     * Server returns a list with the structure for each of the acceptable peering sessions as in the approval case. The server also returns a list of sessions that have not deemed as validated or acceptable to be created. The set of sessions accepted and rejected is disjoint and the join of both sets matches the cardinality of the requested sessions. The sessions on each set are associated to the client request by the Item ID specified for each session.
   * REJECTION CASE
-    * Server returns and error message which indicates that all of the sessions requested have been rejected and the reason for it.
+    * Server returns an error message which indicates that all of the sessions requested have been rejected and the reason for it.
 
 ## CLIENT CONFIGURATION
 The client then configures the chosen peering sessions asynchronously using their internal mechanisms.
@@ -133,15 +133,15 @@ At any point, client may send a "GET STATUS" request to the server, to request t
 The client will send a structure along with the request, as follows:
 
 * structure:
-  1. Session ID
-  2. Local ASN (server)
-  3. Local IP
-  4. Peer ASN (client)
-  5. Peer IP
-  6. Peer Type
-  7. MD5 (optional, as defined above)
-  8. Location
-  9. Status
+  * Session ID
+  * Local ASN (server)
+  * Local IP
+  * Peer ASN (client)
+  * Peer IP
+  * Peer Type
+  * MD5 (optional, as defined above)
+  * Location
+  * Status
 
 The server then responds with the same structure, with the information that it understands (status, etc).
 
@@ -179,6 +179,9 @@ Session Array
   Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID.  RequestID will not change across the request.
 
 BGP Session
+
+  A structure that describes a BGP session and contains the following elements:
+
   * local_asn (ASN of requestor)
   * local_ip (IP of requestor, v4 or v6)
   * peer_asn (server ASN)
@@ -200,11 +203,11 @@ The above is sourced largely from the linked OpenAPI specification.
 On each call, there should be rate limits, allowed senders, and other optional restrictions.
 
 ### Public Peering over an Internet Exchange (IX):
-* /sessions: ADD/RETRIEVE sessions visible to the calling PEER
+* `/sessions`: ADD/RETRIEVE sessions visible to the calling PEER
   * Batch create new session resources
     * Establish new BGP sessions between peers, at the desired exchange.
     * Below is based on OpenAPI specification: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
-    * POST: /sessions
+    * `POST /sessions`
       * Request body: Session Array
       * Responses:
         * 200 OK:
@@ -220,7 +223,7 @@ On each call, there should be rate limits, allowed senders, and other optional r
     * Given a request ID, query for the status of that request.
     * Given an ASN without request ID, query for status of all connections between client and server.
     * Below is based on OpenAPI specification: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
-    * GET: /sessions
+    * `GET /sessions`
       * Request parameters:
         * asn (requesting client's asn)
         * request_id (optional, UUID of request)
@@ -235,13 +238,45 @@ On each call, there should be rate limits, allowed senders, and other optional r
         * 403:
           * Unauthorized to perform the operation
 
+* `/sessions/{session_id}`: Operate on individual sessions
+  * Retrieve an existing session resource
+    * Below is based on OpenAPI specification: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
+    * `GET /sessions/{session_id}`
+      * Request parameters:
+        * session_id returned by the server on creation or through the session list operation.
+      * Responses:
+        * 200 OK:
+          * Contents: Session structure with current attributes
+        * 400:
+          * Error (example: session_id is invalid)
+        * 403:
+          * Unauthorized to perform the operation
+        * 404:
+          * The session referred by the specified session_id does not exist or is not visible to the caller
+
+  * Delete a session.
+    * Given a session ID, delete it which effectively triggers an depeering from the initiator.
+    * Below is based on OpenAPI specification: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
+    * `DELETE /sessions/{session_id}`
+      * Request parameters:
+        * session_id returned by the server on creation or through the session list operation.
+      * Response:
+        * 204: OK
+          * Contents: empty response as the session is processed and hard deleted
+        * 400:
+          * Error (example: session_id is invalid)
+        * 403:
+          * Unauthorized to perform the operation
+        * 404:
+          * The session referred by the specified session_id does not exist or is not visible to the caller
+
 ### UTILITY API CALLS
 Endpoints which provide useful information for potential interconnections.
 
-* /locations: LIST POTENTIAL PEERING LOCATIONS
+* `/locations`: LIST POTENTIAL PEERING LOCATIONS
   * List potential peering locations, both public and private. The response is paginated.
     * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
-    * GET: /locations
+    * `GET /locations`
       * Request parameters:
         * asn (Server ASN, with which to list potential connections)
         * location_type (Optional: Peering Location)
@@ -291,7 +326,7 @@ If the client configured B as well, it will not come up.
 
 This draft encourages peers to set up garbage collection for unconfigured or down peering sessions, to remove stale configuration and maintain good router hygiene.
 
-Related to rejection, if the server would like to configure additional sessions with the client, the server may either reject all the session that do not meet the criteria caused by such absence in the client's request or issue a separate request to the client's server requesting those additional peering sessions D and E.
+Related to rejection, if the server would like to configure additional sessions with the client, the server may either reject all the session that do not meet the criteria caused by such absence in the client's request or approve the client's request and issue a separate request to the client's server requesting those additional peering sessions D and E.
 The server will configure D and E on their side, and D and E will become part of the sessions requested in the UUID.
 The client may choose whether or not to accept those additional sessions.
 If they do, the client should configure D and E as well.
