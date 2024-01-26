@@ -24,9 +24,26 @@ venue:
 
 author:
  -
+    fullname: "Carlos Aguado"
+    organization: AWS
+    email: "crlsa@amazon.com"
+ -
+    fullname: "Matt Griswold"
+    organization: FullCtl
+    email: "grizz@20c.com"
+ -
     fullname: "Jenny Ramseyer"
     organization: Meta
     email: "ramseyer@meta.com"
+ -
+    fullname: "Arturo Servin"
+    organization: Google
+    email: "arturolev@google.com"
+ -
+    fullname: "Tom Strickx"
+    organization: Cloudflare
+    email: "tstrickx@cloudflare.com"
+
 
 normative:
     autopeer:
@@ -391,11 +408,20 @@ This document has no IANA actions.
 
 --- back
 
+
 Acknowledgments     {#acknowledgments}
 ===============
 
-This project is joint work between Meta, AWS, Cloudflare, FullCtl, and Google.
-Many thanks to my collaborators: Carlos Aguado (AWS), Ben Blaustein (Meta), Matt Griswold (FullCtl), Ben Ryall (Meta), Arturo Servin (Google), and Tom Strickx (Cloudflare).
+The authors would like to thank their collaborators, who implemented API versions and provided valuable feedback on the design.
+* Ben Blaustein (Meta)
+* Jakub Heichman (Meta)
+* Stefan Prattner (20c)
+* Ben Ryall (Meta)
+* Erica Salvaneschi (Cloudflare)
+* Job Snijders (Fastly)
+* David Tuber (Cloudflare)
+
+
 
 {:numbered="false"}
 
