@@ -129,6 +129,8 @@ Example Request Flow
 --------------------
 For a diagram, please see: https://github.com/bgp/autopeer/blob/main/README.md#sequence-diagram
 
+
+~~~~~~~~~~
 OIDC Authentication
 
 +-----------+                 +-------+                    +-----------+
@@ -183,7 +185,7 @@ Request session status
       |                                  Reply with session status |
       |                                      (200, 404, 202, etc.) |
       |<-----------------------------------------------------------|
-
+~~~~~~~~~~
 
 
 AUTH    {#auth}
