@@ -46,9 +46,23 @@ author:
 
 
 normative:
-Public Github with proposed API specification and diagrams: https://github.com/bgp/autopeer/
+    autopeer:
+        target: https://github.com/bgp/autopeer/
+        title: Github respository with the API specification and diagrams
+    oidc:
+        target: https://openid.net/specs/openid-connect-core-1_0.html
+        title: OpenID.Core
+    rest:
+        target: http://roy.gbiv.com/pubs/dissertation/top.htm
+        title: Architectural Styles and the Design of Network-based Software Architectures
+        author:
+            name: Roy Thomas Fielding
+            ins: R. T. Fielding
+        date: 2000
+    openapi:
+        target: https://spec.openapis.org/oas/v3.1.0
+        title: OpenAPI-v3.1.0
 
-informative:
 
 --- abstract
 
@@ -59,15 +73,17 @@ We also propose future work to cover private peering, and alternative authentica
 
 --- middle
 
-# Introduction
+Introduction    {#problems}
+============
 
-The Peering API is a mechanism that allows networks to automate interdomain interconnection between two Autonomous Systems (AS) through the Border Gateway Protocol 4 (BGP-4) ([RFC4271](https://datatracker.ietf.org/doc/html/rfc4271)).
+The Peering API is a mechanism that allows networks to automate interdomain interconnection  between two Autonomous Systems (AS) through the Border Gateway Protocol 4 ({{?RFC4271}}).
 Using the API, networks will be able to automatically request and accept peering interconnections between Autonomous Systems in public or private scenarios in a time faster than it would take to configure sessions manually.
 By speeding up the peering turn-up process and removing the need for manual involvement in peering, the API and automation will ensure that networks can get interconnected as fast, reliably, cost-effectively, and efficiently as possible.
 As a result, this improves end-user performance for all applications using networks interconnection supporting the Peering API.
 
 
-Business Justification:
+Business Justification      {#justification}
+----------------------
 
 By using the Peering API, entities requesting and accepting peering can significantly improve the process to turn up interconnections by:
 
@@ -75,43 +91,54 @@ By using the Peering API, entities requesting and accepting peering can signific
 * Reducing configuration mistakes by reducing human interaction
 * And by peering, reducing network latency through expansion of interconnection relationships
 
-# Conventions and Definitions
+
+Conventions and Definitions     {#conventions}
+===========================
 
 All terms used in this document will be defined here:
 
 * Initiator: Network that wants to peer
 * Receiver: Network that is receiving communications about peering
 * Configured: peering session that is set up on one side
-* Established: session is already defined as per BGP-4 specification ([page 71](https://datatracker.ietf.org/doc/html/rfc4271#page-71))
+* Established: session is already defined as per BGP-4 specification  {{Section 8.2.2 of ?RFC4271}}
 
-# Security Considerations
+
+Security Considerations     {#security}
+=======================
+
 As peering connections exchange real Internet traffic, this API requires a security component to verify that the requestor is authorized to operate the interconnection on behalf of such AS.
-In this initial proposal, the API follows an authorization model based on OpenID Connect (OIDC) ([OpenID.Core](https://openid.net/specs/openid-connect-core-1_0.html)) and OAuth 2.0 ([RFC6749](https://datatracker.ietf.org/doc/html/rfc6749)) where the Authorization Server is PeeringDB. The choice of OpenID Connect is to use the standardized token exchange format based on JSON Web Tokens ([RFC7519](https://www.rfc-editor.org/rfc/rfc7519.html)) which allows interoperation with existing web-based application flows. JWT tokens also supply sufficient claims to implement receiver-side authorization decisions when used as bearer access tokens ([RFC9068](https://datatracker.ietf.org/doc/html/rfc9068)) and for which best common practices also exist ([RFC8725](https://www.rfc-editor.org/rfc/rfc8725.html)).
+In this initial proposal, the API follows an authorization model based on OpenID Connect {{oidc}} and OAuth 2.0 ({{!RFC6749}}) where the Authorization Server is PeeringDB. The choice of OpenID Connect is to use the standardized token exchange format based on JSON Web Tokens ({{!RFC7519}}) which allows interoperation with existing web-based application flows. JWT tokens also supply sufficient claims to implement receiver-side authorization decisions when used as bearer access tokens ({{!RFC9068}}) and for which best common practices also exist ({{!RFC8725}}).
 After further discussion, the authors decided to offer alternate authentication options to accommodate the security concerns of different parties.
-As peers may require varying security standards, this document proposes to support PeeringDB OIDC as the base requirement, with optional security extensions in addition (RPKI ([RFC6480](https://datatracker.ietf.org/doc/html/rfc6480)) or alternative OIDC Authorization Servers, for example).
+As peers may require varying security standards, this document proposes to support PeeringDB OIDC as the base requirement, with optional security extensions in addition (RPKI ({{?RFC6480}}) or alternative OIDC Authorization Servers, for example).
 This document hopes that, through the RFC process, the Working Group can come to a consensus on a base "authorization standard," to ease adoption for peering participants.
 
 Of particular interest is RPKI.
 PeeringDB OIDC allows the API to identify who the requesting party is, while RPKI-signing allows such requesting party to prove that they own some of the Internet-assigned resources referenced in the request.
 This combination provides a low entry barrier to create an identity federation across the participating ASs' API with a stronger guarantee of resource ownership against potential for misattribution and repudiation.
 The authors recognize that not all partners have the time or engineering resources to support all authorization standards, so the API reference implementations will offer an extensible security mechanism to meet varying identity and security requirements.
-For RPKI-based authentication, this document refers to RPKI Signed Checklists (RSCs) ([RFC9323](https://datatracker.ietf.org/doc/html/rfc9323)).
+For RPKI-based authentication, this document refers to RPKI Signed Checklists (RSCs) ({{?RFC9323}}).
 
 
-# Protocol
-The Peering API follows the Representational State Transfer ([REST](http://roy.gbiv.com/pubs/dissertation/top.htm)) architecture where sessions, locations, and maintenance events are the resources the API represents and is modeled after the OpenAPI standard [OpenAPI-v3.1.0](https://swagger.io/specification/).
-Using the token bearer model ([RFC6750](https://datatracker.ietf.org/doc/html/rfc6750)), a client application can request to add or remove peering sessions, list potential interconnection locations, and query for upcoming maintenance events on behalf of the AS resource owner.
+Protocol    {#protocol}
+========
 
-# Example Request Flow
+The Peering API follows the Representational State Transfer ({{rest}}) architecture where sessions, locations, and maintenance events are the resources the API represents and is modeled after the OpenAPI standard {{openapi}}.
+Using the token bearer model ({{!RFC6750}}), a client application can request to add or remove peering sessions, list potential interconnection locations, and query for upcoming maintenance events on behalf of the AS resource owner.
+
+Example Request Flow
+--------------------
 For a diagram, please see: https://github.com/bgp/autopeer/blob/main/README.md#sequence-diagram
 
-## AUTH
-First, the initiating OAuth2 Client is also the Resource Owner (RO) so it can follow the OAuth2 client credentials grant [RFC6749-section-4.4](https://datatracker.ietf.org/doc/html/rfc6749#section-4.4).
+AUTH    {#auth}
+----
+First, the initiating OAuth2 Client is also the Resource Owner (RO) so it can follow the OAuth2 client credentials grant {{Section 4.4 of !RFC6749}}.
 In this example, the client will use PeeringDB OIDC credentials to acquire a JWT access token that is scoped for use with the receiving API.
 On successful authentication, PeeringDB provides the Resource Server (RS) with the client's email (for potential manual discussion), along with the client's usage entitlements (known as OAuth2 scopes), to confirm the client is permitted to make API requests on behalf of the initiating AS.
 
-## REQUEST
-1. ADD SESSIONS (CLIENT BATCHED REQUEST)
+REQUEST     {#request}
+-------
+1. ADD SESSION (CLIENT BATCHED REQUEST)
+
 
   * The initiator's client provides a set of:
     * Structure:
@@ -137,14 +164,17 @@ On successful authentication, PeeringDB provides the Resource Server (RS) with t
   * REJECTION CASE
     * Server returns an error message which indicates that all of the sessions requested have been rejected and the reason for it.
 
-## CLIENT CONFIGURATION
+CLIENT CONFIGURATION    {#clientconfig}
+--------------------
 The client then configures the chosen peering sessions asynchronously using their internal mechanisms.
 For every session that the server rejected, the client removes that session from the list to be configured.
 
-## SERVER CONFIGURATION
+SERVER CONFIGURATION    {#serverconfig}
+--------------------
 The server configures all sessions that are in its list of approved peering sessions from its reply to the client.
 
-## MONITORING
+MONITORING   {#monitoring}
+----------
 Both client and server wait for sessions to establish.
 At any point, client may send a "GET STATUS" request to the server, to request the status of the session (by session ID).
 The client will send a structure along with the request, as follows:
@@ -162,22 +192,31 @@ The client will send a structure along with the request, as follows:
 
 The server then responds with the same structure, with the information that it understands (status, etc).
 
-## COMPLETION
+COMPLETION      {#completion}
+----------
 If both sides report that the session is established, then peering is complete.
 If one side does not configure sessions within the server's acceptable configuration window (TimeWindow), then the server is entitled to remove the configured sessions and report "Unestablished" to the client.
 
-# API Endpoints and Specifications
+
+API Endpoints and Specifications    {#endpoints_and_specs}
+================================
+
 Each peer needs a public API endpoint that will implement the API protocol.
-This API should be publicly listed in peeringDB and also as a potential expansion of [RFC9092](https://datatracker.ietf.org/doc/html/rfc9092) which could provide endpoint integration to WHOIS ([RFC3912](https://datatracker.ietf.org/doc/html/rfc3912)).
-Each API endpoint should be fuzz-tested and protected against abuse. Attackers should not be able to access internal systems using the API.
-Every single request should come in with a unique GUID called RequestID that maps to a peering request for later reference. This GUID format should be standardized across all requests. This GUID should be provided by the receiver once it receives the request and must be embedded in all communication. If there is no RequestID present then that should be interpreted as a new request and the process starts again.
+This API should be publicly listed in peeringDB and also as a potential expansion of {{?RFC9092}} which could provide endpoint integration to WHOIS ({{?RFC3912}}).
+Each API endpoint should be fuzz-tested and protected against abuse.  Attackers should not be able to access internal systems using the API.
+Every single request should come in with a unique GUID called RequestID that maps to a peering request for later reference.
+This GUID format should be standardized across all requests.
+This GUID should be provided by the receiver once it receives the request and must be embedded in all communication.
+If there is no RequestID present then that should be interpreted as a new request and the process starts again.
+
 An email address is needed for communication if the API fails or is not implemented properly (can be obtained through PeeringDB).
 
 For a programmatic specification of the API, please see the public Github here: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
 
 This initial draft fully specifies the Public Peering endpoints. Private Peering and Maintenance are under discussion, and the authors invite collaboration and discussion from interested parties.
 
-## DATA TYPES
+DATA TYPES      {#datatypes}
+----------
 As defined in [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml).
 Please see specification for OpenAPI format.
 
@@ -215,11 +254,13 @@ Error
 
 The above is sourced largely from the linked OpenAPI specification.
 
-## Endpoints:
+Endpoints   {#endpoints}
+---------
 (As defined in [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml))
 On each call, there should be rate limits, allowed senders, and other optional restrictions.
 
-### Public Peering over an Internet Exchange (IX):
+
+### Public Peering over an Internet Exchange (IX)   {#public_peering_ix}
 * `/sessions`: ADD/RETRIEVE sessions visible to the calling PEER
   * Batch create new session resources
     * Establish new BGP sessions between peers, at the desired exchange.
@@ -287,7 +328,7 @@ On each call, there should be rate limits, allowed senders, and other optional r
         * 404:
           * The session referred by the specified session_id does not exist or is not visible to the caller
 
-### UTILITY API CALLS
+### UTILITY API CALLS   {#utility_api}
 Endpoints which provide useful information for potential interconnections.
 
 * `/locations`: LIST POTENTIAL PEERING LOCATIONS
@@ -331,7 +372,9 @@ Endpoints which provide useful information for potential interconnections.
 * REMOVE PNI
   * As ADD/AUGMENT in parameters. Responses will include a requestID and status.
 
-# Public Peering Session Negotiation
+Public Peering Session Negotiation  {#session_negotiation}
+==================================
+
 As part of public peering configuration, this draft must consider how the client and server should handshake at which sessions to configure peering.
 At first, a client will request sessions A, B, and C.
 The server may choose to accept all sessions A, B, and C.
@@ -352,11 +395,15 @@ If they do not, the client will not configure D and E, and the server should gar
 As part of the IETF discussion, the authors would like to discuss how to coordinate which side unfilters first.
 Perhaps this information could be conveyed over a preferences vector.
 
-# Private Peering
+Private Peering     {#private_peering}
+===============
+
 Through future discussion with the IETF, the specification for private peering will be solidified.
 Of interest for discussion includes Letter of Authorization (LOA) negotiation, and how to coordinate unfiltering and configuration checks.
 
-# Maintenance
+Maintenance     {#maintenance}
+===========
+
 This draft does not want to invent a new ticketing system.
 However, there is an opportunity in this API to provide maintenance notifications to peering partners.
 If there is interest, this draft would extend to propose a maintenance endpoint, where the server could broadcast upcoming and current maintenance windows.
@@ -373,16 +420,22 @@ The "Area" field could be a freeform string, or could be a parseable ENUM, like 
 
 Past maintenances will not be advertised.
 
-# Possible Extensions
+Possible Extensions     {#extensions}
+===================
+
 The authors acknowledge that route-server configuration may also be of interest for this proposed API, and look forward to future discussions in this area.
 
-# IANA Considerations
+IANA Considerations     {#iana}
+===================
 
 This document has no IANA actions.
 
 --- back
 
-# Acknowledgments
+
+Acknowledgments     {#acknowledgments}
+===============
+
 The authors would like to thank their collaborators, who implemented API versions and provided valuable feedback on the design.
 
 * Ben Blaustein (Meta)
@@ -392,6 +445,7 @@ The authors would like to thank their collaborators, who implemented API version
 * Erica Salvaneschi (Cloudflare)
 * Job Snijders (Fastly)
 * David Tuber (Cloudflare)
+
 
 
 {:numbered="false"}
