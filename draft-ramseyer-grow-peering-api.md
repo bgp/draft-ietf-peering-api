@@ -129,6 +129,65 @@ Example Request Flow
 --------------------
 For a diagram, please see: https://github.com/bgp/autopeer/blob/main/README.md#sequence-diagram
 
+
+~~~~~~~~~~
+OIDC Authentication
+
++-----------+                 +-------+                    +-----------+
+| Initiator |                 | Peer  |                    | PeeringDB |
++-----------+                 +-------+                    +-----------+
+      |                           |                              |
+      | OIDC Authentication       |                              |
+      |--------------------------------------------------------->|
+      |                           |                              |
+      |                                        Provide auth code |
+      |<---------------------------------------------------------|
+      |                           |                              |
+      | Send auth code to Peer    |                              |
+      |--------------------------------------------------------->|
+      |                           |                              |
+      |                           | Exchange auth code for token |
+      |                           |----------------------------->|
+      |                           |                              |
+      |                           |                 Return token |
+      |                           |<-----------------------------|
+      |                           |
+      | Peer determines permissions based on token
+      |                           |
+      | Send OK back to Initiator |
+      |<--------------------------|
+
+Operations, loop until peering is complete.
+
+List Locations
+
++-----------+                                                  +-------+
+| Initiator |                                                  | Peer  |
++-----------+                                                  +-------+
+      |                                                            |
+      | QUERY peering locations (peer type, ASN, auth code)        |
+      |----------------------------------------------------------->|
+      |                                                            |
+      |                               Reply with peering locations |
+      |                            or errors (401, 406, 451, etc.) |
+      |<-----------------------------------------------------------|
+
+
+Request session status
+
++-----------+                                                  +-------+
+| Initiator |                                                  | Peer  |
++-----------+                                                  +-------+
+      |                                                            |
+      | QUERY request status using request ID & auth code          |
+      |----------------------------------------------------------->|
+      |                                                            |
+      |                                  Reply with session status |
+      |                                      (200, 404, 202, etc.) |
+      |<-----------------------------------------------------------|
+~~~~~~~~~~
+
+
 AUTH    {#auth}
 ----
 First, the initiating OAuth2 Client is also the Resource Owner (RO) so it can follow the OAuth2 client credentials grant {{Section 4.4 of !RFC6749}}.
