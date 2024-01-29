@@ -208,7 +208,6 @@ Every single request should come in with a unique GUID called RequestID that map
 This GUID format should be standardized across all requests.
 This GUID should be provided by the receiver once it receives the request and must be embedded in all communication.
 If there is no RequestID present then that should be interpreted as a new request and the process starts again.
-
 An email address is needed for communication if the API fails or is not implemented properly (can be obtained through PeeringDB).
 
 For a programmatic specification of the API, please see the public Github here: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
