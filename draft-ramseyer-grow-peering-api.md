@@ -127,7 +127,7 @@ Using the token bearer model ({{!RFC6750}}), a client application can request to
 
 Example Request Flow
 --------------------
-For a diagram, please see: https://github.com/bgp/autopeer/blob/main/README.md#sequence-diagram
+The diagram below outlines the proposed API flow.
 
 
 ~~~~~~~~~~
