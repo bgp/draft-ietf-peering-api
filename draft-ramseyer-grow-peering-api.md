@@ -118,6 +118,21 @@ This combination provides a low entry barrier to create an identity federation a
 The authors recognize that not all partners have the time or engineering resources to support all authorization standards, so the API reference implementations will offer an extensible security mechanism to meet varying identity and security requirements.
 For RPKI-based authentication, this document refers to RPKI Signed Checklists (RSCs) ({{?RFC9323}}).
 
+The Peering API does not enforce any kind of peering policy on the incoming requests.
+It is left to the server implementation to enforce the AS-specific peering policy.
+The authors encourage each peer to consider the needs of their peering policy and implement request validation as desired.
+
+
+Audience    {#audience}
+========
+The Peering API aims to simplify peering interconnection configuration.
+To that end, the API can be called by either a human or some automation.
+A network engineer can submit API requests through a client-side tool, and configure sessions by hand or through existing tooling.
+Alternately, an automated service can request BGP sessions through some trigger or regularly scheduled request (for example, upon joining a new peering location, or through regular polling of potential peers).
+That automated client can then configure the client sessions through its own tooling.
+For ease of exchanging peering requests, the authors suggest peers to maintain both a client and a server for the API.
+Toward the goal of streamlining peering configuration, the authors encourage peers to automate their network configuration wherever possible, but do not require full automation to use this API.
+
 
 Protocol    {#protocol}
 ========
