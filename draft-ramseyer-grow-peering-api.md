@@ -8,7 +8,7 @@ number:
 date:
 consensus: true
 v: 3
-# area: RTG
+# area: OPS
 # workgroup: GROW
 keyword:
  - BGP
@@ -285,7 +285,8 @@ An email address is needed for communication if the API fails or is not implemen
 
 For a programmatic specification of the API, please see the public Github here: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
 
-This initial draft fully specifies the Public Peering endpoints. Private Peering and Maintenance are under discussion, and the authors invite collaboration and discussion from interested parties.
+This initial draft fully specifies the Public Peering endpoints.
+Private Peering and Maintenance are under discussion, and the authors invite collaboration and discussion from interested parties.
 
 DATA TYPES      {#datatypes}
 ----------
@@ -304,7 +305,10 @@ Session Array
 
   Array of potential BGP sessions, with request UUID.
   Request UUID is optional for client, and required for server.
-  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID.  RequestID will not change across the request.
+  Return URL is optional, and indicates the client's Peering API endpoint.
+  The client's return URL is used by the server to request additional sessions.
+  Client may provide initial UUID for client-side tracking, but the server UUID will be the final definitive ID.
+  RequestID will not change across the request.
 
 BGP Session
 
