@@ -331,7 +331,7 @@ The above is sourced largely from the linked OpenAPI specification.
 
 Endpoints   {#endpoints}
 ---------
-(As defined in {{autopeer}})
+(As defined in {{autopeer}}).
 On each call, there should be rate limits, allowed senders, and other optional restrictions.
 
 
@@ -371,7 +371,7 @@ On each call, there should be rate limits, allowed senders, and other optional r
 
 * `/sessions/{session_id}`: Operate on individual sessions
   * Retrieve an existing session resource
-    * Below is based on OpenAPI specification: {{autopeer}}
+    * Below is based on OpenAPI specification: {{autopeer}}.
     * `GET /sessions/{session_id}`
       * Request parameters:
         * session_id returned by the server on creation or through the session list operation.
@@ -387,7 +387,7 @@ On each call, there should be rate limits, allowed senders, and other optional r
 
   * Delete a session.
     * Given a session ID, delete it which effectively triggers an depeering from the initiator.
-    * Below is based on OpenAPI specification: {{autopeer}}
+    * Below is based on OpenAPI specification: {{autopeer}}.
     * `DELETE /sessions/{session_id}`
       * Request parameters:
         * session_id returned by the server on creation or through the session list operation.
@@ -406,7 +406,7 @@ Endpoints which provide useful information for potential interconnections.
 
 * `/locations`: LIST POTENTIAL PEERING LOCATIONS
   * List potential peering locations, both public and private. The response is paginated.
-    * Below is based on OpenAPI specification: {{autopeer}}
+    * Below is based on OpenAPI specification: {{autopeer}}.
     * `GET /locations`
       * Request parameters:
         * asn (Server ASN, with which to list potential connections)
