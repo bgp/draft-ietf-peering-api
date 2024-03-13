@@ -48,7 +48,7 @@ author:
 normative:
     autopeer:
         target: https://github.com/bgp/autopeer/
-        title: Github respository with the API specification and diagrams
+        title: Github repository with the API specification and diagrams
     oidc:
         target: https://openid.net/specs/openid-connect-core-1_0.html
         title: OpenID.Core
@@ -283,15 +283,14 @@ This GUID should be provided by the receiver once it receives the request and mu
 If there is no RequestID present then that should be interpreted as a new request and the process starts again.
 An email address is needed for communication if the API fails or is not implemented properly (can be obtained through PeeringDB).
 
-For a programmatic specification of the API, please see the public Github here: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
+For a programmatic specification of the API, please see the public Github ({{autopeer}}).
 
 This initial draft fully specifies the Public Peering endpoints.
 Private Peering and Maintenance are under discussion, and the authors invite collaboration and discussion from interested parties.
 
 DATA TYPES      {#datatypes}
 ----------
-As defined in [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml).
-Please see specification for OpenAPI format.
+Please see specification ({{autopeer}}) for OpenAPI format.
 
 Peering Location
 
@@ -332,7 +331,7 @@ The above is sourced largely from the linked OpenAPI specification.
 
 Endpoints   {#endpoints}
 ---------
-(As defined in [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml))
+(As defined in {{autopeer}})
 On each call, there should be rate limits, allowed senders, and other optional restrictions.
 
 
@@ -340,7 +339,7 @@ On each call, there should be rate limits, allowed senders, and other optional r
 * `/sessions`: ADD/RETRIEVE sessions visible to the calling PEER
   * Batch create new session resources
     * Establish new BGP sessions between peers, at the desired exchange.
-    * Below is based on OpenAPI specification: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
+    * Below is based on OpenAPI specification: {{autopeer}}.
     * `POST /sessions`
       * Request body: Session Array
       * Responses:
@@ -354,7 +353,7 @@ On each call, there should be rate limits, allowed senders, and other optional r
   * List all session resources. The response is paginated.
     * Given a request ID, query for the status of that request.
     * Given an ASN without request ID, query for status of all connections between client and server.
-    * Below is based on OpenAPI specification: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
+    * Below is based on OpenAPI specification: {{autopeer}}.
     * `GET /sessions`
       * Request parameters:
         * asn (requesting client's asn)
@@ -372,7 +371,7 @@ On each call, there should be rate limits, allowed senders, and other optional r
 
 * `/sessions/{session_id}`: Operate on individual sessions
   * Retrieve an existing session resource
-    * Below is based on OpenAPI specification: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
+    * Below is based on OpenAPI specification: {{autopeer}}
     * `GET /sessions/{session_id}`
       * Request parameters:
         * session_id returned by the server on creation or through the session list operation.
@@ -388,7 +387,7 @@ On each call, there should be rate limits, allowed senders, and other optional r
 
   * Delete a session.
     * Given a session ID, delete it which effectively triggers an depeering from the initiator.
-    * Below is based on OpenAPI specification: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)
+    * Below is based on OpenAPI specification: {{autopeer}}
     * `DELETE /sessions/{session_id}`
       * Request parameters:
         * session_id returned by the server on creation or through the session list operation.
@@ -407,7 +406,7 @@ Endpoints which provide useful information for potential interconnections.
 
 * `/locations`: LIST POTENTIAL PEERING LOCATIONS
   * List potential peering locations, both public and private. The response is paginated.
-    * Below is based on OpenAPI specification: https://github.com/bgp/autopeer/blob/main/api/openapi.yaml
+    * Below is based on OpenAPI specification: {{autopeer}}
     * `GET /locations`
       * Request parameters:
         * asn (Server ASN, with which to list potential connections)
