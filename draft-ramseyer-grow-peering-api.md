@@ -511,7 +511,7 @@ The authors would like to thank their collaborators, who implemented API version
 
 * Ben Blaustein (Meta)
 * Jakub Heichman (Meta)
-* Stefan Prattner (20c)
+* Stefan Pratter (20C)
 * Ben Ryall (Meta)
 * Erica Salvaneschi (Cloudflare)
 * Job Snijders (Fastly)
