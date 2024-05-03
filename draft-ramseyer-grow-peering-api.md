@@ -472,7 +472,7 @@ Private Peering     {#private_peering}
 Through future discussion with the IETF, the specification for private peering will be solidified.
 Of interest for discussion includes Letter of Authorization (LOA) negotiation, and how to coordinate unfiltering and configuration checks.
 
-IXP Route Servers Peerings     {#route_server}
+IXP Route Server Peering     {#route_server}
 ===============
 
 Terminology:
