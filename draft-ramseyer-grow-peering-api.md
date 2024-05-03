@@ -472,8 +472,18 @@ Private Peering     {#private_peering}
 Through future discussion with the IETF, the specification for private peering will be solidified.
 Of interest for discussion includes Letter of Authorization (LOA) negotiation, and how to coordinate unfiltering and configuration checks.
 
+IXP Route Servers Peerings     {#route_server}
+===============
+
+Terminology:
+
+Additional Fields:
+
+Route Server session establishmet logic:
+
+
 Maintenance     {#maintenance}
-===========
+===============
 
 This draft does not want to invent a new ticketing system.
 However, there is an opportunity in this API to provide maintenance notifications to peering partners.
@@ -495,6 +505,7 @@ Possible Extensions     {#extensions}
 ===================
 
 The authors acknowledge that route-server configuration may also be of interest for this proposed API, and look forward to future discussions in this area.
+
 
 IANA Considerations     {#iana}
 ===================
