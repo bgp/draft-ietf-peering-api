@@ -472,14 +472,75 @@ Private Peering     {#private_peering}
 Through future discussion with the IETF, the specification for private peering will be solidified.
 Of interest for discussion includes Letter of Authorization (LOA) negotiation, and how to coordinate unfiltering and configuration checks.
 
-IXP Route Server Peering     {#route_server}
+
+IXP Route Servers Peerings     {#route_server}
 ===============
 
-Terminology:
+Route servers at Internet Exchange Points (IXPs) are critical in facilitating the exchange of routing information among numerous peers through a single peering session. This section covers the function of route servers within the context of the peering API.
 
-Additional Fields:
+### Definitions
 
-Route Server session establishmet logic:
+In this section, we use introduce the following terms for clarity:
+
+- **IXP operator**: The entity managing at least one peering fabric that houses at least one route server. The IXP operator is one of the endpoints of the peering API communications as described throughout this section, either as initiator or peer.
+- **AS operator**: The entity managing an autonomous system. The AS operator is the other endpoint of the peering API communicatons described throughout this section, either as initiator or peer.
+- **Route server**: BGP termination point that configures negotiations done via the IXP operator's peering API endpoint.
+- **Monitoring session**: A BGP session between an AS in the IXP's peering LAN that exchanges no prefixes, i.e., the AS MAY or MAY NOT announce routes on this sessions; in case it chooses to announce routes, the route server will not redistribute them.
+
+
+### API Extensions for Route Server Peering Negotiations
+
+In addition to the protocol fields proposed in Section §5.3, the following fields are added to enable negotiation of a peering session with a route server at IXPs:
+
+- **as_set_v4**: Specifies the AS-SET for IPv4 prefix filtering at the route server. Only prefixes registered within the specified AS-SET are accepted. All others are filtered. Required if the route server supports only `af_inet`. Optional if `as_set_v6` is provided. Format: "AS-SET@IRR", where IRR is the Internet Routing Registry.
+
+- **as_set_v6**: Specifies the AS-SET for IPv6 prefix filtering at the route server. Only prefixes registered within the specified AS-SET are accepted. All others are filtered. Required if the route server supports only `af_inet6`. Optional if `as_set_v4` is provided. Format: "AS-SET@IRR", where IRR is the Internet Routing Registry.
+
+- **max_prefix_v4**: Specifies the maximum number of IPv4 prefixes that can be announced in a session before the session is dropped.
+
+- **max_prefix_v6**: Specifies the maximum number of IPv6 prefixes that can be announced in a session before the session is dropped.
+
+- **bgp_role**: Indicates the BGP role capability according to {{?RFC9234}}. Must be 'RS' for the route server, and 'RS-Client' for the AS operator *
+
+- **v4_over_v6**: Flag to indicate whether this session is a {{?RFC8950}} session *
+
+- **tcp-ao_supported**: Flag to indicate whether TCP-AO ({{?RFC5925}}) is supported. * 
+
+- **add_path_supported**: Flag to indicate whether Add-Path ({{?RFC7911}}) is supported *
+
+- **bfd_supported**: Flag to indicate whether BFD ({{?RFC5880}}) is supported *
+
+- **monitoring_session**: Flag to indicate whether this session is an IXP route server monitoring session
+
+* This field might be relevant to the session negotiation as described in section #7 and #8 and could be added to the "default session" request / response data fields as listed in section #5.3
+
+
+### Route Server Session Establishment Logic
+
+IXPs typically house multiple route servers in a peering LAN. If an AS operator requests to establish a peering session with an IXP operator, they SHOULD always request peering sessions with each of the route servers that are present in the IXP operator's peering LANs.
+In general, there SHOULD always be peering sessions established between the AS operator's border router and every route server in the IXP operator's respective peering LANs. If an AS operator doesn't want to exchange prefixes with the route servers, they SHOULD configure a monitoring session with every route server as a fallback.
+
+There are 5 possible scenarios of the session establishment between an IXP operator and an AS operator:
+
+1. **AS operator raises a complete session request**: 
+   - **Initiator: AS operator**: Sends a request to establish peering sessions with every route server present in the IXP operator's peering LANs.
+   - **Peer: IXP operator**: SHOULD accept all these sessions.
+  
+2. **AS operator raises an incomplete session request**:
+   - **Initiator: AS operator**: Sends a request to establish peering sessions with any but not all route server present in the IXP operator's peering LANs.
+   - **Peer: IXP operator**: SHOULD reject the peering session request while specifying the cause for rejection: "Peering request rejected due to missing route server sessions. Please accept our offered sessions.". The IXP operator SHOULD proceed as described in scenario 3.
+
+3. **IXP operator responds to incomplete session request**:
+   - **Initiator: IXP operator**: Sends a request to establish peering sessions with every route server present in the IXP operator's peering LANs.
+   - **Peer: AS operator**: SHOULD accept all these sessions. If the AS operator rejects any of these sessions, the IXP operator should proceed as described in scenario 4.
+
+4. **IXP operator sends monitoring sessions as a fallback**:
+   - **Initiator: IXP operator**: When the IXP operator receives a rejection upon offering peering sessions to its route servers, it SHOULD offer these rejected sessions again, but flagged as a monitoring session.
+   - **Peer: AS operator**: SHOULD accept the monitoring sessions. If the AS operator rejects these monitoring sessions, no further action is taken.
+ 
+5. **IXP operator as initiator**:
+   - **Initiator: IXP operator**: The IXP operator SHOULD only send peering session requests to AS operators that contain each of the route servers in the IXP operator's peering LANs.
+   - **Peer: AS operator**: SHOULD accept all sessions. If any of these sessions is rejected, the IXP operator should proceed as described in scenario 4.
 
 
 Maintenance     {#maintenance}
