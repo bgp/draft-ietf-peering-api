@@ -349,6 +349,8 @@ On each call, there should be rate limits, allowed senders, and other optional r
           * Error
         * 403:
           * Unauthorized to perform the operation
+        * 422:
+          * Please contact us, human intervention required
 
   * List all session resources. The response is paginated.
     * Given a request ID, query for the status of that request.
@@ -400,6 +402,8 @@ On each call, there should be rate limits, allowed senders, and other optional r
           * Unauthorized to perform the operation
         * 404:
           * The session referred by the specified session_id does not exist or is not visible to the caller
+        * 422:
+          * Please contact us, human intervention required
 
 ### UTILITY API CALLS   {#utility_api}
 Endpoints which provide useful information for potential interconnections.
