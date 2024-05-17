@@ -155,49 +155,49 @@ Diagram of the Peering Request Process
 +-------------------+                    +-------------------+
                                                  |
                                                  v
-+-------------------+                    +-------------------+  
-|      Step         |                    |      Step 3       | 
++-------------------+                    +-------------------+
+|      Step 4       |                    |      Step 3       |
 |    Network 1      |<-------------------|    Network 1      |
 |  gets approval    |                    |     Public or     |
-|      token        |                    | Private Peering   | 
-+-------------------+                    +-------------------+                   
+|      token        |                    | Private Peering   |
++-------------------+                    +-------------------+
         |
         v
-+-------------------+                    +-------------------+  
-|      Step 5       |                    |      Step 6       | 
++-------------------+                    +-------------------+
+|      Step 5       |                    |      Step 6       |
 |  Network 1 finds  |------------------->|    Network 1      |
 | common locations  |                    |  request peering  |
 +-------------------+                    +-------------------+
                                                   |
                                                   v
-+-------------------+                   +--------------------+  
-|      Step 8       |                   |       Step 7       | 
++-------------------+                   +--------------------+
+|      Step 8       |                   |       Step 7       |
 |     Network 2     |<------------------|     Network 2      |
 | accepts or reject |                   |      verifies      |
-|    sessions       |                   |     credentials    |                
-+-------------------+                   +--------------------+                   
+|    sessions       |                   |     credentials    |
++-------------------+                   +--------------------+
        /     \
       /       \
      /         \
 (yes)           (no)
-      \          | 
+      \          |
        \         +-------------------------------|
         \                                        |
          \                                       |
           v                                      |
-+---------------+          +----------------+    |  
-|    Step 9     |          |    Step 10     |    |                 
++---------------+          +----------------+    |
+|    Step 9     |          |    Step 10     |    |
 | Sessions are  |          | Network 1 or 2 |    |
-|  provisioned  |--------->| checks session |    | 
+|  provisioned  |--------->| checks session |    |
 |     status    |          | until it is up |    |
 +---------------+          +----------------+    |
-                                   |             |                                                    
+                                   |             |
                       +------------+             |
                       |                          |
                       v                          |
             +-------------+                      |
             |   Step 11   |                      |
-            |   Request   |<---------------------+                      
+            |   Request   |<---------------------+
             |  Terminate  |
             +-------------+
 
@@ -219,8 +219,8 @@ Step 3 [Human]: Network 1 decides in type (Public or PNI) of peering and facilit
 Step 4 [API]: Network 1 gets approval/token that is authorized to ‘speak’ on behalf of Network 1’s ASN.
 
 
-Step 5 [API]: Network 1 checks PeeringDB for common places where Network 1
-and Network 2 are (API: GET /locations)
+Step 5 [API]: Network 1 checks PeeringDB for common places between Network 1 and Network 2.
+API: GET /locations
 
 
 Step 6 [API]: Network 1 request peering with Network 2
@@ -230,7 +230,7 @@ API:      POST /add_sessions
 Step 7 [API]: Network 2 verifies Network 1 credentials, check requirements for peering
 
 
-Step 8 [API]: Network 2 accepts or rejects session(S)
+Step 8 [API]: Network 2 accepts or rejects session(s)
 API Server gives yes/no for request
 
 
