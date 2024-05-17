@@ -140,7 +140,112 @@ Protocol    {#protocol}
 The Peering API follows the Representational State Transfer ({{rest}}) architecture where sessions, locations, and maintenance events are the resources the API represents and is modeled after the OpenAPI standard {{openapi}}.
 Using the token bearer model ({{!RFC6750}}), a client application can request to add or remove peering sessions, list potential interconnection locations, and query for upcoming maintenance events on behalf of the AS resource owner.
 
-Example Request Flow
+Example Peering Request Negotiation
+-------------------------------------
+
+Diagram of the Peering Request Process
+
+
+~~~~~~~~~~
+
++-------------------+                    +-------------------+
+|     Step 1        |                    |     Step 2        |
+|    Network 1      |------------------->|    Network 1      |
+|  Identifies need  |                    |   Checks details  |
++-------------------+                    +-------------------+
+                                                 |
+                                                 v
++-------------------+                    +-------------------+  
+|      Step         |                    |      Step 3       | 
+|    Network 1      |<-------------------|    Network 1      |
+|  gets approval    |                    |     Public or     |
+|      token        |                    | Private Peering   | 
++-------------------+                    +-------------------+                   
+        |
+        v
++-------------------+                    +-------------------+  
+|      Step 5       |                    |      Step 6       | 
+|  Network 1 finds  |------------------->|    Network 1      |
+| common locations  |                    |  request peering  |
++-------------------+                    +-------------------+
+                                                  |
+                                                  v
++-------------------+                   +--------------------+  
+|      Step 8       |                   |       Step 7       | 
+|     Network 2     |<------------------|     Network 2      |
+| accepts or reject |                   |      verifies      |
+|    sessions       |                   |     credentials    |                
++-------------------+                   +--------------------+                   
+       /     \
+      /       \
+     /         \
+(yes)           (no)
+      \          | 
+       \         +-------------------------------|
+        \                                        |
+         \                                       |
+          v                                      |
++---------------+          +----------------+    |  
+|    Step 9     |          |    Step 10     |    |                 
+| Sessions are  |          | Network 1 or 2 |    |
+|  provisioned  |--------->| checks session |    | 
+|     status    |          | until it is up |    |
++---------------+          +----------------+    |
+                                   |             |                                                    
+                      +------------+             |
+                      |                          |
+                      v                          |
+            +-------------+                      |
+            |   Step 11   |                      |
+            |   Request   |<---------------------+                      
+            |  Terminate  |
+            +-------------+
+
+
+
+
+
+
+
+Step 1 [Human]: Network 1 identifies that it would be useful to peer with Network 2 to interchange traffic more optimally
+
+
+Step 2 [Human]: Network 1 checks technical and other peering details about Network 2 to check if peering is possible
+
+
+Step 3 [Human]: Network 1 decides in type (Public or PNI) of peering and facility
+
+
+Step 4 [API]: Network 1 gets approval/token that is authorized to ‘speak’ on behalf of Network 1’s ASN.
+
+
+Step 5 [API]: Network 1 checks PeeringDB for common places where Network 1
+and Network 2 are (API: GET /locations)
+
+
+Step 6 [API]: Network 1 request peering with Network 2
+API:      POST /add_sessions
+
+
+Step 7 [API]: Network 2 verifies Network 1 credentials, check requirements for peering
+
+
+Step 8 [API]: Network 2 accepts or rejects session(S)
+API Server gives yes/no for request
+
+
+Step 9 [API]: If yes, sessions are provisioned, Networks 1 or Network 2 can check status
+API: /sessions Get session status
+
+
+Step 10 [API]: API keeps polling until sessions are up
+
+
+Step 11 [API]: Process Terminate
+~~~~~~~~~~
+
+
+Example API Flow
 --------------------
 The diagram below outlines the proposed API flow.
 
