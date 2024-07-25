@@ -1,0 +1,1006 @@
+
+
+
+
+Network Working Group                                          C. Aguado
+Internet-Draft                                                    Amazon
+Intended status: Informational                               M. Griswold
+Expires: 18 November 2024                                        FullCtl
+                                                             J. Ramseyer
+                                                                    Meta
+                                                               A. Servin
+                                                                  Google
+                                                              T. Strickx
+                                                              Cloudflare
+                                                             17 May 2024
+
+
+                              Peering API
+                 draft-ramseyer-grow-peering-api-latest
+
+Abstract
+
+   We propose an API standard for BGP Peering, also known as interdomain
+   interconnection through global Internet Routing.  This API offers a
+   standard way to request public (settlement-free) peering, verify the
+   status of a request or BGP session, and list potential connection
+   locations.  The API is backed by PeeringDB OIDC, the industry
+   standard for peering authentication.  We also propose future work to
+   cover private peering, and alternative authentication methods.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   The latest revision of this draft can be found at
+   https://bgp.github.io/draft-ietf-peering-api/draft-peering-api-
+   ramseyer-protocol.html.  Status information for this document may be
+   found at https://datatracker.ietf.org/doc/draft-ramseyer-grow-
+   peering-api/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/bgp/draft-ietf-peering-api.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 18 November 2024.
+
+Copyright Notice
+
+   Copyright (c) 2024 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction
+     1.1.  Business Justification
+   2.  Conventions and Definitions
+   3.  Security Considerations
+   4.  Audience
+   5.  Protocol
+     5.1.  Example Peering Request Negotiation
+     5.2.  Example API Flow
+     5.3.  AUTH
+     5.4.  REQUEST
+     5.5.  CLIENT CONFIGURATION
+     5.6.  SERVER CONFIGURATION
+     5.7.  MONITORING
+     5.8.  COMPLETION
+   6.  API Endpoints and Specifications
+     6.1.  DATA TYPES
+     6.2.  Endpoints
+       6.2.1.  Public Peering over an Internet Exchange (IX)
+       6.2.2.  UTILITY API CALLS
+       6.2.3.  Private Peering (DRAFT)
+   7.  Public Peering Session Negotiation
+   8.  Private Peering
+   9.  Maintenance
+   10. Possible Extensions
+   11. IANA Considerations
+   12. References
+     12.1.  Normative References
+     12.2.  Informative References
+   Appendix A.  Acknowledgments
+   Authors' Addresses
+
+1.  Introduction
+
+   The Peering API is a mechanism that allows networks to automate
+   interdomain interconnection between two Autonomous Systems (AS)
+   through the Border Gateway Protocol 4 ([RFC4271]).  Using the API,
+   networks will be able to automatically request and accept peering
+   interconnections between Autonomous Systems in public or private
+   scenarios in a time faster than it would take to configure sessions
+   manually.  By speeding up the peering turn-up process and removing
+   the need for manual involvement in peering, the API and automation
+   will ensure that networks can get interconnected as fast, reliably,
+   cost-effectively, and efficiently as possible.  As a result, this
+   improves end-user performance for all applications using networks
+   interconnection supporting the Peering API.
+
+1.1.  Business Justification
+
+   By using the Peering API, entities requesting and accepting peering
+   can significantly improve the process to turn up interconnections by:
+
+   *  Reducing in person-hours spent configuring peering
+
+   *  Reducing configuration mistakes by reducing human interaction
+
+   *  And by peering, reducing network latency through expansion of
+      interconnection relationships
+
+2.  Conventions and Definitions
+
+   All terms used in this document will be defined here:
+
+   *  Initiator: Network that wants to peer
+
+   *  Receiver: Network that is receiving communications about peering
+
+   *  Configured: peering session that is set up on one side
+
+   *  Established: session is already defined as per BGP-4 specification
+      Section 8.2.2 of [RFC4271]
+
+3.  Security Considerations
+
+   As peering connections exchange real Internet traffic, this API
+   requires a security component to verify that the requestor is
+   authorized to operate the interconnection on behalf of such AS.  In
+   this initial proposal, the API follows an authorization model based
+   on OpenID Connect [oidc] and OAuth 2.0 ([RFC6749]) where the
+   Authorization Server is PeeringDB.  The choice of OpenID Connect is
+   to use the standardized token exchange format based on JSON Web
+   Tokens ([RFC7519]) which allows interoperation with existing web-
+   based application flows.  JWT tokens also supply sufficient claims to
+   implement receiver-side authorization decisions when used as bearer
+   access tokens ([RFC9068]) and for which best common practices also
+   exist ([RFC8725]).  After further discussion, the authors decided to
+   offer alternate authentication options to accommodate the security
+   concerns of different parties.  As peers may require varying security
+   standards, this document proposes to support PeeringDB OIDC as the
+   base requirement, with optional security extensions in addition (RPKI
+   ([RFC6480]) or alternative OIDC Authorization Servers, for example).
+   This document hopes that, through the RFC process, the Working Group
+   can come to a consensus on a base "authorization standard," to ease
+   adoption for peering participants.
+
+   Of particular interest is RPKI.  PeeringDB OIDC allows the API to
+   identify who the requesting party is, while RPKI-signing allows such
+   requesting party to prove that they own some of the Internet-assigned
+   resources referenced in the request.  This combination provides a low
+   entry barrier to create an identity federation across the
+   participating ASs' API with a stronger guarantee of resource
+   ownership against potential for misattribution and repudiation.  The
+   authors recognize that not all partners have the time or engineering
+   resources to support all authorization standards, so the API
+   reference implementations will offer an extensible security mechanism
+   to meet varying identity and security requirements.  For RPKI-based
+   authentication, this document refers to RPKI Signed Checklists (RSCs)
+   ([RFC9323]).
+
+   The Peering API does not enforce any kind of peering policy on the
+   incoming requests.  It is left to the server implementation to
+   enforce the AS-specific peering policy.  The authors encourage each
+   peer to consider the needs of their peering policy and implement
+   request validation as desired.
+
+4.  Audience
+
+   The Peering API aims to simplify peering interconnection
+   configuration.  To that end, the API can be called by either a human
+   or some automation.  A network engineer can submit API requests
+   through a client-side tool, and configure sessions by hand or through
+   existing tooling.  Alternately, an automated service can request BGP
+   sessions through some trigger or regularly scheduled request (for
+   example, upon joining a new peering location, or through regular
+   polling of potential peers).  That automated client can then
+   configure the client sessions through its own tooling.  For ease of
+   exchanging peering requests, the authors suggest peers to maintain
+   both a client and a server for the API.  Toward the goal of
+   streamlining peering configuration, the authors encourage peers to
+   automate their network configuration wherever possible, but do not
+   require full automation to use this API.
+
+5.  Protocol
+
+   The Peering API follows the Representational State Transfer ([rest])
+   architecture where sessions, locations, and maintenance events are
+   the resources the API represents and is modeled after the OpenAPI
+   standard [openapi].  Using the token bearer model ([RFC6750]), a
+   client application can request to add or remove peering sessions,
+   list potential interconnection locations, and query for upcoming
+   maintenance events on behalf of the AS resource owner.
+
+5.1.  Example Peering Request Negotiation
+
+   Diagram of the Peering Request Process
+
++-------------------+                    +-------------------+
+|     Step 1        |                    |     Step 2        |
+|    Network 1      |------------------->|    Network 1      |
+|  Identifies need  |                    |   Checks details  |
++-------------------+                    +-------------------+
+                                                 |
+                                                 v
++-------------------+                    +-------------------+
+|      Step 4       |                    |      Step 3       |
+|    Network 1      |<-------------------|    Network 1      |
+|  gets approval    |                    |     Public or     |
+|      token        |                    | Private Peering   |
++-------------------+                    +-------------------+
+        |
+        v
++-------------------+                    +-------------------+
+|      Step 5       |                    |      Step 6       |
+|  Network 1 finds  |------------------->|    Network 1      |
+| common locations  |                    |  request peering  |
++-------------------+                    +-------------------+
+                                                  |
+                                                  v
++-------------------+                   +--------------------+
+|      Step 8       |                   |       Step 7       |
+|     Network 2     |<------------------|     Network 2      |
+| accepts or reject |                   |      verifies      |
+|    sessions       |                   |     credentials    |
++-------------------+                   +--------------------+
+       /     \
+      /       \
+     /         \
+(yes)           (no)
+      \          |
+       \         +-------------------------------|
+        \                                        |
+         \                                       |
+          v                                      |
++---------------+          +----------------+    |
+|    Step 9     |          |    Step 10     |    |
+| Sessions are  |          | Network 1 or 2 |    |
+|  provisioned  |--------->| checks session |    |
+|     status    |          | until it is up |    |
++---------------+          +----------------+    |
+                                   |             |
+                      +------------+             |
+                      |                          |
+                      v                          |
+            +-------------+                      |
+            |   Step 11   |                      |
+            |   Request   |<---------------------+
+            |  Terminate  |
+            +-------------+
+
+
+
+
+
+
+
+Step 1 [Human]: Network 1 identifies that it would be useful to peer with Network 2 to interchange traffic more optimally
+
+
+Step 2 [Human]: Network 1 checks technical and other peering details about Network 2 to check if peering is possible
+
+
+Step 3 [Human]: Network 1 decides in type (Public or PNI) of peering and facility
+
+
+Step 4 [API]: Network 1 gets approval/token that is authorized to ‘speak’ on behalf of Network 1’s ASN.
+
+
+Step 5 [API]: Network 1 checks PeeringDB for common places between Network 1 and Network 2.
+API: GET /locations
+
+
+Step 6 [API]: Network 1 request peering with Network 2
+API:      POST /add_sessions
+
+
+Step 7 [API]: Network 2 verifies Network 1 credentials, check requirements for peering
+
+
+Step 8 [API]: Network 2 accepts or rejects session(s)
+API Server gives yes/no for request
+
+
+Step 9 [API]: If yes, sessions are provisioned, Networks 1 or Network 2 can check status
+API: /sessions Get session status
+
+
+Step 10 [API]: API keeps polling until sessions are up
+
+
+Step 11 [API]: Process Terminate
+
+5.2.  Example API Flow
+
+   The diagram below outlines the proposed API flow.
+
+OIDC Authentication
+
++-----------+                 +-------+                    +-----------+
+| Initiator |                 | Peer  |                    | PeeringDB |
++-----------+                 +-------+                    +-----------+
+      |                           |                              |
+      | OIDC Authentication       |                              |
+      |--------------------------------------------------------->|
+      |                           |                              |
+      |                                        Provide auth code |
+      |<---------------------------------------------------------|
+      |                           |                              |
+      | Send auth code to Peer    |                              |
+      |--------------------------------------------------------->|
+      |                           |                              |
+      |                           | Exchange auth code for token |
+      |                           |----------------------------->|
+      |                           |                              |
+      |                           |                 Return token |
+      |                           |<-----------------------------|
+      |                           |
+      | Peer determines permissions based on token
+      |                           |
+      | Send OK back to Initiator |
+      |<--------------------------|
+
+Operations, loop until peering is complete.
+
+List Locations
+
++-----------+                                                  +-------+
+| Initiator |                                                  | Peer  |
++-----------+                                                  +-------+
+      |                                                            |
+      | QUERY peering locations (peer type, ASN, auth code)        |
+      |----------------------------------------------------------->|
+      |                                                            |
+      |                               Reply with peering locations |
+      |                            or errors (401, 406, 451, etc.) |
+      |<-----------------------------------------------------------|
+
+
+Request session status
+
++-----------+                                                  +-------+
+| Initiator |                                                  | Peer  |
++-----------+                                                  +-------+
+      |                                                            |
+      | QUERY request status using request ID & auth code          |
+      |----------------------------------------------------------->|
+      |                                                            |
+      |                                  Reply with session status |
+      |                                      (200, 404, 202, etc.) |
+      |<-----------------------------------------------------------|
+
+5.3.  AUTH
+
+   First, the initiating OAuth2 Client is also the Resource Owner (RO)
+   so it can follow the OAuth2 client credentials grant Section 4.4 of
+   [RFC6749].  In this example, the client will use PeeringDB OIDC
+   credentials to acquire a JWT access token that is scoped for use with
+   the receiving API.  On successful authentication, PeeringDB provides
+   the Resource Server (RS) with the client's email (for potential
+   manual discussion), along with the client's usage entitlements (known
+   as OAuth2 scopes), to confirm the client is permitted to make API
+   requests on behalf of the initiating AS.
+
+5.4.  REQUEST
+
+   1.  ADD SESSION (CLIENT BATCHED REQUEST)
+
+   *  The initiator's client provides a set of:
+
+      -  Structure:
+
+         1.  Local ASN (receiver)
+
+         2.  Local IP
+
+         3.  Peer ASN (initiator)
+
+         4.  Peer IP
+
+         5.  Peer Type (public or private)
+
+         6.  MD5 (optional with encoding agreed outside of this
+             specification)
+
+         7.  Location (Commonly agreed identifier of the BGP speaker,
+             e.g.  PeeringDB IX lan ID)
+
+   *  The receiver's expected actions:
+
+      -  The server confirms requested clientASN in list of authorized
+         ASNs.
+
+      -  Optional: checks traffic levels, prefix limit counters, other
+         desired internal checks.
+
+   1.  ADD SESSIONS (SERVER BATCHED RESPONSE)
+
+   *  APPROVAL CASE
+
+      -  Server returns a list with the structure for each of the
+         acceptable peering sessions.  Note: this structure may also
+         contain additional attributes such as the server generated
+         session ID.
+
+   *  PARTIAL APPROVAL CASE
+
+      -  Server returns a list with the structure for each of the
+         acceptable peering sessions as in the approval case.  The
+         server also returns a list of sessions that have not deemed as
+         validated or acceptable to be created.  The set of sessions
+         accepted and rejected is disjoint and the join of both sets
+         matches the cardinality of the requested sessions.
+
+   *  REJECTION CASE
+
+      -  Server returns an error message which indicates that all of the
+         sessions requested have been rejected and the reason for it.
+
+5.5.  CLIENT CONFIGURATION
+
+   The client then configures the chosen peering sessions asynchronously
+   using their internal mechanisms.  For every session that the server
+   rejected, the client removes that session from the list to be
+   configured.
+
+5.6.  SERVER CONFIGURATION
+
+   The server configures all sessions that are in its list of approved
+   peering sessions from its reply to the client.
+
+5.7.  MONITORING
+
+   Both client and server wait for sessions to establish.  At any point,
+   client may send a "GET STATUS" request to the server, to request the
+   status of the session (by session ID).  The client will send a
+   structure along with the request, as follows:
+
+   *  structure:
+
+      -  Session ID
+
+      -  Local ASN (server)
+
+      -  Local IP
+
+      -  Peer ASN (client)
+
+      -  Peer IP
+
+      -  Peer Type
+
+      -  MD5 (optional, as defined above)
+
+      -  Location
+
+      -  Status
+
+   The server then responds with the same structure, with the
+   information that it understands (status, etc).
+
+5.8.  COMPLETION
+
+   If both sides report that the session is established, then peering is
+   complete.  If one side does not configure sessions within the
+   server's acceptable configuration window (TimeWindow), then the
+   server is entitled to remove the configured sessions and report
+   "Unestablished" to the client.
+
+6.  API Endpoints and Specifications
+
+   Each peer needs a public API endpoint that will implement the API
+   protocol.  This API should be publicly listed in peeringDB and also
+   as a potential expansion of [RFC9092] which could provide endpoint
+   integration to WHOIS ([RFC3912]).  Each API endpoint should be fuzz-
+   tested and protected against abuse.  Attackers should not be able to
+   access internal systems using the API.  Every single request should
+   come in with a unique GUID called RequestID that maps to a peering
+   request for later reference.  This GUID format should be standardized
+   across all requests.  This GUID should be provided by the receiver
+   once it receives the request and must be embedded in all
+   communication.  If there is no RequestID present then that should be
+   interpreted as a new request and the process starts again.  An email
+   address is needed for communication if the API fails or is not
+   implemented properly (can be obtained through PeeringDB).
+
+   For a programmatic specification of the API, please see the public
+   Github ([autopeer]).
+
+   This initial draft fully specifies the Public Peering endpoints.
+   Private Peering and Maintenance are under discussion, and the authors
+   invite collaboration and discussion from interested parties.
+
+6.1.  DATA TYPES
+
+   Please see specification ([autopeer]) for OpenAPI format.
+
+   Peering Location
+
+   Contains string field listing the desired peering location in format
+   pdb:ix:$IX_ID, and an enum specifying peering type (public or
+   private).
+
+   Session Status
+
+   Status of BGP Session, both as connection status and approval status
+   (Established, Pending, Approved, Rejected, Down, Unestablished, etc)
+
+   Session Array
+
+   Array of potential BGP sessions, with request UUID.  Request UUID is
+   optional for client, and required for server.  Return URL is
+   optional, and indicates the client's Peering API endpoint.  The
+   client's return URL is used by the server to request additional
+   sessions.  Client may provide initial UUID for client-side tracking,
+   but the server UUID will be the final definitive ID.  RequestID will
+   not change across the request.
+
+   BGP Session
+
+   A structure that describes a BGP session and contains the following
+   elements:
+
+   *  local_asn (ASN of requestor)
+
+   *  local_ip (IP of requestor, v4 or v6)
+
+   *  peer_asn (server ASN)
+
+   *  peer_ip (server-side IP)
+
+   *  peer_type (public or private)
+
+   *  md5 (optional, as defined above)
+
+   *  location (Peering Location, as defined above)
+
+   *  status (Session Status, as defined above)
+
+   *  session_id (of individual session and generated by the server)
+
+   Error
+
+   API Errors, for field validation errors in requests, and request-
+   level errors.
+
+   The above is sourced largely from the linked OpenAPI specification.
+
+6.2.  Endpoints
+
+   (As defined in [autopeer]).  On each call, there should be rate
+   limits, allowed senders, and other optional restrictions.
+
+6.2.1.  Public Peering over an Internet Exchange (IX)
+
+   *  /sessions: ADD/RETRIEVE sessions visible to the calling PEER
+
+      -  Batch create new session resources
+
+         o  Establish new BGP sessions between peers, at the desired
+            exchange.
+
+         o  Below is based on OpenAPI specification: [autopeer].
+
+         o  POST /sessions
+
+            +  Request body: Session Array
+
+            +  Responses:
+
+               *  200 OK:
+
+                  -  Contents: Session Array (all sessions in request
+                     accepted for configuration).  Should not all the
+                     sessions be accepted, the response also contains a
+                     list of sessions and the respective errors.
+
+               *  400:
+
+                  -  Error
+
+               *  403:
+
+                  -  Unauthorized to perform the operation
+
+               *  422:
+
+                  -  Please contact us, human intervention required
+
+      -  List all session resources.  The response is paginated.
+
+         o  Given a request ID, query for the status of that request.
+
+         o  Given an ASN without request ID, query for status of all
+            connections between client and server.
+
+         o  Below is based on OpenAPI specification: [autopeer].
+
+         o  GET /sessions
+
+            +  Request parameters:
+
+               *  asn (requesting client's asn)
+
+               *  request_id (optional, UUID of request)
+
+               *  max_results (integer to indicate an upper bound for a
+                  given response page)
+
+               *  next_token (opaque and optional string received on a
+                  previous response page and which allows the server to
+                  produce the next page of results.  Its absence
+                  indicates to the server that the first page is
+                  expected)
+
+            +  Response:
+
+               *  200: OK
+
+                  -  Contents: Session Array of sessions in request_id,
+                     if provided.  Else, all existing and in-progress
+                     sessions between client ASN and server.
+
+                     o  next_token (opaque and optional string the
+                        server expects to be passed back on the request
+                        for the next page.  Its absence indicates to the
+                        client that no more pages are available)
+
+               *  400:
+
+                  -  Error (example: request_id is invalid)
+
+               *  403:
+
+                  -  Unauthorized to perform the operation
+
+   *  /sessions/{session_id}: Operate on individual sessions
+
+      -  Retrieve an existing session resource
+
+         o  Below is based on OpenAPI specification: [autopeer].
+
+         o  GET /sessions/{session_id}
+
+            +  Request parameters:
+
+               *  session_id returned by the server on creation or
+                  through the session list operation.
+
+            +  Responses:
+
+               *  200 OK:
+
+                  -  Contents: Session structure with current attributes
+
+               *  400:
+
+                  -  Error (example: session_id is invalid)
+
+               *  403:
+
+                  -  Unauthorized to perform the operation
+
+               *  404:
+
+                  -  The session referred by the specified session_id
+                     does not exist or is not visible to the caller
+
+      -  Delete a session.
+
+         o  Given a session ID, delete it which effectively triggers an
+            depeering from the initiator.
+
+         o  Below is based on OpenAPI specification: [autopeer].
+
+         o  DELETE /sessions/{session_id}
+
+            +  Request parameters:
+
+               *  session_id returned by the server on creation or
+                  through the session list operation.
+
+            +  Response:
+
+               *  204: OK
+
+                  -  Contents: empty response as the session is
+                     processed and hard deleted
+
+               *  400:
+
+                  -  Error (example: session_id is invalid)
+
+               *  403:
+
+                  -  Unauthorized to perform the operation
+
+               *  404:
+
+                  -  The session referred by the specified session_id
+                     does not exist or is not visible to the caller
+
+               *  422:
+
+                  -  Please contact us, human intervention required
+
+6.2.2.  UTILITY API CALLS
+
+   Endpoints which provide useful information for potential
+   interconnections.
+
+   *  /locations: LIST POTENTIAL PEERING LOCATIONS
+
+      -  List potential peering locations, both public and private.  The
+         response is paginated.
+
+         o  Below is based on OpenAPI specification: [autopeer].
+
+         o  GET /locations
+
+            +  Request parameters:
+
+               *  asn (Server ASN, with which to list potential
+                  connections)
+
+               *  location_type (Optional: Peering Location)
+
+               *  max_results (integer to indicate an upper bound for a
+                  given response page)
+
+               *  next_token (opaque and optional string received on a
+                  previous response page and which allows the server to
+                  produce the next page of results.  Its absence
+                  indicates to the server that the first page is
+                  expected)
+
+            +  Response:
+
+               *  200: OK
+
+                  -  Contents: List of Peering Locations.
+
+                     o  next_token (opaque and optional string the
+                        server expects to be passed back on the request
+                        for the next page.  Its absence indicates to the
+                        client that no more pages are available)
+
+               *  400:
+
+                  -  Error
+
+               *  403:
+
+                  -  Unauthorized to perform the operation
+
+6.2.3.  Private Peering (DRAFT)
+
+   *  ADD/AUGMENT PNI
+
+   *  Parameters:
+
+      -  Peer ASN
+
+      -  Facility
+
+      -  email address (contact)
+
+      -  Action type: add/augment
+
+      -  LAG struct:
+
+         o  IPv4
+
+         o  IPv6
+
+         o  Circuit ID
+
+      -  Who provides LOA? (and where to provide it).
+
+   *  Response:
+
+      -  200:
+
+         o  LAG struct, with server data populated
+
+         o  LOA or way to receive it
+
+         o  Request ID
+
+      -  40x: rejections
+
+   *  REMOVE PNI
+
+      -  As ADD/AUGMENT in parameters.  Responses will include a
+         requestID and status.
+
+7.  Public Peering Session Negotiation
+
+   As part of public peering configuration, this draft must consider how
+   the client and server should handshake at which sessions to configure
+   peering.  At first, a client will request sessions A, B, and C.  The
+   server may choose to accept all sessions A, B, and C.  At this point,
+   configuration proceeds as normal.  However, the server may choose to
+   reject session B.  At that point, the server will reply back with A
+   and C marked as "Accepted," and B as "Rejected."  The server will
+   then configure A and C, and wait for the client to configure A and C.
+   If the client configured B as well, it will not come up.
+
+   This draft encourages peers to set up garbage collection for
+   unconfigured or down peering sessions, to remove stale configuration
+   and maintain good router hygiene.
+
+   Related to rejection, if the server would like to configure
+   additional sessions with the client, the server may either reject all
+   the session that do not meet the criteria caused by such absence in
+   the client's request or approve the client's request and issue a
+   separate request to the client's server requesting those additional
+   peering sessions D and E.  The server will configure D and E on their
+   side, and D and E will become part of the sessions requested in the
+   UUID.  The client may choose whether or not to accept those
+   additional sessions.  If they do, the client should configure D and E
+   as well.  If they do not, the client will not configure D and E, and
+   the server should garbage-collect those pending sessions.
+
+   As part of the IETF discussion, the authors would like to discuss how
+   to coordinate which side unfilters first.  Perhaps this information
+   could be conveyed over a preferences vector.
+
+8.  Private Peering
+
+   Through future discussion with the IETF, the specification for
+   private peering will be solidified.  Of interest for discussion
+   includes Letter of Authorization (LOA) negotiation, and how to
+   coordinate unfiltering and configuration checks.
+
+9.  Maintenance
+
+   This draft does not want to invent a new ticketing system.  However,
+   there is an opportunity in this API to provide maintenance
+   notifications to peering partners.  If there is interest, this draft
+   would extend to propose a maintenance endpoint, where the server
+   could broadcast upcoming and current maintenance windows.
+
+   A maintenance message would follow a format like:
+
+   *  Title: string
+
+   *  Start Date: date maintenance start(s/ed): UTC
+
+   *  End Date: date maintenance ends: UTC
+
+   *  Area: string or enum
+
+   *  Details: freeform string
+
+   The "Area" field could be a freeform string, or could be a parseable
+   ENUM, like (BGP, PublicPeering, PrivatePeering, Configuration,
+   Caching, DNS, etc).
+
+   Past maintenances will not be advertised.
+
+10.  Possible Extensions
+
+   The authors acknowledge that route-server configuration may also be
+   of interest for this proposed API, and look forward to future
+   discussions in this area.
+
+11.  IANA Considerations
+
+   This document has no IANA actions.
+
+12.  References
+
+12.1.  Normative References
+
+   [autopeer] "Github repository with the API specification and
+              diagrams", n.d., <https://github.com/bgp/autopeer/>.
+
+   [oidc]     "OpenID.Core", n.d.,
+              <https://openid.net/specs/openid-connect-core-1_0.html>.
+
+   [openapi]  "OpenAPI-v3.1.0", n.d.,
+              <https://spec.openapis.org/oas/v3.1.0>.
+
+   [rest]     Fielding, R. T., "Architectural Styles and the Design of
+              Network-based Software Architectures", 2000,
+              <http://roy.gbiv.com/pubs/dissertation/top.htm>.
+
+   [RFC6749]  Hardt, D., Ed., "The OAuth 2.0 Authorization Framework",
+              RFC 6749, DOI 10.17487/RFC6749, October 2012,
+              <https://www.rfc-editor.org/rfc/rfc6749>.
+
+   [RFC6750]  Jones, M. and D. Hardt, "The OAuth 2.0 Authorization
+              Framework: Bearer Token Usage", RFC 6750,
+              DOI 10.17487/RFC6750, October 2012,
+              <https://www.rfc-editor.org/rfc/rfc6750>.
+
+   [RFC7519]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web Token
+              (JWT)", RFC 7519, DOI 10.17487/RFC7519, May 2015,
+              <https://www.rfc-editor.org/rfc/rfc7519>.
+
+   [RFC8725]  Sheffer, Y., Hardt, D., and M. Jones, "JSON Web Token Best
+              Current Practices", BCP 225, RFC 8725,
+              DOI 10.17487/RFC8725, February 2020,
+              <https://www.rfc-editor.org/rfc/rfc8725>.
+
+   [RFC9068]  Bertocci, V., "JSON Web Token (JWT) Profile for OAuth 2.0
+              Access Tokens", RFC 9068, DOI 10.17487/RFC9068, October
+              2021, <https://www.rfc-editor.org/rfc/rfc9068>.
+
+12.2.  Informative References
+
+   [RFC3912]  Daigle, L., "WHOIS Protocol Specification", RFC 3912,
+              DOI 10.17487/RFC3912, September 2004,
+              <https://www.rfc-editor.org/rfc/rfc3912>.
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/rfc/rfc4271>.
+
+   [RFC6480]  Lepinski, M. and S. Kent, "An Infrastructure to Support
+              Secure Internet Routing", RFC 6480, DOI 10.17487/RFC6480,
+              February 2012, <https://www.rfc-editor.org/rfc/rfc6480>.
+
+   [RFC9092]  Bush, R., Candela, M., Kumari, W., and R. Housley,
+              "Finding and Using Geofeed Data", RFC 9092,
+              DOI 10.17487/RFC9092, July 2021,
+              <https://www.rfc-editor.org/rfc/rfc9092>.
+
+   [RFC9323]  Snijders, J., Harrison, T., and B. Maddison, "A Profile
+              for RPKI Signed Checklists (RSCs)", RFC 9323,
+              DOI 10.17487/RFC9323, November 2022,
+              <https://www.rfc-editor.org/rfc/rfc9323>.
+
+Appendix A.  Acknowledgments
+
+   The authors would like to thank their collaborators, who implemented
+   API versions and provided valuable feedback on the design.
+
+   *  Ben Blaustein (Meta)
+
+   *  Jakub Heichman (Meta)
+
+   *  Stefan Pratter (20C)
+
+   *  Ben Ryall (Meta)
+
+   *  Erica Salvaneschi (Cloudflare)
+
+   *  Job Snijders (Fastly)
+
+   *  David Tuber (Cloudflare)
+
+   *  Aaron Rose (Amazon)
+
+   *  Prithvi Nath Manikonda (Amazon)
+
+Authors' Addresses
+
+   Carlos Aguado
+   Amazon
+   Email: crlsa@amazon.com
+
+
+   Matt Griswold
+   FullCtl
+   Email: grizz@20c.com
+
+
+   Jenny Ramseyer
+   Meta
+   Email: ramseyer@meta.com
+
+
+   Arturo Servin
+   Google
+   Email: arturolev@google.com
+
+
+   Tom Strickx
+   Cloudflare
+   Email: tstrickx@cloudflare.com

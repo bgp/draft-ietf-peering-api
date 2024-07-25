@@ -1,0 +1,2156 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2024-07-25T01:35:34.118758+00:00",
+  "repo": "bgp/draft-ietf-peering-api",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 2,
+      "id": "I_kwDOKwWQEM55Vo5K",
+      "title": "Do one sentence per line",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/issues/2",
+      "state": "CLOSED",
+      "author": "job",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "tip: By adhering to the convention of a single sentence per line; the git diffs will be much easier to read & review, and overly long sentences are more easily recognized",
+      "createdAt": "2023-12-11T13:45:06Z",
+      "updatedAt": "2024-01-10T21:52:10Z",
+      "closedAt": "2024-01-10T21:52:10Z",
+      "comments": []
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOKwWQEM55VpzK",
+      "title": "Clarify this doc is about inter-domain peering",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/issues/3",
+      "state": "OPEN",
+      "author": "job",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "jramseyer"
+      ],
+      "labels": [],
+      "body": "The document should clarify that the proposed methodology applies in context of inter-domain interconnection in the _Global Internet Routing System_.\r\n\r\nThe word _peering_ is used in many contexts in IETF, so clarification that this is about interconnecting Autonomous Systems that participate in the global Internet routing system is perhaps useful.",
+      "createdAt": "2023-12-11T13:47:01Z",
+      "updatedAt": "2023-12-21T19:37:09Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 4,
+      "id": "I_kwDOKwWQEM55Vr2a",
+      "title": "In addition to PeeringDB OAuth, propose that RPKI can also be used",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/issues/4",
+      "state": "OPEN",
+      "author": "job",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "[RFC 9323](https://datatracker.ietf.org/doc/html/rfc9323) specifies a mechanism for Autonomous System holders to issue a signature over an arbitrary SHA256 message digest, then in turn, Relying Parties can verify this signature against the global RPKI.\r\n\r\nThis means that the Initiator and the Receiver can perform a challenge/response procedure based on the RPKI - which is cryptographically stronger than relying on PeeringDB's OAuth infrastructure.\r\n\r\nThe Initator and the Receiver can establish an arc of trust by having the Initator signal an arbitrary SHA256 hash over which the Receiver must produce a RPKI-RSC signature; the receiver can challenge the Initator in a similar manner. Once both parties have signed the other-party's challenge, both parties know that each party possesses access to private keys associated with the Autonomous Systems on both sides.",
+      "createdAt": "2023-12-11T13:51:21Z",
+      "updatedAt": "2023-12-21T19:33:32Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "body": "+1 on RFC9323 (or RTA too) to bind API requests to ASN holdership.\r\n\r\nI would build on top of that to, instead of a dynamic challenge/response chain of trust between parties as I understand it, use the RSC/RTA to bind the INRs to a OAuth2 issuer via their well-known discovery point ([RFC8414](https://datatracker.ietf.org/doc/html/rfc8414)). This would allow to:\r\n- reuse current identity management solutions based on bearer tokens for async validation\r\n- maintain attestation of individual caller identities on API requests as well as the capability to constrain access to parts of the API defined in this doc via usual scopes or other claims\r\n- extend the integrity checks to the entire API call payload, beyond reliance on a TLS transport, for proof of possession and HTTP signing when those become standard (e.g. [RFC9449](https://datatracker.ietf.org/doc/html/rfc9449))\r\n\r\nI would also defer this to a separate RFC process that builds atop this doc and now gather consensus on the peering API using a bespoke authz implementation.",
+          "createdAt": "2023-12-15T09:56:03Z",
+          "updatedAt": "2023-12-15T09:56:03Z"
+        },
+        {
+          "author": "job",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The RTA proposal was abandoned by the working group. There are no implementations.",
+          "createdAt": "2023-12-15T10:27:21Z",
+          "updatedAt": "2023-12-15T10:27:21Z"
+        },
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I like the idea of splitting it into two proposals, or having authentication be a \"future work\" part of this RFC.\r\n\r\nTrying to tackle both the idea of a machine-to-machine peering API, and machine-to-machine API network verification seems like two related projects.  We could put them all into one RFC, but I worry that we risk distracting ourselves in one or the other, and achieving neither.  If you think it would be appropriate, I would propose we submit\r\n* peering API, with \"future work\" or \"proposed discussion\" around authentication and different options\r\n* (second) send an amendment or second RFC around API authentication for network configuration\r\nIf you think it would be more appropriate just to file one, larger, RFC, please let me know and we can rescope.",
+          "createdAt": "2023-12-21T19:32:32Z",
+          "updatedAt": "2023-12-21T19:32:32Z"
+        },
+        {
+          "author": "job",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Id stick it in one larger doc, that way people have a complete spec to look at. ",
+          "createdAt": "2023-12-21T19:33:31Z",
+          "updatedAt": "2023-12-21T19:33:31Z"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "id": "I_kwDOKwWQEM57sn8j",
+      "title": "PeeringDB OAuth token usage",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/issues/6",
+      "state": "OPEN",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "After our discussion today, I thought more about whether or not you could impersonate someone with the PeeringDB Token.\r\n\r\nThe token we ask for from the user is the access token, not the authorization code.  Authorization code comes first, and is what you use to get a token.  The token is then put in the headers of the call.\r\n\r\nOf note: when you go to register an oauth app on PeeringDB, you get a client ID, which you pass back in order to get an authorization code.  \r\nLater, you take the authorization code, and pass that back to peeringDB to get a token.\r\n\r\nOnce you have the token, one can \"forget about\" the client ID (PeeringDB does not need the client ID to validate the token, it validates the token on its own).  I don't believe this poses a problem to the API, as our implementation only wants the token.  Clients can set up their own \"token-fetching\" method separately.\r\n\r\nIt turns out the lead author on OAuth comes to the IETF regularly (as it is an IETF working group), so maybe we can get his opinion as well.\r\n\r\nAnyway, it doesn't look like you can take actions on PeeringDB with only the access token (at least from a quick look, I didn't poke too hard), but maybe @grizz would have a better idea (looking at https://github.com/peeringdb/peeringdb/issues/131)\r\ncc @caguado for discussion as well.",
+      "createdAt": "2024-01-10T22:07:31Z",
+      "updatedAt": "2024-01-12T15:51:04Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "job",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Yeah, this type of issue is exactly why I think that also mentioning RPKI-based authentication as a option will resolve some trust issues: with RPKI the trust arc is build directly between the two parties, without an intermediate.\r\n\r\nIf the draft offers multiple ways to establish trust between parties, consumers of this technology can choose what risk appetite they have and whether they will offer one or all auth options.",
+          "createdAt": "2024-01-10T22:19:18Z",
+          "updatedAt": "2024-01-10T22:19:18Z"
+        },
+        {
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "body": "About the trust via PeeringDB's OAuth2/OIDC (or any other third party for the matter), what I referred to in the call is that we should probably use the standard as intended when multiple parties are involved, not only in terms of crypto validation but also adequate scoping to each consuming audience. Ref [rfc8725](https://www.rfc-editor.org/rfc/rfc8725#section-2.8) with one more recent example of this scenario in [rfc9068](https://datatracker.ietf.org/doc/html/rfc9068#SecurityConsiderations).\r\n\r\nUnfortunately it is a bit more nuanced than the access tokens being just cryptographically valid, but to verify among other things whether the consuming API (resource server - RS) is the intended audience to trust the scopes the bearer claims to have. Currently the access token PeeringDB hands over to the client is for the use of the PeeringDB RS alone, unless modified to include other RSs, e.g. our collective autopeer APIs. As a counter example, having direct possession of the current access token handed over by PeeringDB means the new consuming service can in turn use it to reach to PeeringDB's API itself during the time period such token is valid.\r\n\r\nUsing Id Tokens for third-party purposes would follow a similar reasoning where those tokens are not expected to be shared outside the original Oauth2 client-AS relation.\r\n\r\nI found [this resource from auth0](https://auth0.com/blog/how-the-jwt-profile-for-oauth-20-access-tokens-became-rfc9068/) useful to understand the nuanced context on all this. As we spoke, I'll bring more of this summarized to our next meeting.",
+          "createdAt": "2024-01-11T10:16:46Z",
+          "updatedAt": "2024-01-11T10:16:46Z"
+        },
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thank you both for the quick reply!\r\n\r\nRegarding RPKI-based authentication--let me take another pass through RFC 9323 to understand it better.  From discussion in issue #4, probably we should give a full spec, with alternate auth options (and cover the private peering and maintenance ideas, but that's another thread).  I was trying to keep it simpler by only proposing one authentication model, but if you think the IETF audience would prefer to see all the options, we can list the full spec and discuss. \r\n\r\nPeeringDB--thanks for the article, that was a neat insight into the IETF process as well.  Re: \r\n\r\n> \"having direct possession of the current access token handed over by PeeringDB means the new consuming service can in turn use it to reach to PeeringDB's API itself during the time period such token is valid.\"\r\n\r\nIsn't this token only for the identity?  Could the API could issue GET/DELETE requests to PeeringDB, based on the permissions of the token?  \r\n I had thought that the token was only the ID token, and therefore, could only be used to get the identity and permissions of the user, as described in the OpenID spec here: https://openid.net/specs/openid-connect-core-1_0.html\r\n\r\nFrom what I can understand from here: https://docs.peeringdb.com/howto/authenticate/\r\nOAuth can be used to verify your identity, but other endpoints are behind user/pass or API-key-based authentication.  \r\n\r\nI guess a malicious provider might be able to take that token and use it to auth against some other server's endpoint, to incorrectly request peering?\r\n\r\nJust thinking through possibilities, I am not an expert on OAuth intricacies and best practices.  I will look forward to your summary as well.",
+          "createdAt": "2024-01-11T18:43:43Z",
+          "updatedAt": "2024-01-11T18:43:43Z"
+        },
+        {
+          "author": "grizz",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> Anyway, it doesn't look like you can take actions on PeeringDB with only the access token (at least from a quick look, I didn't poke too hard), but maybe @grizz would have a better idea (looking at [peeringdb/peeringdb#131](https://github.com/peeringdb/peeringdb/issues/131))\r\n\r\nRight, I don't think there is risk in using the access token, as this is exactly what OAuth2 was designed for, as Carlos said, we need to make sure we're using it correctly. It's been a while, and we should definitely verify that, but that is what the review is for. :)\r\n\r\nRegarding RPKI, @job we are definitely planning on supporting it in a future iteration, like Jenny says, it would need a thread just for it. Our idea is that PDB, or other OAuth2 providers can say who the party is that is doing the request (and with PeeringDB scopes, it can give some authorization for if that party is allowed to do it), while RPKI signing would prove that they're allowed to make requests. Having both would be ideal, and it would be up to the server to decide what level of authentication and authorization they require.",
+          "createdAt": "2024-01-12T03:59:46Z",
+          "updatedAt": "2024-01-12T03:59:46Z"
+        },
+        {
+          "author": "grizz",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Err, posted too quickly and missed a paragraph.\r\n\r\n> Isn't this token only for the identity? Could the API could issue GET/DELETE requests to PeeringDB, based on the permissions of the token?\r\n\r\nThat's correct.\r\n\r\n> I had thought that the token was only the ID token, and therefore, could only be used to get the identity and permissions of the user, as described in the OpenID spec here: https://openid.net/specs/openid-connect-core-1_0.html\r\n\r\nYes, I think we discussed this last NANOG and realized we were technically using OIDC and not OAuth. I can double check in our implementation later, but to reiterate, as long as we're following the standards how it's supposed to be done, we should be fine.",
+          "createdAt": "2024-01-12T04:09:22Z",
+          "updatedAt": "2024-01-12T04:09:22Z"
+        },
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "That's right, I remember we decided it was OIDC at NANOG88, I think.  \r\n\r\nI updated the security considerations section here: https://github.com/bgp/draft-ietf-peering-api/pull/8\r\nOf course, if we discover we are using the tokens incorrectly, we can edit or scrap this section, but I figured I would keep the draft up to date for now.  Let me know if that looks sensible.  \r\n\r\nThanks all of you for reviewing the implementation--if we are using it incorrectly, let me know and I will hold off submitting a draft.  I'm planning to submit in a week or two if we can manage it.",
+          "createdAt": "2024-01-12T15:51:03Z",
+          "updatedAt": "2024-01-12T15:51:03Z"
+        }
+      ]
+    }
+  ],
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOKwWQEM5hrq-v",
+      "title": "Update draft-ramseyer-grow-peering-api.md",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/1",
+      "state": "MERGED",
+      "author": "therealr2d2",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Added/changed some text and some rewriting to the introduction.",
+      "createdAt": "2023-12-11T13:26:23Z",
+      "updatedAt": "2024-01-09T20:36:06Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "f0e4a1800c41b3ffd9d20fa512ec93a9cd7095ba",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "therealr2d2-patch-1",
+      "headRefOid": "82605ed595ce1343a2938f0d6b84a80837e0d169",
+      "closedAt": "2024-01-09T20:36:05Z",
+      "mergedAt": "2024-01-09T20:36:05Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "e38d8a01def9c25cc3b5d12ba6ce7c6e41681a47"
+      },
+      "comments": [
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "merged with later changes, to fix the build process",
+          "createdAt": "2024-01-09T20:34:20Z",
+          "updatedAt": "2024-01-09T20:34:20Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM5q52QV",
+          "commit": {
+            "abbreviatedOid": "09f0647"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Looks good to me.  Thanks!",
+          "createdAt": "2023-12-21T19:28:03Z",
+          "updatedAt": "2023-12-21T19:28:03Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "PR_kwDOKwWQEM5imhy3",
+      "title": "Ramseyer patch intro",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/5",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Feedback from https://github.com/bgp/draft-ietf-peering-api/issues/3 -- added clarification around Peering\r\nSwitched intro to one-sentence-per-line, as in https://github.com/bgp/draft-ietf-peering-api/issues/2\r\nRemoved trailing whitespace to fix lint errors",
+      "createdAt": "2023-12-21T19:56:49Z",
+      "updatedAt": "2024-01-09T20:27:18Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "c34f72263856a8210e3c60e6874706deb9f9ee56",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "ramseyer_patch_intro",
+      "headRefOid": "88b2cef67293444c81537e1cb18a7c8b14433a36",
+      "closedAt": "2024-01-09T20:27:00Z",
+      "mergedAt": "2024-01-09T20:27:00Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "f0e4a1800c41b3ffd9d20fa512ec93a9cd7095ba"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 7,
+      "id": "PR_kwDOKwWQEM5jvB3o",
+      "title": "Update draft-ramseyer-grow-peering-api.md (Abstract)",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/7",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Adding an abstract to the doc",
+      "createdAt": "2024-01-10T22:15:44Z",
+      "updatedAt": "2024-01-16T19:56:20Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "c13eb5f55f64ddaa140bc17af764f94b2b44421e",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-patch-abstract",
+      "headRefOid": "c57c5bd8308c966899a8d3f5f97fa72711bebf20",
+      "closedAt": "2024-01-16T19:56:17Z",
+      "mergedAt": "2024-01-16T19:56:17Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "10c22732681f470a4b8b4c609f24c8b332731500"
+      },
+      "comments": [
+        {
+          "author": "grizz",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@jramseyer probably want to `s/OAuth/OIDC` or similar?",
+          "createdAt": "2024-01-12T19:16:59Z",
+          "updatedAt": "2024-01-12T19:16:59Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM5slBo_",
+          "commit": {
+            "abbreviatedOid": "8cc612a"
+          },
+          "author": "therealr2d2",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-15T13:01:54Z",
+          "updatedAt": "2024-01-15T13:01:54Z",
+          "comments": [
+            {
+              "originalPosition": 1,
+              "body": "--> 'Private (paid) peering'\r\n\r\nI think that private peering and paid peering are regularly two separated things.\r\n\r\nPrivate peering is done on private interfaces (mostly link to link,) and paid peering could be private peering or public peering but you pay to your peer to connect .\r\n\r\n",
+              "createdAt": "2024-01-15T13:01:54Z",
+              "updatedAt": "2024-01-15T13:01:54Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5svxh3",
+          "commit": {
+            "abbreviatedOid": "8cc612a"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-16T17:58:16Z",
+          "updatedAt": "2024-01-16T17:58:16Z",
+          "comments": [
+            {
+              "originalPosition": 1,
+              "body": "Good catch.  I will fix.",
+              "createdAt": "2024-01-16T17:58:16Z",
+              "updatedAt": "2024-01-16T17:58:16Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "id": "PR_kwDOKwWQEM5j2dxI",
+      "title": "Security Considerations section",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/8",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Security Considerations, one typo.\r\n\r\nAdding a section on Security Considerations.\r\nSince we are still in discussions around security considerations for the API, I left this one somewhat ambiguous.  \r\n\r\nThis is by no means perfect, but now we have something.  Trying to get the draft into a minimal reasonable state before we submit for March.\r\n\r\nfrom discussions in:\r\nhttps://github.com/bgp/draft-ietf-peering-api/issues/6 \r\nhttps://github.com/bgp/draft-ietf-peering-api/issues/4",
+      "createdAt": "2024-01-11T19:39:56Z",
+      "updatedAt": "2024-01-12T23:15:00Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "e38d8a01def9c25cc3b5d12ba6ce7c6e41681a47",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-patch-security-1",
+      "headRefOid": "970df359642d92f9ff33135cf5d4457da2ec37d5",
+      "closedAt": "2024-01-12T23:14:57Z",
+      "mergedAt": "2024-01-12T23:14:57Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "c13eb5f55f64ddaa140bc17af764f94b2b44421e"
+      },
+      "comments": [
+        {
+          "author": "grizz",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@jramseyer looks good to me, thanks for writing it up!",
+          "createdAt": "2024-01-12T19:13:52Z",
+          "updatedAt": "2024-01-12T19:13:52Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM5saeWG",
+          "commit": {
+            "abbreviatedOid": "970df35"
+          },
+          "author": "grizz",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-01-12T19:13:09Z",
+          "updatedAt": "2024-01-12T19:13:09Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "id": "PR_kwDOKwWQEM5j21Gt",
+      "title": "Sample request flow",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/9",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Adding a section with sample request flow.\r\n\r\nNot sure if we need this section in addition to the endpoints section.  We can reorder or remove it as necessary.\r\n\r\nTried to follow the spec as we (Meta) understand it, but I will update if I notice any discrepancies between it and the ENDPOINTS section.",
+      "createdAt": "2024-01-11T20:50:34Z",
+      "updatedAt": "2024-01-16T20:00:52Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "10c22732681f470a4b8b4c609f24c8b332731500",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-patch-example-request",
+      "headRefOid": "ce8d28cc7cfbf657caa631ecfa36a12914069864",
+      "closedAt": "2024-01-16T20:00:48Z",
+      "mergedAt": "2024-01-16T20:00:48Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "7035f3b3e681e9279486f5c59d4234d0d8a008c9"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 10,
+      "id": "PR_kwDOKwWQEM5kP_UZ",
+      "title": "Add endpoints, finish draft.",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/10",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Finish draft!\r\n* endpoints\r\n* endpoint details\r\n* future work\r\nI will merge this tomorrow, so we can submit something to the area directors and request to present at dispatch.\r\n",
+      "createdAt": "2024-01-16T21:31:43Z",
+      "updatedAt": "2024-01-18T18:50:00Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "7035f3b3e681e9279486f5c59d4234d0d8a008c9",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "ramseyer-patch-endpoints",
+      "headRefOid": "f98c15e9bb5b31412b7241b70dbff0f7ff8ed972",
+      "closedAt": "2024-01-17T19:09:58Z",
+      "mergedAt": "2024-01-17T19:09:58Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "f15ee58ffe9d9e8ab9a36818d44562d0dfdf76c5"
+      },
+      "comments": [
+        {
+          "author": "job",
+          "authorAssociation": "COLLABORATOR",
+          "body": "You can also immediately bring it to the GROW chairs :-)",
+          "createdAt": "2024-01-16T21:33:25Z",
+          "updatedAt": "2024-01-16T21:33:25Z"
+        },
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> You can also immediately bring it to the GROW chairs :-)\r\n\r\nThanks, sounds good :) I will email you and the other GROW chair.\r\nShould I submit formally to the IETF site, or is a draft attached sufficient?",
+          "createdAt": "2024-01-16T21:36:43Z",
+          "updatedAt": "2024-01-16T21:36:43Z"
+        },
+        {
+          "author": "job",
+          "authorAssociation": "COLLABORATOR",
+          "body": "If you upload this draft via https://datatracker.ietf.org/submit/ - please\r\n\r\nyou can then bring this draft to the attention of working group via grow@ietf.org by sending a cover letter \r\n\r\nIn the same email you can request a talking slot in the upcoming GROW session at IETF 119",
+          "createdAt": "2024-01-16T21:37:20Z",
+          "updatedAt": "2024-01-16T21:37:20Z"
+        },
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks, I will do so this week!  ",
+          "createdAt": "2024-01-16T21:46:39Z",
+          "updatedAt": "2024-01-16T21:46:39Z"
+        },
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@job Thanks for your help!\r\nWe have submitted here: https://datatracker.ietf.org/doc/draft-ramseyer-grow-peering-api/\r\n\r\nI sent an email to grow@ietf.org, but I think it may still be awaiting moderator approval.  Please let me know if it didn't go through.\r\nThanks again!  ",
+          "createdAt": "2024-01-18T16:17:14Z",
+          "updatedAt": "2024-01-18T16:17:14Z"
+        },
+        {
+          "author": "job",
+          "authorAssociation": "COLLABORATOR",
+          "body": "first you have to subscribe to the mailing list https://www.ietf.org/mailman/listinfo/grow and then you can send emails",
+          "createdAt": "2024-01-18T16:19:18Z",
+          "updatedAt": "2024-01-18T16:19:18Z"
+        },
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks!  I subscribed and see it went through now.  ",
+          "createdAt": "2024-01-18T18:50:00Z",
+          "updatedAt": "2024-01-18T18:50:00Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 11,
+      "id": "PR_kwDOKwWQEM5kWUdV",
+      "title": "Fix formatting",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/11",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Generated submission didn't match markdown spec, should have checked.\r\n\r\nLet's see if this fixes (will check compiled files, my mistake)",
+      "createdAt": "2024-01-17T19:43:55Z",
+      "updatedAt": "2024-01-25T18:03:36Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "f15ee58ffe9d9e8ab9a36818d44562d0dfdf76c5",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-patch-formatting",
+      "headRefOid": "fddcaf1f89426b20e0bc3c82bfa545b342e52167",
+      "closedAt": "2024-01-17T20:15:43Z",
+      "mergedAt": "2024-01-17T20:15:43Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "7ef5865d3728d33711e81de158b2a6d8b846a233"
+      },
+      "comments": [
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Ok, the generated files look good.  I will resubmit.",
+          "createdAt": "2024-01-17T20:15:30Z",
+          "updatedAt": "2024-01-17T20:15:30Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 12,
+      "id": "PR_kwDOKwWQEM5kbagI",
+      "title": "Update formatting and minor nits",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/12",
+      "state": "MERGED",
+      "author": "Ichabond",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Added markdown formatting where required, as well as adding references to the RFCs where needed. Further updated some of the wording.",
+      "createdAt": "2024-01-18T14:00:32Z",
+      "updatedAt": "2024-01-18T15:37:21Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "ada68382ee6f2abfb2744217550c315a3f3e9052",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "tstrickx-nits",
+      "headRefOid": "1d2224bc79ce9615d692122905d2f5d09a2d54c3",
+      "closedAt": "2024-01-18T15:37:21Z",
+      "mergedAt": "2024-01-18T15:37:21Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "416d1afbbe2b539722a70a28a9ff6acb1f06ecd3"
+      },
+      "comments": [
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks for the citations and review!  Looks good to me.  I checked the generated files, and they look correct.",
+          "createdAt": "2024-01-18T15:37:17Z",
+          "updatedAt": "2024-01-18T15:37:17Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 13,
+      "id": "PR_kwDOKwWQEM5kiUIG",
+      "title": "Clarify goals and use of authorization flows",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/13",
+      "state": "MERGED",
+      "author": "caguado",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Add more context on why and how OIDC/OAuth2 flows are expected to cover the authorization needs of all participating entities using the technical jargon from OIDC/OAuth2 and link the relevant RFCs.",
+      "createdAt": "2024-01-19T11:33:48Z",
+      "updatedAt": "2024-03-13T18:32:28Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "a8ee209e94b4427e51ee77be82b423b8ce3d9547",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "contrib/crlsa/refactor/authz",
+      "headRefOid": "9f7a66293fb1a9816e1fdf81c66fe6da1d65602d",
+      "closedAt": "2024-01-19T17:00:53Z",
+      "mergedAt": "2024-01-19T17:00:53Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "16a420f1afd7aef319003a6c6a6159b98dd82935"
+      },
+      "comments": [
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks for carefully referencing everything!  I think this makes sense, and is technically clearer as to what we are proposing.  Thanks for the changes!",
+          "createdAt": "2024-01-19T17:00:54Z",
+          "updatedAt": "2024-01-19T17:00:54Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 14,
+      "id": "PR_kwDOKwWQEM5lENWh",
+      "title": "Refactor messages as per modified API",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/14",
+      "state": "MERGED",
+      "author": "caguado",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This commit adapts the structures and wording around the changes made to the reference OpenAPI spec from [1].\r\n\r\n[1] https://github.com/bgp/autopeer/issues/17",
+      "createdAt": "2024-01-25T13:24:07Z",
+      "updatedAt": "2024-01-27T09:47:26Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "a6f9ae565fb9fef8338988cefd0257d5e124e41c",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "contrib/crlsa/refactor/restful",
+      "headRefOid": "d4273e1ecefb6b41603a3c0eb6b8affc254a1037",
+      "closedAt": "2024-01-27T09:47:00Z",
+      "mergedAt": "2024-01-27T09:47:00Z",
+      "mergedBy": "caguado",
+      "mergeCommit": {
+        "oid": "8bb6b31174f36bb73586ce621097167546277f34"
+      },
+      "comments": [
+        {
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Ack thanks. I did check the job output to verify I don't add regressions. Merging then.",
+          "createdAt": "2024-01-27T09:46:45Z",
+          "updatedAt": "2024-01-27T09:46:45Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM5t7WQc",
+          "commit": {
+            "abbreviatedOid": "85c7bc6"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "Thanks for the additions!  \r\n\r\nLet me know what you think of the \"delete sessions\" addition and the session handshaking.   Thanks for the clarifications on the spec!\r\n",
+          "createdAt": "2024-01-25T17:19:56Z",
+          "updatedAt": "2024-01-25T17:49:04Z",
+          "comments": [
+            {
+              "originalPosition": 87,
+              "body": "nit: and -> an",
+              "createdAt": "2024-01-25T17:19:57Z",
+              "updatedAt": "2024-01-25T17:49:04Z"
+            },
+            {
+              "originalPosition": 224,
+              "body": "Since REMOVE IX peer is deleted, shall we add /DELETE here as well?  \r\nLine 240 was the only place we mentioned delete as an option for PX sessions, so let's mention it here as well.\r\n\r\nSomething like:\r\n'''\r\n * Batch delete existing session resources\r\n    * Delete BGP sessions between peers, at the desired exchange.\r\n    * Below is based on OpenAPI specification: [https://github.com/bgp/autopeer/blob/main/api/openapi.yaml](https://github.com/bgp/autopeer/blob/main/api/openapi.yaml)\r\n    * DELETE: /sessions\r\n      * Request body: Session Array\r\n      * Responses:\r\n        * 200 OK:\r\n          * Contents: Session Array (all sessions in request accepted for deletion).\r\n        * 300:\r\n          * Contents: Modified Session Array, with rejected or additional sessions.\r\n        * 400:\r\n          * Error\r\n        * 403:\r\n          * Unauthorized to perform the operation\r\n         '''",
+              "createdAt": "2024-01-25T17:28:24Z",
+              "updatedAt": "2024-01-25T17:49:04Z"
+            },
+            {
+              "originalPosition": 334,
+              "body": "Why split into a separate request?\r\n\r\nI suppose it makes the handshaking simpler, in that, if the server doesn't agree, it just rejects, but I worry it causes a few problems:\r\n1) splitting up more config requests results in additional config pushes to routers (maybe this doesn't matter)\r\n2) client and server end up in a weird looping state of \"client requests ABC\". Server would accept ABC, but not D.  Server rejects all sessions and submits request to client for ABCD.  Client rejects ABC, and sends another request for ABC.  This loops forever, and ABC never gets configured.  I suppose that ties in to \"how do we escalate to a human.\"\r\n\r\nWe will have to develop some notion of handshaking for LOAs, unfiltering, etc, later, so it seems OK to handshake here as well on the list of sessions.\r\n\r\nBut, I think this way is OK as well, and I'm happy to go with it--if this is the REST-API standard way to do it, that's fine by me.  \r\n\r\nIn that case, I propose one clarification:\r\n\" issue a separate request to the client's server requesting those additional peering sessions D and E.\" -> \"approve the client's request and issue a separate request to the client's server requesting those additional peering sessions D and E.\"",
+              "createdAt": "2024-01-25T17:42:05Z",
+              "updatedAt": "2024-01-25T17:49:04Z"
+            },
+            {
+              "originalPosition": 178,
+              "body": "Please keep this space, it is required for formatting the built files",
+              "createdAt": "2024-01-25T17:43:59Z",
+              "updatedAt": "2024-01-25T17:49:04Z"
+            },
+            {
+              "originalPosition": 178,
+              "body": "You can check the built files here: https://github.com/bgp/draft-ietf-peering-api/actions/runs/7655174182",
+              "createdAt": "2024-01-25T17:44:19Z",
+              "updatedAt": "2024-01-25T17:49:04Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5t7-J-",
+          "commit": {
+            "abbreviatedOid": "85c7bc6"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-25T19:00:31Z",
+          "updatedAt": "2024-01-25T19:00:32Z",
+          "comments": [
+            {
+              "originalPosition": 224,
+              "body": "Sure, I thought was a gap from the doc to the OpenAPI spec and cleared the ref. Idem for the `TimeWindow` et al. attributes that did not appear in the spec.\r\n\r\nI can add this back with the DELETE as you describe so that folks comment on its expected batch behaviour dual to the batched creation.",
+              "createdAt": "2024-01-25T19:00:32Z",
+              "updatedAt": "2024-01-25T19:00:32Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5t7-wQ",
+          "commit": {
+            "abbreviatedOid": "85c7bc6"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-25T19:02:12Z",
+          "updatedAt": "2024-01-25T19:02:12Z",
+          "comments": [
+            {
+              "originalPosition": 178,
+              "body": "Sorry, will do.",
+              "createdAt": "2024-01-25T19:02:12Z",
+              "updatedAt": "2024-01-25T19:02:12Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5t8nXx",
+          "commit": {
+            "abbreviatedOid": "85c7bc6"
+          },
+          "author": "grizz",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-25T20:16:38Z",
+          "updatedAt": "2024-01-25T20:16:38Z",
+          "comments": [
+            {
+              "originalPosition": 224,
+              "body": "Good catch, we need to be able to depeer. :)",
+              "createdAt": "2024-01-25T20:16:38Z",
+              "updatedAt": "2024-01-25T20:16:39Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5t_pnr",
+          "commit": {
+            "abbreviatedOid": "85c7bc6"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-26T09:56:25Z",
+          "updatedAt": "2024-01-26T09:56:25Z",
+          "comments": [
+            {
+              "originalPosition": 334,
+              "body": "> Why split into a separate request?\r\n> \r\n> I suppose it makes the handshaking simpler, in that, if the server doesn't agree, it just rejects, but I worry it causes a few problems:\r\n> \r\n> 1. splitting up more config requests results in additional config pushes to routers (maybe this doesn't matter)\r\n\r\nCertainly config pushes and overall turnup velocity may be affected, although this is an implementation detail of how each peer may implement their deployment system. IMO the API should reduce ambiguity between what is proposed and what is accepted without implying additional API calls to be made to finish the handover over the same API method.\r\n\r\nIf we aim to create a two-phase-commit-kind semantics, what if we create an additional resource (e.g. `/proposals/{proposal_id}` which tracks a changeable set of sessions and has a state machine attached to reflect the negotiation status such that when the proposal is accepted by both parties, this triggers the creation of the `/sessions/{session_id}` on the receiver and possibly on the initiator via a back channel mechanism?\r\n\r\n> 2. client and server end up in a weird looping state of \"client requests ABC\". Server would accept ABC, but not D.  Server rejects all sessions and submits request to client for ABCD.  Client rejects ABC, and sends another request for ABC.  This loops forever, and ABC never gets configured.  I suppose that ties in to \"how do we escalate to a human.\"\r\n\r\nExactly why IMO this API is meant to be atomic and model the underlying resources such that initiators will get a clear yes/no response from the receiver. If we intend to track negotiation over time, I think we should model explicitly with a dedicated resource.\r\n\r\n> We will have to develop some notion of handshaking for LOAs, unfiltering, etc, later, so it seems OK to handshake here as well on the list of sessions.\r\n\r\nIMO, this is separate from the sessions over an IX because in those situations the fabric over which the BGP speakers interconnect is already set by both parties so all pertaining to physical layer, LOAs, LAGs and their shape, capacity, IP allocations, etc. would be modelled separately in a `/ports/{port_id}` or `/speaker/{speaker_id}` resource when modelling new IXs or PNIs.\r\n\r\nSo I would actually leave all that ambiguity of the physical layer on the side right now and focus the message only creating the API scaffold for BGP sessions, and somewhat negotiating their cardinality, and the identity federation part.\r\n\r\n> But, I think this way is OK as well, and I'm happy to go with it--if this is the REST-API standard way to do it, that's fine by me.\r\n> \r\n> In that case, I propose one clarification: \" issue a separate request to the client's server requesting those additional peering sessions D and E.\" -> \"approve the client's request and issue a separate request to the client's server requesting those additional peering sessions D and E.\"\r\n\r\nAck, let me edit it as proposed. In light of our concern on work required on smaller peers, I wasn't sure either if AS1 exposing an Autopeer endpoint implies that AS2 must also expose Autopeer endpoint for this backchannel to exist prior to any handshake being possible, hence being a bit ambiguous about it.\r\n\r\n",
+              "createdAt": "2024-01-26T09:56:25Z",
+              "updatedAt": "2024-01-26T09:56:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5uAW4f",
+          "commit": {
+            "abbreviatedOid": "85c7bc6"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-26T11:24:31Z",
+          "updatedAt": "2024-01-26T11:24:31Z",
+          "comments": [
+            {
+              "originalPosition": 224,
+              "body": "When reading through the proposal, I realized I missed the soft-delete semantics implied where the status of the session deletion is reported back so to make the deletion idempotent, I'm adding all this back to the API changes in https://github.com/bgp/autopeer/pull/20",
+              "createdAt": "2024-01-26T11:24:31Z",
+              "updatedAt": "2024-01-26T11:24:31Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5uEFSt",
+          "commit": {
+            "abbreviatedOid": "85c7bc6"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-26T21:17:18Z",
+          "updatedAt": "2024-01-26T21:17:18Z",
+          "comments": [
+            {
+              "originalPosition": 334,
+              "body": "OK, reading your comments, this makes sense to me, and I'm convinced :). I am happy going ahead with your more atomic suggestion--don't think we need to add a proposal object just yet, if this keeps it simpler overall.   \r\n\r\nYou raise an interesting point about the /ports and /speaker endpoints for new PNIs.  Seems sensible to focus on BGP for now, let's leave those for later (maybe we should discuss in a separate issue?)\r\n\r\nI don't think we require both sides necessarily to have autopeer endpoints?  Although I think we can strongly encourage it.  You're right that the server wouldn't be able to send a request back to the client for additional sessions then, but I think we can leave it as an edge case.",
+              "createdAt": "2024-01-26T21:17:18Z",
+              "updatedAt": "2024-01-26T21:17:18Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5uEFxU",
+          "commit": {
+            "abbreviatedOid": "d4273e1"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-26T21:19:05Z",
+          "updatedAt": "2024-01-26T21:19:05Z",
+          "comments": [
+            {
+              "originalPosition": 76,
+              "body": "nice, the session list operation would cover the case where it was configured outside the API.",
+              "createdAt": "2024-01-26T21:19:05Z",
+              "updatedAt": "2024-01-26T21:19:05Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5uEF7c",
+          "commit": {
+            "abbreviatedOid": "d4273e1"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Looks good to me.    Assuming the built artifacts look good, I am happy if you merge!\r\n\r\n@caguado ",
+          "createdAt": "2024-01-26T21:19:41Z",
+          "updatedAt": "2024-01-26T21:20:40Z",
+          "comments": [
+            {
+              "originalPosition": 88,
+              "body": "an -> a, I think\r\n(sorry for the nit)",
+              "createdAt": "2024-01-26T21:19:41Z",
+              "updatedAt": "2024-01-26T21:20:40Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "id": "PR_kwDOKwWQEM5lGSD3",
+      "title": "Add Authors",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/15",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Add authors and collaborators.\r\nI listed us all alphabetically.\r\n\r\n@caguado did you want to be listed as \"AWS\" or as \"Amazon\"?\r\n@grizz did you want \"FullCtl\" or \"20c\"?  I put you as FullCtl and Stefan as 20c, but maybe you want them to match?\r\n",
+      "createdAt": "2024-01-25T19:14:47Z",
+      "updatedAt": "2024-01-26T20:57:03Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "a6f9ae565fb9fef8338988cefd0257d5e124e41c",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-nits",
+      "headRefOid": "e0c5c8276508e6ef2f1a6b999e964b1b07f28a79",
+      "closedAt": "2024-01-26T20:57:03Z",
+      "mergedAt": "2024-01-26T20:57:03Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "311ff448dde30f11b5ecf5298efb7ec2e1e2c1fa"
+      },
+      "comments": [
+        {
+          "author": "grizz",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@jramseyer that's perfect as is, thanks.",
+          "createdAt": "2024-01-25T19:16:31Z",
+          "updatedAt": "2024-01-25T19:16:31Z"
+        },
+        {
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@jramseyer Sorry is a good point and don't have an answer. I think `Amazon Inc.` would be the company name, but let's leave it as is for now and will reach back after I hear internally if anything else.",
+          "createdAt": "2024-01-26T12:56:22Z",
+          "updatedAt": "2024-01-26T12:56:22Z"
+        },
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Everything seems resolved, so I will close this one.  Carlos, feel free to change the name as you hear internally if needed!\r\n\r\n",
+          "createdAt": "2024-01-26T20:56:57Z",
+          "updatedAt": "2024-01-26T20:56:57Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM5t8iyC",
+          "commit": {
+            "abbreviatedOid": "a793da3"
+          },
+          "author": "job",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-25T20:03:37Z",
+          "updatedAt": "2024-01-25T20:03:38Z",
+          "comments": [
+            {
+              "originalPosition": 39,
+              "body": "Could you consider adding my name too? :-)",
+              "createdAt": "2024-01-25T20:03:38Z",
+              "updatedAt": "2024-01-25T20:03:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5t8wQg",
+          "commit": {
+            "abbreviatedOid": "a793da3"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-25T20:41:26Z",
+          "updatedAt": "2024-01-25T20:41:26Z",
+          "comments": [
+            {
+              "originalPosition": 39,
+              "body": "Of course!  We'd be delighted.  I will add you shortly.",
+              "createdAt": "2024-01-25T20:41:26Z",
+              "updatedAt": "2024-01-25T20:41:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5t8yCM",
+          "commit": {
+            "abbreviatedOid": "a793da3"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-25T20:46:11Z",
+          "updatedAt": "2024-01-25T20:46:11Z",
+          "comments": [
+            {
+              "originalPosition": 39,
+              "body": "done :) ",
+              "createdAt": "2024-01-25T20:46:11Z",
+              "updatedAt": "2024-01-25T20:46:11Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5uA2UY",
+          "commit": {
+            "abbreviatedOid": "fc90aa4"
+          },
+          "author": "Ichabond",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-26T13:04:05Z",
+          "updatedAt": "2024-01-26T13:04:05Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "Can we add David Tuber (Cloudflare) as well, given he helped out a lot with v0 of the initial spec?",
+              "createdAt": "2024-01-26T13:04:05Z",
+              "updatedAt": "2024-01-26T13:04:05Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5uD2On",
+          "commit": {
+            "abbreviatedOid": "fc90aa4"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-26T20:28:50Z",
+          "updatedAt": "2024-01-26T20:28:51Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "can do!",
+              "createdAt": "2024-01-26T20:28:51Z",
+              "updatedAt": "2024-01-26T20:28:51Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "id": "PR_kwDOKwWQEM5lGkGL",
+      "title": "add ascii art",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/16",
+      "state": "MERGED",
+      "author": "grizz",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Add ascii representations of the mermaid docs. They are hand made and I'm not sure it makes sense to diagram more than the Auth loop part.\r\n\r\nIt does look like we can have the svg rendered for the html views [0], using our github actions template [1]. Should we look at adding both or leave it as is for the first version?\r\n\r\n[0] https://authors.ietf.org/diagrams\r\n[1] https://github.com/cabo/kramdown-rfc/wiki/SVG\r\n\r\n\r\n\r\n",
+      "createdAt": "2024-01-25T20:10:16Z",
+      "updatedAt": "2024-01-29T21:20:44Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "30f157288dd60d8b0a887b0c04b20d8ea1aa918b",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "grizz-ascii-diagrams",
+      "headRefOid": "302cba5ad9ff2f681e2bd858b1ce858d7044d104",
+      "closedAt": "2024-01-29T21:20:44Z",
+      "mergedAt": "2024-01-29T21:20:44Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "9ffff4dd9dad315a708dbe79e787619179826103"
+      },
+      "comments": [
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Looks nice to me!  Thanks for putting it together.   Fine by me to merge once it renders correctly in the artifact.\r\n\r\n",
+          "createdAt": "2024-01-26T21:02:18Z",
+          "updatedAt": "2024-01-26T21:02:18Z"
+        },
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "resolved merge conflicts",
+          "createdAt": "2024-01-29T16:22:59Z",
+          "updatedAt": "2024-01-29T16:22:59Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM5uBfyS",
+          "commit": {
+            "abbreviatedOid": "53b010f"
+          },
+          "author": "Ichabond",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-26T14:42:18Z",
+          "updatedAt": "2024-01-26T14:42:19Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "As per \r\nhttps://github.com/cabo/kramdown-rfc/blob/master/examples/stupid-s.mkd\r\nYou should \"box\" this diagram with\r\n```\r\n~~~~~~~~~~\r\n```\r\n",
+              "createdAt": "2024-01-26T14:42:18Z",
+              "updatedAt": "2024-01-26T14:42:19Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5uB3e1",
+          "commit": {
+            "abbreviatedOid": "53b010f"
+          },
+          "author": "grizz",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-26T15:28:15Z",
+          "updatedAt": "2024-01-26T15:28:15Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "@Ichabond oh, good catch, thanks. I guess I should do a local install and check how the rendering works.",
+              "createdAt": "2024-01-26T15:28:15Z",
+              "updatedAt": "2024-01-26T15:28:15Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5uEAQH",
+          "commit": {
+            "abbreviatedOid": "53b010f"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-26T21:01:39Z",
+          "updatedAt": "2024-01-26T21:01:39Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "You can check the build artifacts here, too: https://github.com/bgp/draft-ietf-peering-api/actions/runs/7659907136 \r\n\r\nLet's see if it works with the ~~~?",
+              "createdAt": "2024-01-26T21:01:39Z",
+              "updatedAt": "2024-01-26T21:01:39Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5uEAhf",
+          "commit": {
+            "abbreviatedOid": "53b010f"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-01-26T21:02:36Z",
+          "updatedAt": "2024-01-26T21:02:36Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "id": "PR_kwDOKwWQEM5lKbLS",
+      "title": "Update references using inline-style + other formatting changes",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/17",
+      "state": "MERGED",
+      "author": "Ichabond",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I've added the references using the defined style in https://github.com/cabo/kramdown-rfc/tree/master\r\n\r\nFurthermore, added anchors to the individual sections to make cross-referencing easier",
+      "createdAt": "2024-01-26T14:12:07Z",
+      "updatedAt": "2024-01-29T16:20:25Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "8bb6b31174f36bb73586ce621097167546277f34",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "tstrickx/update_references",
+      "headRefOid": "10b261596fb48e10c8102daedff2b9a4844bf1ff",
+      "closedAt": "2024-01-29T16:20:25Z",
+      "mergedAt": "2024-01-29T16:20:25Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "30f157288dd60d8b0a887b0c04b20d8ea1aa918b"
+      },
+      "comments": [
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks for adding!  I think I fixed merge commits--if the build looks good, will merge this PR.",
+          "createdAt": "2024-01-29T16:16:55Z",
+          "updatedAt": "2024-01-29T16:16:55Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM5uE3yT",
+          "commit": {
+            "abbreviatedOid": "6e19b87"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Oh wow, now the draft looks elegant indeed.  Nice, thanks for adding these.",
+          "createdAt": "2024-01-27T01:06:18Z",
+          "updatedAt": "2024-01-27T01:06:18Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "id": "PR_kwDOKwWQEM5lNPgP",
+      "title": "Quick fix on formatting",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/18",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "quick formatting fix.",
+      "createdAt": "2024-01-27T01:07:12Z",
+      "updatedAt": "2024-01-27T01:11:31Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "311ff448dde30f11b5ecf5298efb7ec2e1e2c1fa",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-patch-1",
+      "headRefOid": "3a85270fd2f1bed3010737ce6e5c466c2b992554",
+      "closedAt": "2024-01-27T01:11:28Z",
+      "mergedAt": "2024-01-27T01:11:28Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "6040d571c8c96a3dceee2fafe3847e4170ea9ddd"
+      },
+      "comments": [
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Built file looks correct now, will ship\r\n(bulleted list was not bulleted correctly)",
+          "createdAt": "2024-01-27T01:11:30Z",
+          "updatedAt": "2024-01-27T01:11:30Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 19,
+      "id": "PR_kwDOKwWQEM5lWLTy",
+      "title": "Format diagram for draft",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/19",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I think this fixes the formatting?  Just based on the example in https://github.com/cabo/kramdown-rfc/blob/master/examples/stupid-s.mkd?plain=1",
+      "createdAt": "2024-01-29T16:26:51Z",
+      "updatedAt": "2024-01-29T21:06:19Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "grizz-ascii-diagrams",
+      "baseRefOid": "623f480c1162718da67e34d1a593a1f6d9173f44",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-patch-2",
+      "headRefOid": "46038df45c368668dd9b5812cd730154b8e368c4",
+      "closedAt": "2024-01-29T21:06:13Z",
+      "mergedAt": "2024-01-29T21:06:13Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "302cba5ad9ff2f681e2bd858b1ce858d7044d104"
+      },
+      "comments": [
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Yeah, checking the build files here: https://github.com/bgp/draft-ietf-peering-api/actions/runs/7699242254, it looks ok.",
+          "createdAt": "2024-01-29T16:28:46Z",
+          "updatedAt": "2024-01-29T16:28:46Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 20,
+      "id": "PR_kwDOKwWQEM5lWPI6",
+      "title": "Small formatting change",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/20",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I went back and forth on whether it should be \"interdomain interconnection\" or \"inter-domain interconnection.\"\r\n\r\nThe web seems to use both, so I just picked \"interdomain.\"",
+      "createdAt": "2024-01-29T16:35:56Z",
+      "updatedAt": "2024-01-29T21:26:57Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "30f157288dd60d8b0a887b0c04b20d8ea1aa918b",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-patch-3",
+      "headRefOid": "aa99a9eb9cfbced45a6ce13f27af2ea5e7745658",
+      "closedAt": "2024-01-29T21:24:20Z",
+      "mergedAt": "2024-01-29T21:24:20Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "9e7e59a5eaa3fa2b1cd78e171bd1c62674fca69d"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 21,
+      "id": "PR_kwDOKwWQEM5ocQFv",
+      "title": "Add security policy, audience sections to Peering API",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/21",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Add \"Audience\" section to indicate to readers who the suggested users of this API might be.\r\n\r\nAlso, add a note regarding peering policy being left to the peer.",
+      "createdAt": "2024-03-01T18:54:28Z",
+      "updatedAt": "2024-03-06T21:31:39Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "8dbdbee8a36f714f78f5092c73c1e88c581b40aa",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-users-disclaimers",
+      "headRefOid": "485efa30bc708f4da54a54c531b995ae97286d95",
+      "closedAt": "2024-03-06T21:31:33Z",
+      "mergedAt": "2024-03-06T21:31:33Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "b050ceaf03c68ec0b3610e4a62ba2f6573b902c6"
+      },
+      "comments": [
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks!",
+          "createdAt": "2024-03-06T21:31:36Z",
+          "updatedAt": "2024-03-06T21:31:36Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM5x9FeG",
+          "commit": {
+            "abbreviatedOid": "485efa3"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-03-01T19:06:09Z",
+          "updatedAt": "2024-03-01T19:06:09Z",
+          "comments": [
+            {
+              "originalPosition": 9,
+              "body": "I thought about putting this at the bottom of the paper instead--let me know if anyone prefers it moved.",
+              "createdAt": "2024-03-01T19:06:09Z",
+              "updatedAt": "2024-03-01T19:06:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5yfSZo",
+          "commit": {
+            "abbreviatedOid": "485efa3"
+          },
+          "author": "grizz",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-03-06T20:58:37Z",
+          "updatedAt": "2024-03-06T20:58:37Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 22,
+      "id": "PR_kwDOKwWQEM5pHT6M",
+      "title": "Add acknowledgement to early contributors",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/22",
+      "state": "MERGED",
+      "author": "caguado",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Adding folks in my team that contributed in the early beginning of the google doc and back channel discussions.",
+      "createdAt": "2024-03-08T19:21:24Z",
+      "updatedAt": "2024-03-13T18:32:15Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "b050ceaf03c68ec0b3610e4a62ba2f6573b902c6",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "contrib/crlsa/acknowledgements",
+      "headRefOid": "a4700f788c9fb6f400f0b03130acfe9a446ad3d3",
+      "closedAt": "2024-03-11T19:22:12Z",
+      "mergedAt": "2024-03-11T19:22:12Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "da101a13276da1d6a6f16c7370b84ffb5ce5ebeb"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM5yy0p9",
+          "commit": {
+            "abbreviatedOid": "a4700f7"
+          },
+          "author": "grizz",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-03-08T22:00:31Z",
+          "updatedAt": "2024-03-08T22:00:31Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5y-R7-",
+          "commit": {
+            "abbreviatedOid": "a4700f7"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Looks good, thanks!",
+          "createdAt": "2024-03-11T19:22:07Z",
+          "updatedAt": "2024-03-11T19:22:07Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 23,
+      "id": "PR_kwDOKwWQEM5pHUNb",
+      "title": "Cleanup references to agreed changes in API",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/23",
+      "state": "MERGED",
+      "author": "caguado",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This commit cleans up the references to the item_id and clarifies the HTTP return code for partial results.",
+      "createdAt": "2024-03-08T19:22:31Z",
+      "updatedAt": "2024-03-13T18:32:31Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "da101a13276da1d6a6f16c7370b84ffb5ce5ebeb",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "contrib/crlsa/fixup-item-errors",
+      "headRefOid": "5d95efc54f94daa1b2776059765dd80041703d0d",
+      "closedAt": "2024-03-13T15:37:40Z",
+      "mergedAt": "2024-03-13T15:37:40Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "f43f10766badb0c906a99ba484995f63b7328024"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM5y-Pgx",
+          "commit": {
+            "abbreviatedOid": "52f9877"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Looks good, just a few questions",
+          "createdAt": "2024-03-11T19:19:11Z",
+          "updatedAt": "2024-03-11T19:20:39Z",
+          "comments": [
+            {
+              "originalPosition": 33,
+              "body": "(not blocking the merge) Is this a separate list, or will the rejected sessions be listed with status: \"rejected\"?\r\nThe second case makes sense to me, just confirming we are in alignment.",
+              "createdAt": "2024-03-11T19:19:11Z",
+              "updatedAt": "2024-03-11T19:20:39Z"
+            },
+            {
+              "originalPosition": 42,
+              "body": "Doesn't next_token indicate the next page that we should fetch?\r\nIt comes from the previous page, but it links the next page, right?",
+              "createdAt": "2024-03-11T19:19:54Z",
+              "updatedAt": "2024-03-11T19:20:39Z"
+            },
+            {
+              "originalPosition": 47,
+              "body": "nit: which -> when",
+              "createdAt": "2024-03-11T19:20:15Z",
+              "updatedAt": "2024-03-11T19:20:39Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5zAO7K",
+          "commit": {
+            "abbreviatedOid": "52f9877"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-03-11T21:50:25Z",
+          "updatedAt": "2024-03-11T21:50:26Z",
+          "comments": [
+            {
+              "originalPosition": 33,
+              "body": "The response contains 2 lists, the list of sessions and a list of errors. Either can be full-empty, partial-partial, empty-full to signify what happened to the collection of requested resources. The sum of both should match that of the request.\r\n\r\nThe error code was under question and I haven't found a conclusive source on what 2xx matches a partial accepted request (206 implies content ranges and 207 caldav) so opted to not overload existing 2xx with additional semantics. In the same way we expect initiators to match by some property each item of the response to each item of the request, the absence of one successful can be matched against the errors in the error list.",
+              "createdAt": "2024-03-11T21:50:26Z",
+              "updatedAt": "2024-03-11T21:50:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5zAPEs",
+          "commit": {
+            "abbreviatedOid": "52f9877"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-03-11T21:50:38Z",
+          "updatedAt": "2024-03-11T21:50:38Z",
+          "comments": [
+            {
+              "originalPosition": 42,
+              "body": "It does, the attribute itself is described as a token to convey that is abstract and opaque hence the explicit suffix.",
+              "createdAt": "2024-03-11T21:50:38Z",
+              "updatedAt": "2024-03-11T21:50:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5zAVKT",
+          "commit": {
+            "abbreviatedOid": "c4279bd"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-03-11T21:58:42Z",
+          "updatedAt": "2024-03-11T21:58:53Z",
+          "comments": [
+            {
+              "originalPosition": 42,
+              "body": "But doesn't the next token hint you to the next page, not the previous page?\r\nOr is the intent here \"give me the next page as directed from the 'next token' from the previous page\"?\r\n\r\nMaybe \"opaque and optional string to hint the query and last result returned when fetching the following page\" would be clearer?\r\n\r\n",
+              "createdAt": "2024-03-11T21:58:42Z",
+              "updatedAt": "2024-03-11T21:58:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5zHI4q",
+          "commit": {
+            "abbreviatedOid": "52f9877"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-03-12T14:33:11Z",
+          "updatedAt": "2024-03-12T14:33:11Z",
+          "comments": [
+            {
+              "originalPosition": 42,
+              "body": "I see, let me be more verbose in the explanation to clarify it.",
+              "createdAt": "2024-03-12T14:33:11Z",
+              "updatedAt": "2024-03-12T14:33:11Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5zLU2A",
+          "commit": {
+            "abbreviatedOid": "5d95efc"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Looks great!  Thank you!",
+          "createdAt": "2024-03-12T20:09:58Z",
+          "updatedAt": "2024-03-12T20:09:58Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "id": "PR_kwDOKwWQEM5phnj7",
+      "title": "Return_URL spec, Area->OPS",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/24",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Return URL from https://github.com/bgp/autopeer/pull/21\r\n\r\nAlso change area to OPS, since GROW is in OPS: https://datatracker.ietf.org/wg/grow/about/",
+      "createdAt": "2024-03-13T15:55:38Z",
+      "updatedAt": "2024-03-13T17:49:05Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "f43f10766badb0c906a99ba484995f63b7328024",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-patch-return-url",
+      "headRefOid": "2ebbb5bd8ebec81eaf15dcb0e6dfc870ab67105c",
+      "closedAt": "2024-03-13T17:48:57Z",
+      "mergedAt": "2024-03-13T17:48:57Z",
+      "mergedBy": "caguado",
+      "mergeCommit": {
+        "oid": "eee1c7809edb2a108399df66971fdb2613a3cdec"
+      },
+      "comments": [
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "(looks like I can only add one reviewer, but happy for anyone to stamp)",
+          "createdAt": "2024-03-13T17:09:12Z",
+          "updatedAt": "2024-03-13T17:09:12Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM5zU0Ru",
+          "commit": {
+            "abbreviatedOid": "2ebbb5b"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-03-13T17:47:11Z",
+          "updatedAt": "2024-03-13T17:47:11Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 25,
+      "id": "PR_kwDOKwWQEM5piax-",
+      "title": "Change github link to proper reference",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/25",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "We added a reference to the github, but never updated the links.  Let's change the links over.",
+      "createdAt": "2024-03-13T18:01:49Z",
+      "updatedAt": "2024-03-13T18:35:07Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "eee1c7809edb2a108399df66971fdb2613a3cdec",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-patch-2",
+      "headRefOid": "bd7b7b4a95749abccf6086eb861f9b84800a85b0",
+      "closedAt": "2024-03-13T18:35:07Z",
+      "mergedAt": "2024-03-13T18:35:07Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "33f645794517f071a23dc59a6b4d0f3a4e2e1cd7"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM5zVKNi",
+          "commit": {
+            "abbreviatedOid": "bd7b7b4"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-03-13T18:30:02Z",
+          "updatedAt": "2024-03-13T18:30:02Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 26,
+      "id": "PR_kwDOKwWQEM5s9j1H",
+      "title": "fix typo",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/26",
+      "state": "MERGED",
+      "author": "grizz",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-04-17T18:52:18Z",
+      "updatedAt": "2024-04-22T19:48:09Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "17009b7a67de164c4f73ba66f8eb9acc88752af0",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "fix-pratter",
+      "headRefOid": "6dc83096b15dd123ce5949642a01f210dd0b468e",
+      "closedAt": "2024-04-22T19:48:08Z",
+      "mergedAt": "2024-04-22T19:48:08Z",
+      "mergedBy": "caguado",
+      "mergeCommit": {
+        "oid": "41f188910faa1e5b9bf1aa9a6ea9c7c727cf722f"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 27,
+      "id": "PR_kwDOKwWQEM5tZN0v",
+      "title": "Rework security considerations section",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/27",
+      "state": "MERGED",
+      "author": "caguado",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This commit delves more into the security considerations to operate the peering API and introduces a baseline threat model that supports the addition of authorization, proof of resource holdership and request integrity to address them.\r\n\r\nThis commit also moves the security considerations sections to the end of the document to align with other RFCs.",
+      "createdAt": "2024-04-22T19:49:06Z",
+      "updatedAt": "2024-05-28T09:03:21Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "41f188910faa1e5b9bf1aa9a6ea9c7c727cf722f",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "contrib/caguado/security-section-iteration",
+      "headRefOid": "71d78bca0ade6527f6d902b943bb5f0a95512e38",
+      "closedAt": "2024-05-28T09:03:21Z",
+      "mergedAt": "2024-05-28T09:03:21Z",
+      "mergedBy": "caguado",
+      "mergeCommit": {
+        "oid": "a2abe671e0a1a4b09e787ec12be673e4ba4b50d6"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM54JOuQ",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "There is still behavioural ambiguity to be cleared.",
+          "createdAt": "2024-04-22T19:52:06Z",
+          "updatedAt": "2024-04-22T19:57:00Z",
+          "comments": [
+            {
+              "originalPosition": 89,
+              "body": "Directional feedback wanted. This section does not include yet any reference to what parts of the API payload should be signed.",
+              "createdAt": "2024-04-22T19:52:06Z",
+              "updatedAt": "2024-04-22T19:57:00Z"
+            },
+            {
+              "originalPosition": 63,
+              "body": "Directional feedback wanted. This section does not include minimum expected claims should any OAuth2 authorization server be used.",
+              "createdAt": "2024-04-22T19:53:13Z",
+              "updatedAt": "2024-04-22T19:57:00Z"
+            },
+            {
+              "originalPosition": 73,
+              "body": "Pending validation with identity specialist. This section includes RSCs that are meant to be versatile in the security content they track whilst being too specific about what other content may also track.\r\n\r\nAdditionally, as it is, brokerage federation models where resource servers trust an intermediate OAuth2 authorization server will not work because the RSC will sign properties they don't have immediate access to.",
+              "createdAt": "2024-04-22T19:56:11Z",
+              "updatedAt": "2024-04-22T19:57:00Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM558wGa",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-08T15:14:32Z",
+          "updatedAt": "2024-05-08T15:14:32Z",
+          "comments": [
+            {
+              "originalPosition": 63,
+              "body": "I think the bare minimum that we want is for them to have a \"claim\" to the ASN (which I know is not a proper OAuth2 \"claim\").  If we are talking about proper OAuth \"claims\", maybe the minimum should be a \"Peering\" related claim?",
+              "createdAt": "2024-05-08T15:14:32Z",
+              "updatedAt": "2024-05-08T15:14:32Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM558zY0",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-08T15:20:41Z",
+          "updatedAt": "2024-05-08T15:20:41Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "I think we could make the RSC model is an either-or case.  Either the server will use OAuth, or they will use RSC.  \r\nIdeally, everyone should use RSC, but until we reach that case, people can use OAuth.  \r\n\r\nOnce a client and server both use RSC, I don't see a reason why one would want to auth with *both* OAuth AND RSC, so it should be fair to make it an either-or option.  \r\n\r\n(I may have missed a reason why we would want both RSC and OAuth in the same request)\r\n\r\nRelated to:\r\n> Additionally, as it is, brokerage federation models where resource servers trust an intermediate OAuth2 authorization server will not work because the RSC will sign properties they don't have immediate access to.\r\n\r\nIn the RSC case, the client and server would negotiate the RSC handshake outside of the OAuth server, so the OAuth server would not be involved, right?\r\n",
+              "createdAt": "2024-05-08T15:20:41Z",
+              "updatedAt": "2024-05-08T15:20:41Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM5580MJ",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-08T15:22:10Z",
+          "updatedAt": "2024-05-08T15:22:10Z",
+          "comments": [
+            {
+              "originalPosition": 89,
+              "body": "Looking at https://datatracker.ietf.org/doc/rfc9323/\r\nCould RSC just sign the json blob of the sesssion request/location list payload?",
+              "createdAt": "2024-05-08T15:22:10Z",
+              "updatedAt": "2024-05-08T15:22:10Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM55-hVb",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-08T18:59:10Z",
+          "updatedAt": "2024-05-08T18:59:10Z",
+          "comments": [
+            {
+              "originalPosition": 89,
+              "body": "What is the expected outcome or concern?\r\n\r\nI did not originally because of 2 drawbacks:\r\n- unable to trust the incoming identity (e.g. someone@example.net) as it would not be cryptographically tied to the ASN it claims represents. Without a trustworthy identity, audit logging would become less effective.\r\n- I don't think organizations would want to be forced to provide access to the signing CA to the client for every request. An alternative would be to introduce signing sub CAs, but I find that suboptimal as it would still not address the identity issue.",
+              "createdAt": "2024-05-08T18:59:10Z",
+              "updatedAt": "2024-05-08T18:59:10Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM55-ikA",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-08T19:02:07Z",
+          "updatedAt": "2024-05-08T19:02:07Z",
+          "comments": [
+            {
+              "originalPosition": 89,
+              "body": "Similarly, even if we don't consider OAuth and people prefer to use other identities like ARIN's or RIPE maintainers, I would still expect to have a mechanism to cryptographically tie back the incoming identity to the ASN. With something like this, implementations would have the choice to support RIPE, PeeringDB, Okta or any Oauth2 provider.",
+              "createdAt": "2024-05-08T19:02:07Z",
+              "updatedAt": "2024-05-08T19:02:07Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM55-i1V",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-08T19:02:45Z",
+          "updatedAt": "2024-05-08T19:02:46Z",
+          "comments": [
+            {
+              "originalPosition": 63,
+              "body": "Yes, I did not include a claim as not sure what would we want. Something simple like `asn: 123` or something more aligned to whois/RDAP fields? IIRC, `asn` is also used there.",
+              "createdAt": "2024-05-08T19:02:45Z",
+              "updatedAt": "2024-05-08T19:02:46Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM55-vY-",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-08T19:33:11Z",
+          "updatedAt": "2024-05-08T19:33:11Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "I would say they answer different questions. RPKI is not designed to be an identity management protocol so without OAuth, the signer of the checklist is saying nothing about the individual identity of the caller. And without an identity of the caller, implementations will need to agree on the minimal set of identifiable information of the caller they are willing to accept for auditing or troubleshoot requests.\r\n\r\nWhat is the concern for both? Is it privacy?",
+              "createdAt": "2024-05-08T19:33:11Z",
+              "updatedAt": "2024-05-08T19:33:11Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM56Oouy",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-10T18:46:00Z",
+          "updatedAt": "2024-05-10T18:46:01Z",
+          "comments": [
+            {
+              "originalPosition": 63,
+              "body": "I think either one is fine by me. ' asn: 123' and/or 'peering' (to indicate 'ok to do requests') would work.",
+              "createdAt": "2024-05-10T18:46:00Z",
+              "updatedAt": "2024-05-10T18:46:01Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM56OpOK",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-10T18:47:31Z",
+          "updatedAt": "2024-05-10T18:47:31Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "Do we care who the original caller is?  I figured we didn't really care, as long as the request came from a legitimate entity.  That is to say, I don't think we care if it is Alice or Bob requesting, as long as we can verify that person is allowed to request for the desired ASN.  ",
+              "createdAt": "2024-05-10T18:47:31Z",
+              "updatedAt": "2024-05-10T18:47:31Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM56jPCP",
+          "commit": {
+            "abbreviatedOid": "71d78bc"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-14T17:49:33Z",
+          "updatedAt": "2024-05-14T17:49:42Z",
+          "comments": [
+            {
+              "originalPosition": 68,
+              "body": "@job or @benmaddison , could you take a look at these RSC sections?  Anything you would propose that we add?  We would like to submit a new version to GROW soon, but would like to address the RPKI signed checklists comments.",
+              "createdAt": "2024-05-14T17:49:34Z",
+              "updatedAt": "2024-05-14T17:49:42Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM57ThZR",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-21T13:52:51Z",
+          "updatedAt": "2024-05-21T13:52:52Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "I see. I posit organizations where all roles involved (e.g. security, bizdev, capacity deployment, netops) are separate teams would care to know who did trigger a request on a peer. This may be implemented with internal logging of who did access the keys leading to create the RSC but I find it more opportunistic. If the concern is privacy, we should capture it in the assumptions.\r\n\r\nThe second aspect of decoupling RSC from the individual request signing is that we can follow tighter key recycling policies without asking organizations to provide their (OAuth) clients access to their signing CA to create and distribute the individual RSCs for authorization as this is what OAuth does well.",
+              "createdAt": "2024-05-21T13:52:52Z",
+              "updatedAt": "2024-05-21T13:52:52Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM57f9gt",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-22T18:01:43Z",
+          "updatedAt": "2024-05-22T18:01:44Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "That's a good point.  I had planned to leave it up to the client to log, but perhaps we should leave it as an option to the server if required.  At least, we should mention it in the doc.  Perhaps this falls under the \"fleet of authentication options that the client and server can choose from\"?  Some servers require RSC and OAuth, and some only require RSC.\r\n\r\nPerhaps the server should provide a blob in their IRR record that the client needs to sign and provide along with their request?",
+              "createdAt": "2024-05-22T18:01:43Z",
+              "updatedAt": "2024-05-22T18:01:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM57kvGw",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-23T08:22:54Z",
+          "updatedAt": "2024-05-23T08:22:54Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "The proposal of using this chain of trust of using an industry standard method for authz and RPKI for trust anchoring stems from the threat model. That's why I'm kind of insisting on validating the concerns with the threats, that is whether these would be something orgs would agree first, so that the mitigations (the authz, signing, logging and auditing, authenticated encryption, attribution, etc) follow suit on what are meant to mitigate against.\r\n\r\n> Perhaps the server should provide a blob in their IRR record that the client needs to sign and provide along with their request?\r\n\r\nI don't understand the involvement of the IRR, please help me walk through it with an example. What would a receiver endpoint do, check IRR and if some field is present enforce authz, in the absence of it, accept only a RSC signed request?\r\n\r\nIMO, the proposal here is simpler where the initiator simply uses their OAuth2 AS of choice, and the receiver will be able to accepted so long there is an RSC that crypto-links it to the ASN it claims to represent. No additional handshake required.",
+              "createdAt": "2024-05-23T08:22:54Z",
+              "updatedAt": "2024-05-23T08:22:54Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM57kvJ-",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-23T08:22:59Z",
+          "updatedAt": "2024-05-23T08:22:59Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "Another issue I've lately noticed, from my lack of experience using RSC but having seen Ben's [rpkimancer](https://github.com/benmaddison/rpkimancer) and re-reading the RSC [RFC 2.1](https://datatracker.ietf.org/doc/html/rfc9323#name-rsc-ee-certificates) is that EE certificates are single use. This would align well with key operations for signing a manifest, like the JWKS descriptor mentioned (or like ROA operations), where those can also be detached, handled by different teams owning IANA resources, etc. I don't see how we can create a single EE for _every_ API request if we were to sign each of them with a single RSC. I may be grossly misunderstanding the RFC.",
+              "createdAt": "2024-05-23T08:22:59Z",
+              "updatedAt": "2024-05-23T08:24:12Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM57qgG7",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-23T18:32:03Z",
+          "updatedAt": "2024-05-23T18:32:03Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "I think perhaps I may have overcomplicated this in my confusion.  (this is my first look at RSC as well)\r\n\r\n> IMO, the proposal here is simpler where the initiator simply uses their OAuth2 AS of choice, and the receiver will be able to accepted so long there is an RSC that crypto-links it to the ASN it claims to represent. No additional handshake required.\r\n\r\nThis is what I intended :) If we're in agreement that this is what we want, I say let's go with this--sorry if I overcomplicated it.  \r\n\r\nI do think we should think about how to use RSC as a standalone authenticator (without OAuth), but perhaps that's better done through the working group (or at least, they would be able to offer suggestions--this is hitting the limits of my knowledge on RSC)",
+              "createdAt": "2024-05-23T18:32:03Z",
+              "updatedAt": "2024-05-23T18:32:03Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM57zEkq",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "grizz",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-24T13:47:20Z",
+          "updatedAt": "2024-05-24T13:47:20Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "I'm a bit late to the party here, but I'm also in favor of \r\n\r\n> IMO, the proposal here is simpler where the initiator simply uses their OAuth2 AS of choice, and the receiver will be able to accepted so long there is an RSC that crypto-links it to the ASN it claims to represent. No additional handshake required.\r\n\r\nI think it should be up to the receiving side if they require RSC or if OAuth2 is sufficient.\r\n\r\nI'm also interested using RSC standalone, either through more discussion or for me it would be easier to sit down and try to do it once we have have the reference servers running. :)",
+              "createdAt": "2024-05-24T13:47:20Z",
+              "updatedAt": "2024-05-24T13:47:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM57zl3z",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-24T14:41:21Z",
+          "updatedAt": "2024-05-24T14:41:22Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "That seems reasonable to me.  Shall we go ahead with \"Oauth + RSC as optional addition\", and solicit working group feedback on how to do \"standalone RSC\"?  (Testing it out on the API instances would help, too)\r\n\r\nStandalone RSC will be interesting, but I don't know enough about how it works to write out a convincing proposal.  ",
+              "createdAt": "2024-05-24T14:41:21Z",
+              "updatedAt": "2024-05-24T14:41:22Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM58A3qD",
+          "commit": {
+            "abbreviatedOid": "1e5697b"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-05-27T10:29:03Z",
+          "updatedAt": "2024-05-27T10:29:03Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "Ack, I'll be merging by EOB if all ok then.",
+              "createdAt": "2024-05-27T10:29:03Z",
+              "updatedAt": "2024-05-27T10:29:03Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 28,
+      "id": "PR_kwDOKwWQEM5u4W1s",
+      "title": "add 422 for human intervention",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/28",
+      "state": "MERGED",
+      "author": "grizz",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-05-08T13:22:44Z",
+      "updatedAt": "2024-05-08T15:10:58Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "41f188910faa1e5b9bf1aa9a6ea9c7c727cf722f",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "grizz-updates",
+      "headRefOid": "291f613731fbd641d7d94246e989fcd5038cfb88",
+      "closedAt": "2024-05-08T15:10:58Z",
+      "mergedAt": "2024-05-08T15:10:58Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "1e8b4d6be4b6c6e7a5227aafb24f894f4a92ce7e"
+      },
+      "comments": [
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "looks good to me!",
+          "createdAt": "2024-05-08T15:10:35Z",
+          "updatedAt": "2024-05-08T15:10:35Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 29,
+      "id": "PR_kwDOKwWQEM5v1Dpf",
+      "title": "Update draft-ramseyer-grow-peering-api.md",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/29",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Including the diagram by Arturo",
+      "createdAt": "2024-05-17T19:26:09Z",
+      "updatedAt": "2024-05-21T13:39:44Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "1e8b4d6be4b6c6e7a5227aafb24f894f4a92ce7e",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-patch-diagram",
+      "headRefOid": "a792bb1b3afc59239ad0477b2cdb5b5047a040a0",
+      "closedAt": "2024-05-21T13:39:44Z",
+      "mergedAt": "2024-05-21T13:39:44Z",
+      "mergedBy": "caguado",
+      "mergeCommit": {
+        "oid": "d84db8fbfb4e9e7f823bad08d2c03f8cc658adac"
+      },
+      "comments": [],
+      "reviews": []
+    }
+  ]
+}
