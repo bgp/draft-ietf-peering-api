@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-08-04T01:42:03.046885+00:00",
+  "timestamp": "2024-08-06T01:36:28.830951+00:00",
   "repo": "bgp/draft-ietf-peering-api",
   "labels": [
     {
@@ -57,7 +57,7 @@
       "url": "https://github.com/bgp/draft-ietf-peering-api/issues/2",
       "state": "CLOSED",
       "author": "job",
-      "authorAssociation": "COLLABORATOR",
+      "authorAssociation": "MEMBER",
       "assignees": [],
       "labels": [],
       "body": "tip: By adhering to the convention of a single sentence per line; the git diffs will be much easier to read & review, and overly long sentences are more easily recognized",
@@ -73,7 +73,7 @@
       "url": "https://github.com/bgp/draft-ietf-peering-api/issues/3",
       "state": "OPEN",
       "author": "job",
-      "authorAssociation": "COLLABORATOR",
+      "authorAssociation": "MEMBER",
       "assignees": [
         "jramseyer"
       ],
@@ -91,7 +91,7 @@
       "url": "https://github.com/bgp/draft-ietf-peering-api/issues/4",
       "state": "OPEN",
       "author": "job",
-      "authorAssociation": "COLLABORATOR",
+      "authorAssociation": "MEMBER",
       "assignees": [],
       "labels": [],
       "body": "[RFC 9323](https://datatracker.ietf.org/doc/html/rfc9323) specifies a mechanism for Autonomous System holders to issue a signature over an arbitrary SHA256 message digest, then in turn, Relying Parties can verify this signature against the global RPKI.\r\n\r\nThis means that the Initiator and the Receiver can perform a challenge/response procedure based on the RPKI - which is cryptographically stronger than relying on PeeringDB's OAuth infrastructure.\r\n\r\nThe Initator and the Receiver can establish an arc of trust by having the Initator signal an arbitrary SHA256 hash over which the Receiver must produce a RPKI-RSC signature; the receiver can challenge the Initator in a similar manner. Once both parties have signed the other-party's challenge, both parties know that each party possesses access to private keys associated with the Autonomous Systems on both sides.",
@@ -108,7 +108,7 @@
         },
         {
           "author": "job",
-          "authorAssociation": "COLLABORATOR",
+          "authorAssociation": "MEMBER",
           "body": "The RTA proposal was abandoned by the working group. There are no implementations.",
           "createdAt": "2023-12-15T10:27:21Z",
           "updatedAt": "2023-12-15T10:27:21Z"
@@ -122,7 +122,7 @@
         },
         {
           "author": "job",
-          "authorAssociation": "COLLABORATOR",
+          "authorAssociation": "MEMBER",
           "body": "Id stick it in one larger doc, that way people have a complete spec to look at. ",
           "createdAt": "2023-12-21T19:33:31Z",
           "updatedAt": "2023-12-21T19:33:31Z"
@@ -146,7 +146,7 @@
       "comments": [
         {
           "author": "job",
-          "authorAssociation": "COLLABORATOR",
+          "authorAssociation": "MEMBER",
           "body": "Yeah, this type of issue is exactly why I think that also mentioning RPKI-based authentication as a option will resolve some trust issues: with RPKI the trust arc is build directly between the two parties, without an intermediate.\r\n\r\nIf the draft offers multiple ways to establish trust between parties, consumers of this technology can choose what risk appetite they have and whether they will offer one or all auth options.",
           "createdAt": "2024-01-10T22:19:18Z",
           "updatedAt": "2024-01-10T22:19:18Z"
@@ -167,14 +167,14 @@
         },
         {
           "author": "grizz",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "MEMBER",
           "body": "> Anyway, it doesn't look like you can take actions on PeeringDB with only the access token (at least from a quick look, I didn't poke too hard), but maybe @grizz would have a better idea (looking at [peeringdb/peeringdb#131](https://github.com/peeringdb/peeringdb/issues/131))\r\n\r\nRight, I don't think there is risk in using the access token, as this is exactly what OAuth2 was designed for, as Carlos said, we need to make sure we're using it correctly. It's been a while, and we should definitely verify that, but that is what the review is for. :)\r\n\r\nRegarding RPKI, @job we are definitely planning on supporting it in a future iteration, like Jenny says, it would need a thread just for it. Our idea is that PDB, or other OAuth2 providers can say who the party is that is doing the request (and with PeeringDB scopes, it can give some authorization for if that party is allowed to do it), while RPKI signing would prove that they're allowed to make requests. Having both would be ideal, and it would be up to the server to decide what level of authentication and authorization they require.",
           "createdAt": "2024-01-12T03:59:46Z",
           "updatedAt": "2024-01-12T03:59:46Z"
         },
         {
           "author": "grizz",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "MEMBER",
           "body": "Err, posted too quickly and missed a paragraph.\r\n\r\n> Isn't this token only for the identity? Could the API could issue GET/DELETE requests to PeeringDB, based on the permissions of the token?\r\n\r\nThat's correct.\r\n\r\n> I had thought that the token was only the ID token, and therefore, could only be used to get the identity and permissions of the user, as described in the OpenID spec here: https://openid.net/specs/openid-connect-core-1_0.html\r\n\r\nYes, I think we discussed this last NANOG and realized we were technically using OIDC and not OAuth. I can double check in our implementation later, but to reiterate, as long as we're following the standards how it's supposed to be done, we should be fine.",
           "createdAt": "2024-01-12T04:09:22Z",
           "updatedAt": "2024-01-12T04:09:22Z"
@@ -296,7 +296,7 @@
       "comments": [
         {
           "author": "grizz",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "MEMBER",
           "body": "@jramseyer probably want to `s/OAuth/OIDC` or similar?",
           "createdAt": "2024-01-12T19:16:59Z",
           "updatedAt": "2024-01-12T19:16:59Z"
@@ -373,7 +373,7 @@
       "comments": [
         {
           "author": "grizz",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "MEMBER",
           "body": "@jramseyer looks good to me, thanks for writing it up!",
           "createdAt": "2024-01-12T19:13:52Z",
           "updatedAt": "2024-01-12T19:13:52Z"
@@ -386,7 +386,7 @@
             "abbreviatedOid": "970df35"
           },
           "author": "grizz",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "MEMBER",
           "state": "APPROVED",
           "body": "",
           "createdAt": "2024-01-12T19:13:09Z",
@@ -451,7 +451,7 @@
       "comments": [
         {
           "author": "job",
-          "authorAssociation": "COLLABORATOR",
+          "authorAssociation": "MEMBER",
           "body": "You can also immediately bring it to the GROW chairs :-)",
           "createdAt": "2024-01-16T21:33:25Z",
           "updatedAt": "2024-01-16T21:33:25Z"
@@ -465,7 +465,7 @@
         },
         {
           "author": "job",
-          "authorAssociation": "COLLABORATOR",
+          "authorAssociation": "MEMBER",
           "body": "If you upload this draft via https://datatracker.ietf.org/submit/ - please\r\n\r\nyou can then bring this draft to the attention of working group via grow@ietf.org by sending a cover letter \r\n\r\nIn the same email you can request a talking slot in the upcoming GROW session at IETF 119",
           "createdAt": "2024-01-16T21:37:20Z",
           "updatedAt": "2024-01-16T21:37:20Z"
@@ -486,7 +486,7 @@
         },
         {
           "author": "job",
-          "authorAssociation": "COLLABORATOR",
+          "authorAssociation": "MEMBER",
           "body": "first you have to subscribe to the mailing list https://www.ietf.org/mailman/listinfo/grow and then you can send emails",
           "createdAt": "2024-01-18T16:19:18Z",
           "updatedAt": "2024-01-18T16:19:18Z"
@@ -734,7 +734,7 @@
             "abbreviatedOid": "85c7bc6"
           },
           "author": "grizz",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "MEMBER",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2024-01-25T20:16:38Z",
@@ -878,7 +878,7 @@
       "comments": [
         {
           "author": "grizz",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "MEMBER",
           "body": "@jramseyer that's perfect as is, thanks.",
           "createdAt": "2024-01-25T19:16:31Z",
           "updatedAt": "2024-01-25T19:16:31Z"
@@ -905,7 +905,7 @@
             "abbreviatedOid": "a793da3"
           },
           "author": "job",
-          "authorAssociation": "COLLABORATOR",
+          "authorAssociation": "MEMBER",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2024-01-25T20:03:37Z",
@@ -1008,7 +1008,7 @@
       "url": "https://github.com/bgp/draft-ietf-peering-api/pull/16",
       "state": "MERGED",
       "author": "grizz",
-      "authorAssociation": "CONTRIBUTOR",
+      "authorAssociation": "MEMBER",
       "assignees": [],
       "labels": [],
       "body": "Add ascii representations of the mermaid docs. They are hand made and I'm not sure it makes sense to diagram more than the Auth loop part.\r\n\r\nIt does look like we can have the svg rendered for the html views [0], using our github actions template [1]. Should we look at adding both or leave it as is for the first version?\r\n\r\n[0] https://authors.ietf.org/diagrams\r\n[1] https://github.com/cabo/kramdown-rfc/wiki/SVG\r\n\r\n\r\n\r\n",
@@ -1069,7 +1069,7 @@
             "abbreviatedOid": "53b010f"
           },
           "author": "grizz",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "MEMBER",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2024-01-26T15:28:15Z",
@@ -1329,7 +1329,7 @@
             "abbreviatedOid": "485efa3"
           },
           "author": "grizz",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "MEMBER",
           "state": "APPROVED",
           "body": "",
           "createdAt": "2024-03-06T20:58:37Z",
@@ -1371,7 +1371,7 @@
             "abbreviatedOid": "a4700f7"
           },
           "author": "grizz",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "MEMBER",
           "state": "APPROVED",
           "body": "",
           "createdAt": "2024-03-08T22:00:31Z",
@@ -1646,7 +1646,7 @@
       "url": "https://github.com/bgp/draft-ietf-peering-api/pull/26",
       "state": "MERGED",
       "author": "grizz",
-      "authorAssociation": "CONTRIBUTOR",
+      "authorAssociation": "MEMBER",
       "assignees": [],
       "labels": [],
       "body": "",
@@ -2032,7 +2032,7 @@
             "abbreviatedOid": "1e5697b"
           },
           "author": "grizz",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "MEMBER",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2024-05-24T13:47:20Z",
@@ -2095,7 +2095,7 @@
       "url": "https://github.com/bgp/draft-ietf-peering-api/pull/28",
       "state": "MERGED",
       "author": "grizz",
-      "authorAssociation": "CONTRIBUTOR",
+      "authorAssociation": "MEMBER",
       "assignees": [],
       "labels": [],
       "body": "",
