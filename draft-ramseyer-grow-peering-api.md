@@ -1,6 +1,7 @@
 ---
 title: "Peering API"
-category: info
+category: std
+pi: [toc, sortrefs, symrefs, comments]
 
 docname: draft-ramseyer-grow-peering-api-latest
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
@@ -97,11 +98,19 @@ Conventions and Terminology     {#conventions}
 
 All terms used in this document will be defined here:
 
-* Initiator: Network that wants to peer
-* Receiver: Network that is receiving communications about peering
-* Configured: peering session that is set up on one side
-* Established: session is already defined as per BGP-4 specification  {{Section 8.2.2 of ?RFC4271}}
+Initiator
+: Network that wants to peer
 
+Receiver
+: Network that is receiving communications about peering
+
+Configured
+: peering session that is set up on one side
+
+Established
+: session is already defined as per BGP-4 specification  {{Section 8.2.2 of ?RFC4271}}
+
+{::boilerplate bcp14+}
 
 Audience    {#audience}
 ========
@@ -117,7 +126,7 @@ Toward the goal of streamlining peering configuration, the authors encourage pee
 Protocol    {#protocol}
 ========
 
-The Peering API follows the Representational State Transfer ({{rest}}) architecture where sessions, locations, and maintenance events are the resources the API represents and is modeled after the OpenAPI standard {{openapi}}.
+The Peering API follows the Representational State Transfer ({{?BCP56}}) architecture where sessions, locations, and maintenance events are the resources the API represents and is modeled after the OpenAPI standard {{openapi}}.
 Using the token bearer model ({{!RFC6750}}), a client application can request to add or remove peering sessions, list potential interconnection locations, and query for upcoming maintenance events on behalf of the AS resource owner.
 
 Example Peering Request Negotiation
@@ -126,21 +135,21 @@ Example Peering Request Negotiation
 Diagram of the Peering Request Process
 
 
-~~~~~~~~~~
+~~~ aasvg
 
-+-------------------+                    +-------------------+
+ .-----------------.                      .-----------------.
 |     Step 1        |                    |     Step 2        |
 |    Network 1      |------------------->|    Network 1      |
 |  Identifies need  |                    |   Checks details  |
-+-------------------+                    +-------------------+
+ '-----------------'                      '-----------------'
                                                  |
                                                  v
-+-------------------+                    +-------------------+
++-------------------+                     .-----------------.
 |      Step 4       |                    |      Step 3       |
 |    Network 1      |<-------------------|    Network 1      |
 |  gets approval    |                    |     Public or     |
 |      token        |                    | Private Peering   |
-+-------------------+                    +-------------------+
++-------------------+                     '-----------------'
         |
         v
 +-------------------+                    +-------------------+
@@ -159,9 +168,9 @@ Diagram of the Peering Request Process
        /     \
       /       \
      /         \
-(yes)           (no)
+  Accept      Reject
       \          |
-       \         +-------------------------------|
+       \         +-------------------------------+
         \                                        |
          \                                       |
           v                                      |
@@ -175,92 +184,32 @@ Diagram of the Peering Request Process
                       +------------+             |
                       |                          |
                       v                          |
-            +-------------+                      |
-            |   Step 11   |                      |
-            |   Request   |<---------------------+
-            |  Terminate  |
-            +-------------+
+            +------------+                       |
+            |   Step 11  |                       |
+            |   Process  |<----------------------+
+            | Terminates |
+            +------------+
+~~~
 
-
-
-
-
-
-
-Step 1 [Human]: Network 1 identifies that it would be useful to peer with Network 2 to interchange traffic more optimally
-
-
-Step 2 [Human]: Network 1 checks technical and other peering details about Network 2 to check if peering is possible
-
-
-Step 3 [Human]: Network 1 decides in type (Public or PNI) of peering and facility
-
-
-Step 4 [API]: Network 1 gets approval/token that is authorized to ‘speak’ on behalf of Network 1’s ASN.
-
-
-Step 5 [API]: Network 1 checks PeeringDB for common places between Network 1 and Network 2.
-API: GET /locations
-
-
-Step 6 [API]: Network 1 request peering with Network 2
-API:      POST /add_sessions
-
-
-Step 7 [API]: Network 2 verifies Network 1 credentials, check requirements for peering
-
-
-Step 8 [API]: Network 2 accepts or rejects session(s)
-API Server gives yes/no for request
-
-
-Step 9 [API]: If yes, sessions are provisioned, Networks 1 or Network 2 can check status
-API: /sessions Get session status
-
-
-Step 10 [API]: API keeps polling until sessions are up
-
-
-Step 11 [API]: Process Terminate
-~~~~~~~~~~
-
+* Step 1 (Human): Network 1 identifies that it would be useful to peer with Network 2 to interchange traffic more optimally.
+* Step 2 (Human): Network 1 checks technical and other peering details about Network 2 to check if peering is possible.
+* Step 3 (Human): Network 1 decides in type (Public or PNI) of peering and facility.
+* Step 4 (API): Network 1 gets approval/token that is authorized to ‘speak’ on behalf of Network 1’s ASN.
+* Step 5 (API): Network 1 checks PeeringDB for common places between Network 1 and Network 2; GET /locations
+* Step 6 (API): Network 1 request peering with Network 2; POST /add_sessions
+* Step 7 (API): Network 2 verifies Network 1 credentials, check requirements for peering.
+* Step 8 (API): Network 2 accepts or rejects session(s). API Server gives yes/no for request.
+* Step 9 (API): If yes, sessions are provisioned, Networks 1 or Network 2 can check status; API: GET /sessions
+* Step 10 (API): API keeps polling until sessions are up
+* Step 11 (API): Process Terminates
 
 Example API Flow
 --------------------
 The diagram below outlines the proposed API flow.
 
+### List Locations
 
-~~~~~~~~~~
-OIDC Authentication
-
-+-----------+                 +-------+                    +-----------+
-| Initiator |                 | Peer  |                    | PeeringDB |
-+-----------+                 +-------+                    +-----------+
-      |                           |                              |
-      | OIDC Authentication       |                              |
-      |--------------------------------------------------------->|
-      |                           |                              |
-      |                                        Provide auth code |
-      |<---------------------------------------------------------|
-      |                           |                              |
-      | Send auth code to Peer    |                              |
-      |--------------------------------------------------------->|
-      |                           |                              |
-      |                           | Exchange auth code for token |
-      |                           |----------------------------->|
-      |                           |                              |
-      |                           |                 Return token |
-      |                           |<-----------------------------|
-      |                           |
-      | Peer determines permissions based on token
-      |                           |
-      | Send OK back to Initiator |
-      |<--------------------------|
-
-Operations, loop until peering is complete.
-
-List Locations
-
+~~~ aasvg
 +-----------+                                                  +-------+
 | Initiator |                                                  | Peer  |
 +-----------+                                                  +-------+
@@ -271,10 +220,11 @@ List Locations
       |                               Reply with peering locations |
       |                            or errors (401, 406, 451, etc.) |
       |<-----------------------------------------------------------|
+~~~
 
+### Request session status
 
-Request session status
-
+~~~ aasvg
 +-----------+                                                  +-------+
 | Initiator |                                                  | Peer  |
 +-----------+                                                  +-------+
@@ -285,54 +235,39 @@ Request session status
       |                                  Reply with session status |
       |                                      (200, 404, 202, etc.) |
       |<-----------------------------------------------------------|
-~~~~~~~~~~
+~~~
 
+### REQUEST     {#request}
 
-AUTH    {#auth}
-----
-First, the initiating OAuth2 Client is also the Resource Owner (RO) so it can follow the OAuth2 client credentials grant {{Section 4.4 of !RFC6749}}.
-In this example, the client will use PeeringDB OIDC credentials to acquire a JWT access token that is scoped for use with the receiving API.
-On successful authentication, PeeringDB provides the Resource Server (RS) with the client's email (for potential manual discussion), along with the client's usage entitlements (known as OAuth2 scopes), to confirm the client is permitted to make API requests on behalf of the initiating AS.
-
-REQUEST     {#request}
--------
 1. ADD SESSION (CLIENT BATCHED REQUEST)
-
-
-  * The initiator's client provides a set of:
-    * Structure:
-        1. Local ASN (receiver)
-        2. Local IP
-        3. Peer ASN (initiator)
-        4. Peer IP
-        5. Peer Type (public or private)
-        6. MD5 (optional with encoding agreed outside of this specification)
-        7. Location (Commonly agreed identifier of the BGP speaker, e.g. PeeringDB IX lan ID)
-
-  * The receiver's expected actions:
+   * The initiator's client provides a set of:
+       1. Structure:
+           1. Local ASN (receiver)
+           2. Local IP
+           3. Peer ASN (initiator)
+           4. Peer IP
+           5. Peer Type (public or private)
+           6. MD5 (optional with encoding agreed outside of this specification)
+           7. Location (Commonly agreed identifier of the BGP speaker, e.g. PeeringDB IX lan ID)
+   * The receiver's expected actions:
     * The server confirms requested clientASN in list of authorized ASNs.
     * Optional: checks traffic levels, prefix limit counters, other desired internal checks.
+2. ADD SESSIONS (SERVER BATCHED RESPONSE)
+   * APPROVAL CASE
+      * Server returns a list with the structure for each of the acceptable peering sessions. Note: this structure may also contain additional attributes such as the server generated session ID.
+   * PARTIAL APPROVAL CASE
+      * Server returns a list with the structure for each of the acceptable peering sessions as in the approval case. The server also returns a list of sessions that have not deemed as validated or acceptable to be created. The set of sessions accepted and rejected is disjoint and the join of both sets matches the cardinality of the requested sessions.
+   * REJECTION CASE
+      * Server returns an error message which indicates that all of the sessions requested have been rejected and the reason for it.
 
-2.  ADD SESSIONS (SERVER BATCHED RESPONSE)
-
-  * APPROVAL CASE
-    * Server returns a list with the structure for each of the acceptable peering sessions. Note: this structure may also contain additional attributes such as the server generated session ID.
-  * PARTIAL APPROVAL CASE
-    * Server returns a list with the structure for each of the acceptable peering sessions as in the approval case. The server also returns a list of sessions that have not deemed as validated or acceptable to be created. The set of sessions accepted and rejected is disjoint and the join of both sets matches the cardinality of the requested sessions.
-  * REJECTION CASE
-    * Server returns an error message which indicates that all of the sessions requested have been rejected and the reason for it.
-
-CLIENT CONFIGURATION    {#clientconfig}
---------------------
+### CLIENT CONFIGURATION    {#clientconfig}
 The client then configures the chosen peering sessions asynchronously using their internal mechanisms.
 For every session that the server rejected, the client removes that session from the list to be configured.
 
-SERVER CONFIGURATION    {#serverconfig}
---------------------
+### SERVER CONFIGURATION    {#serverconfig}
 The server configures all sessions that are in its list of approved peering sessions from its reply to the client.
 
-MONITORING   {#monitoring}
-----------
+### MONITORING   {#monitoring}
 Both client and server wait for sessions to establish.
 At any point, client may send a "GET STATUS" request to the server, to request the status of the session (by session ID).
 The client will send a structure along with the request, as follows:
@@ -350,11 +285,95 @@ The client will send a structure along with the request, as follows:
 
 The server then responds with the same structure, with the information that it understands (status, etc).
 
-COMPLETION      {#completion}
-----------
+### COMPLETION      {#completion}
 If both sides report that the session is established, then peering is complete.
 If one side does not configure sessions within the server's acceptable configuration window (TimeWindow), then the server is entitled to remove the configured sessions and report "Unestablished" to the client.
 
+Authentication
+==============
+
+Authentication to this API is performed with Bearer tokens. Two methods are defined below to obtain a bearer token,
+the choice of which is supported is up to operator preference however the authors recommend the use of RPKI Signed
+Checklists over reliance on an external OIDC provider.
+
+OAuth with RPKI Signed Checklists
+---------------------------------
+
+This section of the document defined an extension to the OAuth 2.0 protocol ({{!RFC6749}}) to allow for a client to
+obtain an access token using RPKI Signed Checklists ({{!RFC9323}}).
+
+### Server Metadata
+
+A server implementing OAuth with RSCs MUST host an OAuth Authorization Server Metadata ({{!RFC8414}}) at
+`/.well-known/oauth-authorization-server`. That is if its Peering API base URL is `https://example.com/peering`
+then its OAuth Metata file will be at `https://example.com/peering/.well-known/oauth-authorization-server`.
+
+The metadata file MUST include the following additional fields:
+
+* `rpki_signed_checklist_nonce`: a URL the client can use to obtain a nonce for the OAuth Exchange.
+* `rpki_signed_checklist_digest_algorithms`: A list of string representation of OIDs of digest algorithms the server
+  will accept.
+
+### Nonce Endpoint
+
+The OAuth Server's `rpki_signed_checklist_nonce` endpoint MUST accept GET requests and MUST return a JSON document with
+two fields:
+
+* `state`: an opaque string to be returned to the server to allow it to keep track of state
+* `nonce`: a Base64 encoded nonce containing at least 128 bits of entropy
+
+The server SHOULD set a reasonable time limit on when the returned nonce can be used.
+
+### Token Endpoint
+
+The standard OAuth token endpoint is extended with a new `grant_type` of TBD[^1]. This grant type has two fields:
+
+* `state`: the opaque state string associated with the nonce
+* `rsc`: a Base64 encoded RPKI Signed Checklist over the ASNs the client wishes to be authorized for
+
+### RPKI Signed Checklist Format
+
+The RPKI Signed Checklist presented to the server MUST conform to the following requirements to be accepted.
+
+* The RSC MUST be valid per ({{!RFC9323}})
+* The RSC MUST have at least one ASN in its resources
+* The RSC MUST NOT have any IP resources
+* The digest algorithm used MUST be one advertised as accepted by the server
+* The RSC MUST be over one file called `peering-api-oauth-nonce`
+* The contents of that file MUST be the nonce returned by the server
+
+OAuth with Peering DB
+---------------------
+First, the initiating OAuth2 Client is also the Resource Owner (RO) so it can follow the OAuth2 client credentials grant {{Section 4.4 of !RFC6749}}.
+In this example, the client will use PeeringDB OIDC credentials to acquire a JWT access token that is scoped for use with the receiving API.
+On successful authentication, PeeringDB provides the Resource Server (RS) with the client's email (for potential manual discussion), along with the client's usage entitlements (known as OAuth2 scopes), to confirm the client is permitted to make API requests on behalf of the initiating AS.
+
+~~~ aasvg
++-----------+                 +-------+                    +-----------+
+| Initiator |                 | Peer  |                    | PeeringDB |
++-----------+                 +-------+                    +-----------+
+      |                           |                              |
+      | OIDC Authentication       |                              |
+      |--------------------------------------------------------->|
+      |                           |                              |
+      |                           |            Provide auth code |
+      |<---------------------------------------------------------|
+      |                           |                              |
+      | Send auth code to Peer    |                              |
+      |-------------------------->|                              |
+      |                           |                              |
+      |                           | Exchange auth code for token |
+      |                           |----------------------------->|
+      |                           |                              |
+      |                           |                 Return token |
+      |                           |<-----------------------------|
+      |                           |
+      |                           | Peer determines
+      |                           | permissions based on token
+      |                           |
+      | Send OK back to Initiator |
+      |<--------------------------|
+~~~
 
 API Endpoints and Specifications    {#endpoints_and_specs}
 ================================
@@ -585,7 +604,7 @@ Security Considerations     {#security}
 
 This document describes a mechanism to standardize the discovery, creation and maintenance of peering relationships across autonomous systems (AS) using an out-of-band application programming interface (API). With it, AS operators take a step to operationalize their peering policy with new and existing peers in ways that improve or completely replace manual business validations, ultimately leading to the automation of the interconnection. However, this improvement can only be fully materialized when operators are certain that such API follows the operational trust and threat models they are comfortable with, some of which are documented in BGP operations and security best practices ({{?RFC7454}}). To that extent, this document assumes the peering API will be deployed following a strategy of defense in-depth and proposes the following common baseline threat model below.
 
-#### Threats     {#threats}
+## Threats     {#threats}
 
 Each of the following threats assume a scenario where an arbitrary actor is capable of reaching the peering API instance of a given operator, the client and the operator follow their own endpoint security and maintenance practices, and the trust anchors in use are already established following guidelines outside of the scope of this document.
 
@@ -593,7 +612,7 @@ Each of the following threats assume a scenario where an arbitrary actor is capa
 * T2: A malicious actor with physical access to the IX fabric can expose a peering API for an IX member different of its own to accept requests on behalf of such third party and supplant it, leading to a loss of authenticity, integrity, non-repudiability, and confidentiality between IX members.
 * T3: A malicious actor without physical access to the IX fabric but with access the the peering API can use any ASN to impersonate any autonomous system and overload the receiver's peering API internal validations leading to a denial of service.
 
-#### Mitigations     {#mitigations}
+## Mitigations     {#mitigations}
 
 The following list of mitigations address different parts of the threats identified above:
 
@@ -648,7 +667,6 @@ This document has no IANA actions.
 
 --- back
 
-
 Acknowledgments     {#acknowledgments}
 ===============
 
@@ -664,7 +682,4 @@ The authors would like to thank their collaborators, who implemented API version
 * Aaron Rose (Amazon)
 * Prithvi Nath Manikonda (Amazon)
 
-
-
-{:numbered="false"}
-
+[^1]: This probably needs a URI assigned from the IANA registry https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml
