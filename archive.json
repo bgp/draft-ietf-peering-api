@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-20T01:55:55.510099+00:00",
+  "timestamp": "2024-10-22T01:49:10.855199+00:00",
   "repo": "bgp/draft-ietf-peering-api",
   "labels": [
     {
@@ -187,6 +187,22 @@
           "updatedAt": "2024-01-12T15:51:03Z"
         }
       ]
+    },
+    {
+      "number": 32,
+      "id": "I_kwDOKwWQEM6bJiVv",
+      "title": "Bug in OAuth process?",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/issues/32",
+      "state": "OPEN",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "@TheEnbyperor reports:\r\n\r\n\"The PeeringDB Auth is woefully underspecified, and maybe even broken. I tried to follow it and made a client_credentials application owned by my organization. When I used the access token to query https://auth.peeringdb.com/profile/v1 this returned a 500 Internal Server Error so this doesn't appear to be the correct way to go about things. The draft talks about OAuth Authorization Code Exchange grant type, but that is (to my understanding) for interactive login sessions with a human present. This draft defines a machine to machine API so the Client Credentials grant type should be used instead.\"\r\n(copied from https://github.com/bgp/draft-ietf-peering-api/pull/30)\r\n\r\nWe should investigate to see if client_credentials is no longer working.",
+      "createdAt": "2024-10-21T15:46:10Z",
+      "updatedAt": "2024-10-21T15:46:11Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -2164,7 +2180,7 @@
       "labels": [],
       "body": "The PR adds a definition for how RPKI Signed Checklists can be used to authenticate to a Peering API. \r\n\r\nI've also reorganized some parts to fit this in, and made the graphs render as SVGs using `aasvg`.\r\n\r\nSome more general comments on other bits of the draft from reading through it whilst working on it:\r\n\r\nThe PeeringDB Auth is woefully underspecified, and maybe even broken. I tried to follow it and made a `client_credentials` application owned by my organization. When I used the access token to query `https://auth.peeringdb.com/profile/v1` this returned a 500 Internal Server Error so this doesn't appear to be the correct way to go about things. The draft talks about OAuth Authorization Code Exchange grant type, but that is (to my understanding) for interactive login sessions with a human present. This draft defines a machine to machine API so the Client Credentials grant type should be used instead.\r\n\r\nI'm also not a fan of defining the API only in an OpenAPI document. This is fine to have in addition but were this document to end up as an RFC it should be a self contained document that doesn't include a file in GitHub as a core part of its functionality. I'm happy to rewrite the API definition into a format that fits into an I-D.\r\n\r\nFinally I think the example API flow could do with rewriting to make it easier to follow. It's also lacking in BCP14 terms so its unclear what is a hard requirement and what is a recommendation.",
       "createdAt": "2024-08-09T15:08:06Z",
-      "updatedAt": "2024-08-09T15:08:06Z",
+      "updatedAt": "2024-10-21T16:08:12Z",
       "baseRepository": "bgp/draft-ietf-peering-api",
       "baseRefName": "main",
       "baseRefOid": "a2abe671e0a1a4b09e787ec12be673e4ba4b50d6",
@@ -2175,8 +2191,104 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "comments": [
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Wow, I'm embarrassed--I was out on vacation and completely missed this PR.  I'm sorry for the late review!  Thanks for writing it up.\r\n\r\nA few questions:\r\n\r\n> I'm also not a fan of defining the API only in an OpenAPI document. This is fine to have in addition but were this document to end up as an RFC it should be a self contained document that doesn't include a file in GitHub as a core part of its functionality. I'm happy to rewrite the API definition into a format that fits into an I-D.\r\n\r\nThanks for the feedback.  We would welcome the rewrite, if it is not in the correct format now.  We had attempted to rewrite it here: https://www.ietf.org/archive/id/draft-ramseyer-grow-peering-api-05.html#name-endpoints\r\nbut if you can point us to a more \"I-D\" formatted example, I'm happy to rewrite it/would welcome any PRs to do so.\r\n\r\n> The PeeringDB Auth is woefully underspecified, and maybe even broken. I tried to follow it and made a client_credentials application owned by my organization. When I used the access token to query https://auth.peeringdb.com/profile/v1 this returned a 500 Internal Server Error so this doesn't appear to be the correct way to go about things. The draft talks about OAuth Authorization Code Exchange grant type, but that is (to my understanding) for interactive login sessions with a human present. This draft defines a machine to machine API so the Client Credentials grant type should be used instead.\r\n\r\nInteresting, will take a look.  Let's open this one separately as an issue to discuss.  [EDIT]: Reported in https://github.com/bgp/draft-ietf-peering-api/issues/32",
+          "createdAt": "2024-10-21T14:47:43Z",
+          "updatedAt": "2024-10-21T15:47:07Z"
+        },
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The draft looks good to me!  I'll merge it in on Wednesday, assuming no further comments.  \r\n@TheEnbyperor , should we add a reference to https://datatracker.ietf.org/doc/draft-misell-grow-rpki-peering-api-discovery/ as well?  Could add it as part of this one, or I can add a reference separately.  \r\n\r\nThanks for the pull request!",
+          "createdAt": "2024-10-21T14:54:42Z",
+          "updatedAt": "2024-10-21T14:54:42Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM6OAszY",
+          "commit": {
+            "abbreviatedOid": "8e63e56"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-21T15:55:22Z",
+          "updatedAt": "2024-10-21T15:55:22Z",
+          "comments": [
+            {
+              "originalPosition": 412,
+              "body": "Want to add yourself as well?",
+              "createdAt": "2024-10-21T15:55:22Z",
+              "updatedAt": "2024-10-21T15:55:22Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6OAtuI",
+          "commit": {
+            "abbreviatedOid": "8e63e56"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-21T15:56:58Z",
+          "updatedAt": "2024-10-21T15:56:58Z",
+          "comments": [
+            {
+              "originalPosition": 303,
+              "body": "Should this section reference API discovery and https://datatracker.ietf.org/doc/draft-misell-grow-rpki-peering-api-discovery/ as well?\r\n\r\n(We can add this separately as well.  I can open a PR for API discovery instead if you would rather)",
+              "createdAt": "2024-10-21T15:56:58Z",
+              "updatedAt": "2024-10-21T15:56:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6OA1Bw",
+          "commit": {
+            "abbreviatedOid": "8e63e56"
+          },
+          "author": "job",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-21T16:08:00Z",
+          "updatedAt": "2024-10-21T16:08:00Z",
+          "comments": [
+            {
+              "originalPosition": 345,
+              "body": "No, the digest algorithm is defined in RFC9323, not by the server. Anything other than SHA-256 would be invalid",
+              "createdAt": "2024-10-21T16:08:00Z",
+              "updatedAt": "2024-10-21T16:08:00Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6OA1IU",
+          "commit": {
+            "abbreviatedOid": "8e63e56"
+          },
+          "author": "job",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-21T16:08:12Z",
+          "updatedAt": "2024-10-21T16:08:12Z",
+          "comments": [
+            {
+              "originalPosition": 346,
+              "body": "this is fine",
+              "createdAt": "2024-10-21T16:08:12Z",
+              "updatedAt": "2024-10-21T16:08:12Z"
+            }
+          ]
+        }
+      ]
     },
     {
       "number": 31,
@@ -2190,7 +2302,7 @@
       "labels": [],
       "body": "Hi all,\r\n\r\nafter some discussion with Jenny and Arturo, I have prepared this PR to add necessary fields for route server support at IXPs to the draft. I am happy to work on any feedback.\r\n\r\nI was a bit unsure where to add the explanation of new fields, that are not yet reflected in the autopeer OpenAPI definition. For the time being I placed them in the BGP Session section, but they might fit better somewhere else. To be discussed.\r\n\r\nRegards,\r\nMatthias",
       "createdAt": "2024-10-18T15:49:50Z",
-      "updatedAt": "2024-10-18T15:53:33Z",
+      "updatedAt": "2024-10-21T15:54:48Z",
       "baseRepository": "bgp/draft-ietf-peering-api",
       "baseRefName": "main",
       "baseRefOid": "a2abe671e0a1a4b09e787ec12be673e4ba4b50d6",
@@ -2202,7 +2314,34 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM6OAq7e",
+          "commit": {
+            "abbreviatedOid": "06e44ea"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Looks good to me!  If no further comments, I'll merge it in on Wednesday.",
+          "createdAt": "2024-10-21T15:52:04Z",
+          "updatedAt": "2024-10-21T15:54:48Z",
+          "comments": [
+            {
+              "originalPosition": 84,
+              "body": "This looks good.  \r\n\r\nAs an aside, we should probably update the OpenAPI spec and move it in to the IETF draft as well (also brought up in https://github.com/bgp/draft-ietf-peering-api/pull/30), but that's outside the scope of this PR.",
+              "createdAt": "2024-10-21T15:52:04Z",
+              "updatedAt": "2024-10-21T15:54:48Z"
+            },
+            {
+              "originalPosition": 110,
+              "body": "Want to add yourself as well?",
+              "createdAt": "2024-10-21T15:54:18Z",
+              "updatedAt": "2024-10-21T15:54:48Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
