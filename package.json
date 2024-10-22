@@ -1,0 +1,6 @@
+{
+  "name": "draft-ietf-peering-api",
+  "dependencies": {
+    "aasvg": "^0.4.0"
+  }
+}
