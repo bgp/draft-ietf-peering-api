@@ -339,12 +339,14 @@ The standard OAuth token endpoint is extended with a new `grant_type` of
 
 The RPKI Signed Checklist presented to the server MUST conform to the following requirements to be accepted.
 
-* The RSC MUST be valid per ({{!RFC9323}})
+* The RSC MUST be valid per {{!RFC9323}}
 * The RSC MUST have at least one ASN in its resources
 * The RSC MUST NOT have any IP resources
 * The digest algorithm used MUST be an algorithm defined in {{!RFC7935}}
-* The RSC MUST be over one file called `peering-api-oauth-nonce`
-* The contents of that file MUST be the nonce returned by the server
+* The RSC MUST be over two files
+  * One file called `peering-api-oauth-nonce`; the contents of this file MUST be the nonce returned by the server
+  * One file called `peering-api-oauth-origin`; the contents of this file MUST be the Peering API base URL
+     (e.g. `https://example.com/peering`)
 
 OAuth with Peering DB
 ---------------------
