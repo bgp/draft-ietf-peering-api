@@ -64,6 +64,11 @@ normative:
         target: https://spec.openapis.org/oas/v3.1.0
         title: OpenAPI-v3.1.0
 
+informative:
+  rpki-discovery:
+    target: https://datatracker.ietf.org/doc/draft-misell-grow-rpki-peering-api-discovery/
+    title: "A Profile for Peering API Discovery via the RPKI"
+
 
 --- abstract
 
@@ -308,11 +313,9 @@ A server implementing OAuth with RSCs MUST host an OAuth Authorization Server Me
 `/.well-known/oauth-authorization-server`. That is if its Peering API base URL is `https://example.com/peering`
 then its OAuth Metata file will be at `https://example.com/peering/.well-known/oauth-authorization-server`.
 
-The metadata file MUST include the following additional fields:
+The metadata file MUST include the following additional field:
 
 * `rpki_signed_checklist_nonce`: a URL the client can use to obtain a nonce for the OAuth Exchange.
-* `rpki_signed_checklist_digest_algorithms`: A list of string representation of OIDs of digest algorithms the server
-  will accept.
 
 ### Nonce Endpoint
 
@@ -326,7 +329,8 @@ The server SHOULD set a reasonable time limit on when the returned nonce can be 
 
 ### Token Endpoint
 
-The standard OAuth token endpoint is extended with a new `grant_type` of TBD[^1]. This grant type has two fields:
+The standard OAuth token endpoint is extended with a new `grant_type` of
+`urn:ietf:params:oauth:grant-type:rpki_signed_checklist`. This grant type has two fields:
 
 * `state`: the opaque state string associated with the nonce
 * `rsc`: a Base64 encoded RPKI Signed Checklist over the ASNs the client wishes to be authorized for
@@ -338,7 +342,7 @@ The RPKI Signed Checklist presented to the server MUST conform to the following 
 * The RSC MUST be valid per ({{!RFC9323}})
 * The RSC MUST have at least one ASN in its resources
 * The RSC MUST NOT have any IP resources
-* The digest algorithm used MUST be one advertised as accepted by the server
+* The digest algorithm used MUST be an algorithm defined in {{!RFC7935}}
 * The RSC MUST be over one file called `peering-api-oauth-nonce`
 * The contents of that file MUST be the nonce returned by the server
 
@@ -432,6 +436,18 @@ Error
   API Errors, for field validation errors in requests, and request-level errors.
 
 The above is sourced largely from the linked OpenAPI specification.
+
+Discovery
+---------
+
+This document does not specify how to discover an ASN's Peering API endpoint.
+Some possible options are:
+
+* Via the RPKI using {{rpki-discovery}}
+* Publication in WHOIS/RDAP
+* Manual configuration
+
+The preferred method is via the RPKI.
 
 Endpoints   {#endpoints}
 ---------
@@ -663,7 +679,21 @@ The authors acknowledge that route-server configuration may also be of interest 
 IANA Considerations     {#iana}
 ===================
 
-This document has no IANA actions.
+## OAuth URI
+
+This document adds one new entry to the "OAuth URI" registry:
+
+| URN                                                      | Common Name                                 | Reference     |
+|----------------------------------------------------------|---------------------------------------------|---------------|
+| `urn:ietf:params:oauth:grant-type:rpki_signed_checklist` | Token type URI for an RPKI Signed Checklist | This document |
+
+## OAuth Authorization Server Metadata
+
+This document adds one new entry to the "OAuth Authorization Server Metadata" registry:
+
+| Metadata name                 | Metadata Description                                     | Reference     |
+|-------------------------------|----------------------------------------------------------|---------------|
+| `rpki_signed_checklist_nonce` | A URL for the RPKI Signed Checklist token exchange nonce | This document |
 
 --- back
 
@@ -681,5 +711,6 @@ The authors would like to thank their collaborators, who implemented API version
 * David Tuber (Cloudflare)
 * Aaron Rose (Amazon)
 * Prithvi Nath Manikonda (Amazon)
+* Q Misell (Glauca Digital)
 
 [^1]: This probably needs a URI assigned from the IANA registry https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml
