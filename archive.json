@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-22T01:49:10.855199+00:00",
+  "timestamp": "2024-10-24T01:47:53.090920+00:00",
   "repo": "bgp/draft-ietf-peering-api",
   "labels": [
     {
@@ -2180,13 +2180,13 @@
       "labels": [],
       "body": "The PR adds a definition for how RPKI Signed Checklists can be used to authenticate to a Peering API. \r\n\r\nI've also reorganized some parts to fit this in, and made the graphs render as SVGs using `aasvg`.\r\n\r\nSome more general comments on other bits of the draft from reading through it whilst working on it:\r\n\r\nThe PeeringDB Auth is woefully underspecified, and maybe even broken. I tried to follow it and made a `client_credentials` application owned by my organization. When I used the access token to query `https://auth.peeringdb.com/profile/v1` this returned a 500 Internal Server Error so this doesn't appear to be the correct way to go about things. The draft talks about OAuth Authorization Code Exchange grant type, but that is (to my understanding) for interactive login sessions with a human present. This draft defines a machine to machine API so the Client Credentials grant type should be used instead.\r\n\r\nI'm also not a fan of defining the API only in an OpenAPI document. This is fine to have in addition but were this document to end up as an RFC it should be a self contained document that doesn't include a file in GitHub as a core part of its functionality. I'm happy to rewrite the API definition into a format that fits into an I-D.\r\n\r\nFinally I think the example API flow could do with rewriting to make it easier to follow. It's also lacking in BCP14 terms so its unclear what is a hard requirement and what is a recommendation.",
       "createdAt": "2024-08-09T15:08:06Z",
-      "updatedAt": "2024-10-21T16:08:12Z",
+      "updatedAt": "2024-10-23T17:26:46Z",
       "baseRepository": "bgp/draft-ietf-peering-api",
       "baseRefName": "main",
       "baseRefOid": "a2abe671e0a1a4b09e787ec12be673e4ba4b50d6",
       "headRepository": "TheEnbyperor/draft-ietf-peering-api",
       "headRefName": "main",
-      "headRefOid": "8e63e56b68c589ff2f41858707a67dc2e55656a6",
+      "headRefOid": "1247b281fb56bbee977cabccceb47004e97b0ec8",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -2205,6 +2205,62 @@
           "body": "The draft looks good to me!  I'll merge it in on Wednesday, assuming no further comments.  \r\n@TheEnbyperor , should we add a reference to https://datatracker.ietf.org/doc/draft-misell-grow-rpki-peering-api-discovery/ as well?  Could add it as part of this one, or I can add a reference separately.  \r\n\r\nThanks for the pull request!",
           "createdAt": "2024-10-21T14:54:42Z",
           "updatedAt": "2024-10-21T14:54:42Z"
+        },
+        {
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "body": "> The draft looks good to me! I'll merge it in on Wednesday, assuming no further comments. @TheEnbyperor , should we add a reference to https://datatracker.ietf.org/doc/draft-misell-grow-rpki-peering-api-discovery/ as well? Could add it as part of this one, or I can add a reference separately.\r\n\r\nYes, that should probably be referenced informatively.",
+          "createdAt": "2024-10-22T08:44:07Z",
+          "updatedAt": "2024-10-22T08:44:07Z"
+        },
+        {
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "body": "Whoops, one *major* oversight a friend just pointed out - there was nothing stopping example.com from taking a nonce from example.org and giving it to AS64496 thereby getting access to example.org as AS64496. I've added a binding to the intended origin to fix this.",
+          "createdAt": "2024-10-22T11:10:31Z",
+          "updatedAt": "2024-10-22T11:10:31Z"
+        },
+        {
+          "author": "job",
+          "authorAssociation": "MEMBER",
+          "body": "> Whoops, one _major_ oversight a friend just pointed out - there was nothing stopping example.com from taking a nonce from example.org and giving it to AS64496 thereby getting access to example.org as AS64496. I've added a binding to the intended origin to fix this.\r\n\r\nare you sure the information actually needs to be inside files over which one hashes?\r\n\r\nThe relying party was the one that issued the nonce-to-be-signed-over, so it can simply check whether the nonce matches the value in the `peering-api-oauth-nonce` field.\r\n\r\nThe relying party knows the `peering-api-oauth-origin` it expects, so it can simply check whether the sha256 for the URI it expects is contained within the field `peering-api-oauth-origin`.\r\n\r\nAll in all, the \"filenames\" are just labels for SHA256 values",
+          "createdAt": "2024-10-22T14:18:35Z",
+          "updatedAt": "2024-10-22T14:18:35Z"
+        },
+        {
+          "author": "job",
+          "authorAssociation": "MEMBER",
+          "body": "In other words, the names & hashes themselves can be used to communicate between Issuer and RP; no need to `open()` any files ",
+          "createdAt": "2024-10-22T14:39:46Z",
+          "updatedAt": "2024-10-22T14:39:46Z"
+        },
+        {
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "body": "This is probably poor wording on my part but I never intended the spec to imply `fopen(3)`ing files.",
+          "createdAt": "2024-10-22T17:28:13Z",
+          "updatedAt": "2024-10-22T17:28:13Z"
+        },
+        {
+          "author": "job",
+          "authorAssociation": "MEMBER",
+          "body": "Perhaps I am misreading the suggested changes, but it seems that an RSC is only requested in 1 direction, right? Why not in both? Both sides of the to-be-established peering relationship have to authenticate each other that they are who they say they are, right? Doing it both ways should help overcome the need to include the origin in the signed payload.",
+          "createdAt": "2024-10-23T10:51:29Z",
+          "updatedAt": "2024-10-23T10:51:29Z"
+        },
+        {
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "body": "I can add mutual authentication, but I don't think this eliminates the need to include an audience and subject in both RSCs.",
+          "createdAt": "2024-10-23T13:18:13Z",
+          "updatedAt": "2024-10-23T13:18:13Z"
+        },
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I am not an RSC expert, but I like the idea of both sides authenticating.  It would give us a better guarantee that both the client and server here are legitimate entities.\r\n\r\nFrom a security standpoint in other auth methods, the server is implicitly trusted by the client.  You could argue that you shouldn't request peering if you don't believe that the server is trustworthy, but I like the idea that, with mutual RSC verification, the client can confirm that the server is trustworthy as well.  \r\n\r\nI defer to you both on the inclusion of the origin/subject in RSCs.",
+          "createdAt": "2024-10-23T17:26:44Z",
+          "updatedAt": "2024-10-23T17:26:44Z"
         }
       ],
       "reviews": [
@@ -2287,6 +2343,66 @@
               "updatedAt": "2024-10-21T16:08:12Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6OH3Tz",
+          "commit": {
+            "abbreviatedOid": "8e63e56"
+          },
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-22T08:47:52Z",
+          "updatedAt": "2024-10-22T08:47:52Z",
+          "comments": [
+            {
+              "originalPosition": 412,
+              "body": "Sure, will do.",
+              "createdAt": "2024-10-22T08:47:52Z",
+              "updatedAt": "2024-10-22T08:47:52Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6OH4EV",
+          "commit": {
+            "abbreviatedOid": "8e63e56"
+          },
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-22T08:48:34Z",
+          "updatedAt": "2024-10-22T08:48:34Z",
+          "comments": [
+            {
+              "originalPosition": 303,
+              "body": "Discovery and auth are two separate things, even if they use the same RPKI.",
+              "createdAt": "2024-10-22T08:48:34Z",
+              "updatedAt": "2024-10-22T08:48:34Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6OH8f0",
+          "commit": {
+            "abbreviatedOid": "8e63e56"
+          },
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-22T08:54:59Z",
+          "updatedAt": "2024-10-22T08:55:00Z",
+          "comments": [
+            {
+              "originalPosition": 345,
+              "body": "Ah! I had failed to notice that RFC7935 only allows SHA-256 - will amend.",
+              "createdAt": "2024-10-22T08:54:59Z",
+              "updatedAt": "2024-10-22T08:55:00Z"
+            }
+          ]
         }
       ]
     },
@@ -2295,25 +2411,35 @@
       "id": "PR_kwDOKwWQEM5_HySq",
       "title": "Adding route server support",
       "url": "https://github.com/bgp/draft-ietf-peering-api/pull/31",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "mwichtlh",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Hi all,\r\n\r\nafter some discussion with Jenny and Arturo, I have prepared this PR to add necessary fields for route server support at IXPs to the draft. I am happy to work on any feedback.\r\n\r\nI was a bit unsure where to add the explanation of new fields, that are not yet reflected in the autopeer OpenAPI definition. For the time being I placed them in the BGP Session section, but they might fit better somewhere else. To be discussed.\r\n\r\nRegards,\r\nMatthias",
       "createdAt": "2024-10-18T15:49:50Z",
-      "updatedAt": "2024-10-21T15:54:48Z",
+      "updatedAt": "2024-10-23T17:14:11Z",
       "baseRepository": "bgp/draft-ietf-peering-api",
       "baseRefName": "main",
       "baseRefOid": "a2abe671e0a1a4b09e787ec12be673e4ba4b50d6",
       "headRepository": "mwichtlh/draft-ietf-peering-api",
       "headRefName": "main",
-      "headRefOid": "06e44ea324df49f454e752d57ff8cbb63ac82bc4",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
+      "headRefOid": "e146ac72d46a3ecc7fcfb11c67fe948cc8a88bc0",
+      "closedAt": "2024-10-23T17:14:11Z",
+      "mergedAt": "2024-10-23T17:14:11Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "c3bbefaeb597f9ac3b27d7bd7eb3e5bb3dbc479f"
+      },
+      "comments": [
+        {
+          "author": "mwichtlh",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> Looks good to me! If no further comments, I'll merge it in on Wednesday.\r\n\r\nFine for me, thank you.",
+          "createdAt": "2024-10-22T12:28:43Z",
+          "updatedAt": "2024-10-22T12:28:43Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOKwWQEM6OAq7e",
@@ -2338,6 +2464,66 @@
               "body": "Want to add yourself as well?",
               "createdAt": "2024-10-21T15:54:18Z",
               "updatedAt": "2024-10-21T15:54:48Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6OKM6v",
+          "commit": {
+            "abbreviatedOid": "06e44ea"
+          },
+          "author": "mwichtlh",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-22T12:24:35Z",
+          "updatedAt": "2024-10-22T12:24:36Z",
+          "comments": [
+            {
+              "originalPosition": 84,
+              "body": "> As an aside, we should probably update the OpenAPI spec and move it in to the IETF draft as well (also brought up in https://github.com/bgp/draft-ietf-peering-api/pull/30), but that's outside the scope of this PR.\r\n\r\nI think that\u2019s a very reasonable approach. RFCs should be self-contained. I\u2019m happy to help with editing tasks like this.",
+              "createdAt": "2024-10-22T12:24:36Z",
+              "updatedAt": "2024-10-22T12:24:36Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6OKO_I",
+          "commit": {
+            "abbreviatedOid": "06e44ea"
+          },
+          "author": "mwichtlh",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-22T12:27:57Z",
+          "updatedAt": "2024-10-22T12:27:58Z",
+          "comments": [
+            {
+              "originalPosition": 110,
+              "body": "Thanks, done.",
+              "createdAt": "2024-10-22T12:27:58Z",
+              "updatedAt": "2024-10-22T12:27:58Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6ObHEo",
+          "commit": {
+            "abbreviatedOid": "06e44ea"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-23T17:05:50Z",
+          "updatedAt": "2024-10-23T17:05:50Z",
+          "comments": [
+            {
+              "originalPosition": 84,
+              "body": "Thanks!  We'd welcome the help.",
+              "createdAt": "2024-10-23T17:05:50Z",
+              "updatedAt": "2024-10-23T17:05:50Z"
             }
           ]
         }
