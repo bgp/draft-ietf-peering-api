@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-31T01:50:27.234983+00:00",
+  "timestamp": "2024-11-03T01:56:06.075969+00:00",
   "repo": "bgp/draft-ietf-peering-api",
   "labels": [
     {
@@ -2180,7 +2180,7 @@
       "labels": [],
       "body": "The PR adds a definition for how RPKI Signed Checklists can be used to authenticate to a Peering API. \r\n\r\nI've also reorganized some parts to fit this in, and made the graphs render as SVGs using `aasvg`.\r\n\r\nSome more general comments on other bits of the draft from reading through it whilst working on it:\r\n\r\nThe PeeringDB Auth is woefully underspecified, and maybe even broken. I tried to follow it and made a `client_credentials` application owned by my organization. When I used the access token to query `https://auth.peeringdb.com/profile/v1` this returned a 500 Internal Server Error so this doesn't appear to be the correct way to go about things. The draft talks about OAuth Authorization Code Exchange grant type, but that is (to my understanding) for interactive login sessions with a human present. This draft defines a machine to machine API so the Client Credentials grant type should be used instead.\r\n\r\nI'm also not a fan of defining the API only in an OpenAPI document. This is fine to have in addition but were this document to end up as an RFC it should be a self contained document that doesn't include a file in GitHub as a core part of its functionality. I'm happy to rewrite the API definition into a format that fits into an I-D.\r\n\r\nFinally I think the example API flow could do with rewriting to make it easier to follow. It's also lacking in BCP14 terms so its unclear what is a hard requirement and what is a recommendation.",
       "createdAt": "2024-08-09T15:08:06Z",
-      "updatedAt": "2024-10-25T21:49:34Z",
+      "updatedAt": "2024-10-31T20:22:52Z",
       "baseRepository": "bgp/draft-ietf-peering-api",
       "baseRefName": "main",
       "baseRefOid": "a2abe671e0a1a4b09e787ec12be673e4ba4b50d6",
@@ -2282,6 +2282,13 @@
           "body": "Let's hold off on merging this - a case has been made that an improved version of RSC is needed to do the Peering API any justice.\r\n\r\n",
           "createdAt": "2024-10-25T21:49:33Z",
           "updatedAt": "2024-10-25T21:49:33Z"
+        },
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@job @TheEnbyperor Thanks for the update, I will wait to merge this PR.\r\n\r\nWe plan to post a new version to the IETF on Monday.  If this one is ready, I'll include it.  If not, we can leave this one out and include it in a later version.  Thanks!",
+          "createdAt": "2024-10-31T20:22:50Z",
+          "updatedAt": "2024-10-31T20:22:50Z"
         }
       ],
       "reviews": [
