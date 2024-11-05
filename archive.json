@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-11-03T01:56:06.075969+00:00",
+  "timestamp": "2024-11-05T01:46:39.898669+00:00",
   "repo": "bgp/draft-ietf-peering-api",
   "labels": [
     {
@@ -201,6 +201,22 @@
       "body": "@TheEnbyperor reports:\r\n\r\n\"The PeeringDB Auth is woefully underspecified, and maybe even broken. I tried to follow it and made a client_credentials application owned by my organization. When I used the access token to query https://auth.peeringdb.com/profile/v1 this returned a 500 Internal Server Error so this doesn't appear to be the correct way to go about things. The draft talks about OAuth Authorization Code Exchange grant type, but that is (to my understanding) for interactive login sessions with a human present. This draft defines a machine to machine API so the Client Credentials grant type should be used instead.\"\r\n(copied from https://github.com/bgp/draft-ietf-peering-api/pull/30)\r\n\r\nWe should investigate to see if client_credentials is no longer working.",
       "createdAt": "2024-10-21T15:46:10Z",
       "updatedAt": "2024-10-21T15:46:11Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 33,
+      "id": "I_kwDOKwWQEM6c8y9u",
+      "title": "Move OpenAPI Spec into this draft",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/issues/33",
+      "state": "OPEN",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "It's been brought up a couple of times (most recently https://github.com/bgp/draft-ietf-peering-api/pull/31)  that we ought to move the API spec defined in the peering API github into this draft.  Anyone interested in formally defining the API spec in this draft?  Discussion at past IETFs indicated that we shouldn't refer out to a github in this formal specification.\r\n\r\ncc @mwichtlh ",
+      "createdAt": "2024-11-04T15:50:40Z",
+      "updatedAt": "2024-11-04T15:50:40Z",
       "closedAt": null,
       "comments": []
     }
