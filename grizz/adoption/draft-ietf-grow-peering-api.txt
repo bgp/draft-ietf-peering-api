@@ -5,18 +5,18 @@
 Network Working Group                                          C. Aguado
 Internet-Draft                                                    Amazon
 Intended status: Informational                               M. Griswold
-Expires: 8 May 2025                                              FullCtl
+Expires: 10 June 2025                                            FullCtl
                                                              J. Ramseyer
                                                                     Meta
                                                                A. Servin
                                                                   Google
                                                               T. Strickx
                                                               Cloudflare
-                                                         4 November 2024
+                                                         7 December 2024
 
 
                               Peering API
-                 draft-ramseyer-grow-peering-api-latest
+                   draft-ietf-grow-peering-api-latest
 
 Abstract
 
@@ -35,8 +35,8 @@ About This Document
    The latest revision of this draft can be found at
    https://bgp.github.io/draft-ietf-peering-api/draft-peering-api-
    ramseyer-protocol.html.  Status information for this document may be
-   found at https://datatracker.ietf.org/doc/draft-ramseyer-grow-
-   peering-api/.
+   found at https://datatracker.ietf.org/doc/draft-ietf-grow-peering-
+   api/.
 
    Source for this draft and an issue tracker can be found at
    https://github.com/bgp/draft-ietf-peering-api.
@@ -56,7 +56,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 May 2025.
+   This Internet-Draft will expire on 10 June 2025.
 
 Copyright Notice
 
