@@ -2,7 +2,7 @@
 title: "Peering API"
 category: info
 
-docname: draft-ramseyer-grow-peering-api-latest
+docname: draft-ietf-grow-peering-api-latest
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
