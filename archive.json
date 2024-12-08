@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-05T01:58:10.698963+00:00",
+  "timestamp": "2024-12-08T02:05:17.131981+00:00",
   "repo": "bgp/draft-ietf-peering-api",
   "labels": [
     {
@@ -2570,6 +2570,48 @@
               "updatedAt": "2024-10-23T17:05:50Z"
             }
           ]
+        }
+      ]
+    },
+    {
+      "number": 34,
+      "id": "PR_kwDOKwWQEM6EZOGf",
+      "title": "Adoption!",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/34",
+      "state": "MERGED",
+      "author": "grizz",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-12-07T03:57:24Z",
+      "updatedAt": "2024-12-07T11:53:35Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "c3bbefaeb597f9ac3b27d7bd7eb3e5bb3dbc479f",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "grizz/adoption",
+      "headRefOid": "db592a79f14d210eed9f78966967e17eefa68d78",
+      "closedAt": "2024-12-07T11:53:35Z",
+      "mergedAt": "2024-12-07T11:53:35Z",
+      "mergedBy": "grizz",
+      "mergeCommit": {
+        "oid": "d8ea22a3e0d54f517645902356a43958eb185b56"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM6UM-fu",
+          "commit": {
+            "abbreviatedOid": "db592a7"
+          },
+          "author": "job",
+          "authorAssociation": "MEMBER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-12-07T07:52:15Z",
+          "updatedAt": "2024-12-07T07:52:15Z",
+          "comments": []
         }
       ]
     }
