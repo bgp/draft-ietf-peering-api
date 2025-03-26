@@ -734,7 +734,7 @@ The authors would like to thank their collaborators, who implemented API version
 * Stefan Pratter (20C)
 * Ben Ryall (Meta)
 * Erica Salvaneschi (Cloudflare)
-* Job Snijders (Fastly)
+* Job Snijders
 * David Tuber (Cloudflare)
 * Aaron Rose (Amazon)
 * Prithvi Nath Manikonda (Amazon)
