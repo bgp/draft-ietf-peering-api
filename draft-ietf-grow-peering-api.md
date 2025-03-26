@@ -62,6 +62,9 @@ normative:
     openapi:
         target: https://spec.openapis.org/oas/v3.1.0
         title: OpenAPI-v3.1.0
+    draft-blahaj-sidrops-rsm:
+      target: https://datatracker.ietf.org/doc/draft-blahaj-sidrops-rsm/
+      title: "Resource Public Key Infrastructure (RPKI) Signed Messages (RSMs)"
 
 informative:
   rpki-discovery:
@@ -315,27 +318,27 @@ Authentication
 
 Authentication to this API is performed with Bearer tokens. Two methods are defined below to obtain a bearer token,
 the choice of which is supported is up to operator preference however the authors recommend the use of RPKI Signed
-Checklists over reliance on an external OIDC provider.
+Messages over reliance on an external OIDC provider.
 
-OAuth with RPKI Signed Checklists
+OAuth with RPKI Signed Messages
 ---------------------------------
 
 This section of the document defined an extension to the OAuth 2.0 protocol ({{!RFC6749}}) to allow for a client to
-obtain an access token using RPKI Signed Checklists ({{!RFC9323}}).
+obtain an access token using RPKI Signed Messages ({{draft-blahaj-sidrops-rsm}}).
 
 ### Server Metadata
 
-A server implementing OAuth with RSCs MUST host an OAuth Authorization Server Metadata ({{!RFC8414}}) at
+A server implementing OAuth with RSMs MUST host an OAuth Authorization Server Metadata ({{!RFC8414}}) at
 `/.well-known/oauth-authorization-server`. That is if its Peering API base URL is `https://example.com/peering`
-then its OAuth Metata file will be at `https://example.com/peering/.well-known/oauth-authorization-server`.
+then its OAuth Metadata file will be at `https://example.com/peering/.well-known/oauth-authorization-server`.
 
 The metadata file MUST include the following additional field:
 
-* `rpki_signed_checklist_nonce`: a URL the client can use to obtain a nonce for the OAuth Exchange.
+* `rpki_signed_message_nonce`: a URL the client can use to obtain a nonce for the OAuth Exchange.
 
 ### Nonce Endpoint
 
-The OAuth Server's `rpki_signed_checklist_nonce` endpoint MUST accept GET requests and MUST return a JSON document with
+The OAuth Server's `rpki_signed_message_nonce` endpoint MUST accept GET requests and MUST return a JSON document with
 two fields:
 
 * `state`: an opaque string to be returned to the server to allow it to keep track of state
@@ -346,23 +349,23 @@ The server SHOULD set a reasonable time limit on when the returned nonce can be 
 ### Token Endpoint
 
 The standard OAuth token endpoint is extended with a new `grant_type` of
-`urn:ietf:params:oauth:grant-type:rpki_signed_checklist`. This grant type has two fields:
+`urn:ietf:params:oauth:grant-type:rpki_signed_message`. This grant type has two fields:
 
 * `state`: the opaque state string associated with the nonce
-* `rsc`: a Base64 encoded RPKI Signed Checklist over the ASNs the client wishes to be authorized for
+* `rsm`: a Base64 encoded DER RPKI Signed Message over the nonce, signed with the ASNs the client wishes to be authorized for
 
-### RPKI Signed Checklist Format
+### RPKI Signed Message Format
 
-The RPKI Signed Checklist presented to the server MUST conform to the following requirements to be accepted.
+The RPKI Signed Message presented to the server MUST conform to the following requirements to be accepted.
 
-* The RSC MUST be valid per {{!RFC9323}}
-* The RSC MUST have at least one ASN in its resources
-* The RSC MUST NOT have any IP resources
+* The RSM MUST be valid per {{draft-blahaj-sidrops-rsm}}
+* The RSM MUST have at least one ASN in its resources
+* The RSM MUST NOT have any IP resources
 * The digest algorithm used MUST be an algorithm defined in {{!RFC7935}}
-* The RSC MUST be over two files
-  * One file called `peering-api-oauth-nonce`; the contents of this file MUST be the nonce returned by the server
-  * One file called `peering-api-oauth-origin`; the contents of this file MUST be the Peering API base URL
-     (e.g. `https://example.com/peering`)
+* The RSM MUST be over the nonce provided by the OAuth server.
+* The RSM MUST have an audience of `1.3.6.1.5.5.TBD.0.1.X`, where X is the ASN of the peering API to be communicated with.
+  That is, an RSM intended for the peering API of AS64496 will have the audience `1.3.6.1.5.5.TBD.0.1.64496`.
+* The RSM MUST have the purpose `1.3.6.1.5.5.TBD.1.0`.
 
 OAuth with Peering DB
 ---------------------
@@ -676,23 +679,14 @@ The peering API instance receives HTTP requests from a client application from a
 Proof of holdership     {#resource-holdership}
 -------------------
 
-The peering API defined in this document uses ASNs as primary identifiers to identify each party on a peering session besides other resources such as IP addresses. ASNs are explicitly expected in some API payloads but are also implicitly expected when making authorization business decisions such as listing resources that belong to an operator. Given that ASNs are Internet Number Resources assigned by RIRs and that the OAuth2 Authorization Server in use may not be operated by any of those RIRs, as it is the case of PeeringDB or any other commercial OAuth2 service, JWT claims that contain an ASN need be proved to be legitimately used by the initiator. This document proposes to attest ASN resource holdership using a mechanism based on RPKI ({{?RFC6480}}) and in particular with the use of RPKI Signed Checklists (RSCs) ({{!RFC9323}}).
-
-JWT access tokens can be of two kinds, identifier-based tokens or self-contained tokens ({{Section 1.4 of ?RFC6749}}). Resource servers must validate them for every request. AS operators can hint other operators to validate whether a caller holds ownership of the ASN their request represent by issuing a signed checklist that is specific to the different validation methods as described below.
-
-For Identifier-based access tokens, if the Authorization Server supports metadata, ASN holders must create a signed checklist that contains the well-known Authorization Server Metadata URI and a digest of the JSON document contained (Section 3 of {{!RFC8414}}). If the authorization server does not support metadata, the signed checklist contains the token introspection URI and its digest.
-
-Self-contained access tokens are cryptographically signed by the token issuer using a JSON Web Signature (JWS) ({{?RFC7515}}). The cryptographic keys used for signature validation is exposed as a JSON Web Key (JWK) ({{?RFC7517}}). ASN holders must create a signed checklist for the "jwks_uri" field of the Authorization Server Metadata URI and a digest of the JSON document contained ({{Section 3.2 of !RFC8414}}).
-
-Resource servers must validate the JWT access token in the following manner:
-
-* If the access token is identifier-based, the resource server must resolve what introspection endpoint to use for the given access token, that is, either resolved through the Authorization Server Metadata URI ({{Section 3 of !RFC8414}}) or pre-configured upon registration in the absence of metadata support.
-  * The resource server must verify the metadata URI and its content with a signed checklist issued by the ASN contained in the access token claims.
-  * If the Authorization Server does not support metadata, the resource server must validate the introspection endpoint URI matches exactly the URI contained in a signed checklist issued by the ASN contained in the access token claims.
-  * Upon successful signed checklist validation, resource servers must use the introspection endpoint for regular access token validation process ({{?RFC7662}}).
-* If the access token is self-contained, the resource server must follow the regular validation process for signed access tokens ({{Section 5.2 of !RFC7515}}).
-  * After discovering the valid public keys used to sign the token, the resource server must validate that the JWKS URI where the public keys have been discovered, and the content of such JSON document referred by it, match the signed checklist issued by the ASN contained in the access token claims.
-* Resource servers must reject the request if any of these validations fail.
+The peering API defined in this document uses ASNs as primary identifiers to identify each party on a peering session
+besides other resources such as IP addresses. ASNs are explicitly expected in some API payloads but are also implicitly
+expected when making authorization business decisions such as listing resources that belong to an operator. Given that
+ASNs are Internet Number Resources assigned by RIRs and that the OAuth2 Authorization Server in use may not be operated
+by any of those RIRs, as it is the case of PeeringDB or any other commercial OAuth2 service, JWT claims that contain an
+ASN need be proved to be legitimately used by the initiator. This document proposes to attest ASN resource holdership
+using a mechanism based on RPKI ({{?RFC6480}}) and in particular with the use of RPKI Signed Messages (RSMs)
+({{draft-blahaj-sidrops-rsm}}).
 
 Request integrity and proof of possession     {#integrity-and-possession}
 -----------------------------------------
@@ -708,17 +702,25 @@ IANA Considerations     {#iana}
 
 This document adds one new entry to the "OAuth URI" registry:
 
-| URN                                                      | Common Name                                 | Reference     |
-|----------------------------------------------------------|---------------------------------------------|---------------|
-| `urn:ietf:params:oauth:grant-type:rpki_signed_checklist` | Token type URI for an RPKI Signed Checklist | This document |
+| URN                                                    | Common Name                               | Reference     |
+|--------------------------------------------------------|-------------------------------------------|---------------|
+| `urn:ietf:params:oauth:grant-type:rpki_signed_message` | Token type URI for an RPKI Signed Message | This document |
 
 ## OAuth Authorization Server Metadata
 
 This document adds one new entry to the "OAuth Authorization Server Metadata" registry:
 
-| Metadata name                 | Metadata Description                                     | Reference     |
-|-------------------------------|----------------------------------------------------------|---------------|
-| `rpki_signed_checklist_nonce` | A URL for the RPKI Signed Checklist token exchange nonce | This document |
+| Metadata name               | Metadata Description                                   | Reference     |
+|-----------------------------|--------------------------------------------------------|---------------|
+| `rpki_signed_message_nonce` | A URL for the RPKI Signed Message token exchange nonce | This document |
+
+## RPKI Signed Message well-known purposes
+
+This document adds one new entry to the "RPKI Signed Message well-known purposes" registry:
+
+| Decimal | Description                      | Reference     |
+|---------|----------------------------------|---------------|
+| 0       | Peering API OAuth token exchange | This document |
 
 --- back
 
@@ -738,6 +740,3 @@ The authors would like to thank their collaborators, who implemented API version
 * Prithvi Nath Manikonda (Amazon)
 * Q Misell (Glauca Digital)
 * Matthias Wichtlhuber (DE-CIX)
-
-
-[^1]: This probably needs a URI assigned from the IANA registry https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml
