@@ -1,22 +1,20 @@
-name: "Update Editor's Copy"
+name: "Archive Issues and Pull Requests"
 
 on:
-  push:
-    paths-ignore:
-    - README.md
-    - CONTRIBUTING.md
-    - LICENSE.md
-    - .gitignore
-  pull_request:
-    paths-ignore:
-    - README.md
-    - CONTRIBUTING.md
-    - LICENSE.md
-    - .gitignore
+  schedule:
+    - cron: '0 0 * * 0,2,4'
+  repository_dispatch:
+    types: [archive]
+  workflow_dispatch:
+    inputs:
+      archive_full:
+        description: 'Recreate the archive from scratch'
+        default: false
+        type: boolean
 
 jobs:
   build:
-    name: "Update Editor's Copy"
+    name: "Archive Issues and Pull Requests"
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -24,38 +22,24 @@ jobs:
     - name: "Checkout"
       uses: actions/checkout@v4
 
-    - name: "Setup"
-      id: setup
-      run: date -u "+date=%FT%T" >>"$GITHUB_OUTPUT"
+    # Note: No caching for this build!
 
-    - name: "Caching"
-      uses: actions/cache@v4
-      with:
-        path: |
-          .refcache
-          .venv
-          .gems
-          node_modules
-          .targets.mk
-        key: i-d-${{ steps.setup.outputs.date }}
-        restore-keys: i-d-
-
-    - name: "Build Drafts"
+    - name: "Update Archive"
       uses: martinthomson/i-d-template@v1
+      env:
+        ARCHIVE_FULL: ${{ inputs.archive_full }}
       with:
+        make: archive
         token: ${{ github.token }}
 
     - name: "Update GitHub Pages"
       uses: martinthomson/i-d-template@v1
-      if: ${{ github.event_name == 'push' }}
       with:
-        make: gh-pages
+        make: gh-archive
         token: ${{ github.token }}
 
-    - name: "Archive Built Drafts"
+    - name: "Save Archive"
       uses: actions/upload-artifact@v4
       with:
-        name: drafts
-        path: |
-          draft-*.html
-          draft-*.txt
+        name: archive
+        path: archive.json
