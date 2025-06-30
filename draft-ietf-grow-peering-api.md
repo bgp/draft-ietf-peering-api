@@ -43,6 +43,10 @@ author:
     fullname: "Tom Strickx"
     organization: Cloudflare
     email: "tstrickx@cloudflare.com"
+ -
+    fullname: "Q Misell"
+    organization: AS207960 Cyfyngedig
+    email: "q@as207960.net"
 
 
 normative:
@@ -62,9 +66,9 @@ normative:
     openapi:
         target: https://spec.openapis.org/oas/v3.1.0
         title: OpenAPI-v3.1.0
-    draft-blahaj-sidrops-rsm:
-      target: https://datatracker.ietf.org/doc/draft-blahaj-sidrops-rsm/
-      title: "Resource Public Key Infrastructure (RPKI) Signed Messages (RSMs)"
+    draft-blahaj-grow-rpki-oauth:
+      target: https://datatracker.ietf.org/doc/draft-blahaj-grow-rpki-oauth/
+      title: "Attesting the Identities of Parties in OpenID Connect (OIDC) using the Resource Public Key Infrastructure (RPKI)"
 
 informative:
   rpki-discovery:
@@ -317,58 +321,47 @@ Authentication
 ==============
 
 Authentication to this API is performed with Bearer tokens. Two methods are defined below to obtain a bearer token,
-the choice of which is supported is up to operator preference however the authors recommend the use of RPKI Signed
-Messages over reliance on an external OIDC provider.
+the choice of which is supported is up to operator preference however the authors recommend the use of RPKI Attested
+OAuth over reliance on an external OIDC provider.
 
-OAuth with RPKI Signed Messages
+OAuth with RPKI Attested OAuth
 ---------------------------------
 
-This section of the document defined an extension to the OAuth 2.0 protocol ({{!RFC6749}}) to allow for a client to
-obtain an access token using RPKI Signed Messages ({{draft-blahaj-sidrops-rsm}}).
+It is envisioned the primary authentication mechanism for this API will be with RPKI Attested OAuth as defined
+in {{draft-blahaj-grow-rpki-oauth}}.
 
-### Server Metadata
+When a client wishes to authenticate to a Peering API server using RPKI Attested OAuth, it first makes a `POST` request
+to the server's `/oauth/client_register` endpoint, containing the following JSON body:
 
-A server implementing OAuth with RSMs MUST host an OAuth Authorization Server Metadata ({{!RFC8414}}) at
-`/.well-known/oauth-authorization-server`. That is if its Peering API base URL is `https://example.com/peering`
-then its OAuth Metadata file will be at `https://example.com/peering/.well-known/oauth-authorization-server`.
+~~~json
+{
+  "idp_base": "https://example.com/idp/"
+}
+~~~
 
-The metadata file MUST include the following additional field:
+The `idp_base` URL provided MUST host an OAuth Discovery document as per {{draft-blahaj-grow-rpki-oauth}}.
 
-* `rpki_signed_message_nonce`: a URL the client can use to obtain a nonce for the OAuth Exchange.
+The Peering API server registers with the well-known scope `urn:ietf:params:oauth:scope:peering-api`.
 
-### Nonce Endpoint
+After successfully registering, the Peering API server stores its OAuth Client ID and Client Secret, along with the
+ASNs that this IdP is authoritative for. Future Bearer tokens can be checked against this list for which ASNs they
+are allowed to submit requests on behalf of.
 
-The OAuth Server's `rpki_signed_message_nonce` endpoint MUST accept GET requests and MUST return a JSON document with
-two fields:
+The Peering API server then returns the following JSON body to the client:
 
-* `state`: an opaque string to be returned to the server to allow it to keep track of state
-* `nonce`: a Base64 encoded nonce containing at least 128 bits of entropy
+~~~json
+{
+  "client_id": "example-id"
+}
+~~~
 
-The server SHOULD set a reasonable time limit on when the returned nonce can be used.
-
-### Token Endpoint
-
-The standard OAuth token endpoint is extended with a new `grant_type` of
-`urn:ietf:params:oauth:grant-type:rpki_signed_message`. This grant type has two fields:
-
-* `state`: the opaque state string associated with the nonce
-* `rsm`: a Base64 encoded DER RPKI Signed Message over the nonce, signed with the ASNs the client wishes to be authorized for
-
-### RPKI Signed Message Format
-
-The RPKI Signed Message presented to the server MUST conform to the following requirements to be accepted.
-
-* The RSM MUST be valid per {{draft-blahaj-sidrops-rsm}}
-* The RSM MUST have at least one ASN in its resources
-* The RSM MUST NOT have any IP resources
-* The digest algorithm used MUST be an algorithm defined in {{!RFC7935}}
-* The RSM MUST be over the nonce provided by the OAuth server.
-* The RSM MUST have an audience of `1.3.6.1.5.5.TBD.0.1.X`, where X is the ASN of the peering API to be communicated with.
-  That is, an RSM intended for the peering API of AS64496 will have the audience `1.3.6.1.5.5.TBD.0.1.64496`.
-* The RSM MUST have the purpose `1.3.6.1.5.5.TBD.1.0`.
+A client may then request that its IdP perform an OAuth Token Exchange {{!RFC8693}} towards this Client ID,
+and use the resulting Bearer token to authenticate to the Peering API server.
 
 OAuth with Peering DB
 ---------------------
+As an alternative, this document allows, but does not recommend, the use of PeeringDB OAuth.
+
 First, the initiating OAuth2 Client is also the Resource Owner (RO) so it can follow the OAuth2 client credentials grant {{Section 4.4 of !RFC6749}}.
 In this example, the client will use PeeringDB OIDC credentials to acquire a JWT access token that is scoped for use with the receiving API.
 On successful authentication, PeeringDB provides the Resource Server (RS) with the client's email (for potential manual discussion), along with the client's usage entitlements (known as OAuth2 scopes), to confirm the client is permitted to make API requests on behalf of the initiating AS.
@@ -685,8 +678,8 @@ expected when making authorization business decisions such as listing resources 
 ASNs are Internet Number Resources assigned by RIRs and that the OAuth2 Authorization Server in use may not be operated
 by any of those RIRs, as it is the case of PeeringDB or any other commercial OAuth2 service, JWT claims that contain an
 ASN need be proved to be legitimately used by the initiator. This document proposes to attest ASN resource holdership
-using a mechanism based on RPKI ({{?RFC6480}}) and in particular with the use of RPKI Signed Messages (RSMs)
-({{draft-blahaj-sidrops-rsm}}).
+using a mechanism based on RPKI ({{?RFC6480}}) and in particular with the use of RPKI Attested OAUth
+({{draft-blahaj-grow-rpki-oauth}}).
 
 Request integrity and proof of possession     {#integrity-and-possession}
 -----------------------------------------
@@ -702,25 +695,9 @@ IANA Considerations     {#iana}
 
 This document adds one new entry to the "OAuth URI" registry:
 
-| URN                                                    | Common Name                               | Reference     |
-|--------------------------------------------------------|-------------------------------------------|---------------|
-| `urn:ietf:params:oauth:grant-type:rpki_signed_message` | Token type URI for an RPKI Signed Message | This document |
-
-## OAuth Authorization Server Metadata
-
-This document adds one new entry to the "OAuth Authorization Server Metadata" registry:
-
-| Metadata name               | Metadata Description                                   | Reference     |
-|-----------------------------|--------------------------------------------------------|---------------|
-| `rpki_signed_message_nonce` | A URL for the RPKI Signed Message token exchange nonce | This document |
-
-## RPKI Signed Message well-known purposes
-
-This document adds one new entry to the "RPKI Signed Message well-known purposes" registry:
-
-| Decimal | Description                      | Reference     |
-|---------|----------------------------------|---------------|
-| 0       | Peering API OAuth token exchange | This document |
+| URN                                       | Common Name                              | Reference     |
+|-------------------------------------------|------------------------------------------|---------------|
+| `urn:ietf:params:oauth:scope:peering-api` | Well-known scope for the BGP Peering API | This document |
 
 --- back
 
@@ -738,5 +715,4 @@ The authors would like to thank their collaborators, who implemented API version
 * David Tuber (Cloudflare)
 * Aaron Rose (Amazon)
 * Prithvi Nath Manikonda (Amazon)
-* Q Misell (Glauca Digital)
 * Matthias Wichtlhuber (DE-CIX)
