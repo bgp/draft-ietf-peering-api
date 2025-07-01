@@ -674,7 +674,7 @@ Acknowledgments     {#acknowledgments}
 
 The authors would like to thank their collaborators, who implemented API versions and provided valuable feedback on the design.
 
-* Ben Blaustein 
+* Ben Blaustein
 * Jakub Heichman (Meta)
 * Prithvi Nath Manikonda (Amazon)
 * Q Misell (Glauca Digital)
@@ -682,7 +682,7 @@ The authors would like to thank their collaborators, who implemented API version
 * Aaron Rose (Amazon)
 * Ben Ryall (Meta)
 * Erica Salvaneschi (Cloudflare)
-* Job Snijders 
+* Job Snijders
 * David Tuber (Cloudflare)
 * Matthias Wichtlhuber (DE-CIX)
 
