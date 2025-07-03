@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-01-30T01:43:59.980941+00:00",
+  "timestamp": "2025-07-03T01:23:23.183473+00:00",
   "repo": "bgp/draft-ietf-peering-api",
   "labels": [
     {
@@ -200,9 +200,17 @@
       "labels": [],
       "body": "@TheEnbyperor reports:\r\n\r\n\"The PeeringDB Auth is woefully underspecified, and maybe even broken. I tried to follow it and made a client_credentials application owned by my organization. When I used the access token to query https://auth.peeringdb.com/profile/v1 this returned a 500 Internal Server Error so this doesn't appear to be the correct way to go about things. The draft talks about OAuth Authorization Code Exchange grant type, but that is (to my understanding) for interactive login sessions with a human present. This draft defines a machine to machine API so the Client Credentials grant type should be used instead.\"\r\n(copied from https://github.com/bgp/draft-ietf-peering-api/pull/30)\r\n\r\nWe should investigate to see if client_credentials is no longer working.",
       "createdAt": "2024-10-21T15:46:10Z",
-      "updatedAt": "2024-10-21T15:46:11Z",
+      "updatedAt": "2025-02-04T20:47:00Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "ichdasich",
+          "authorAssociation": "NONE",
+          "body": "I just spent a bit of time trying to get this working; So far i had a similar experience to Q, though.\n\n\nIt would be nice to have a sample client in bash and curl around in the repo.",
+          "createdAt": "2025-02-04T20:46:58Z",
+          "updatedAt": "2025-02-04T20:46:58Z"
+        }
+      ]
     },
     {
       "number": 33,
@@ -2187,7 +2195,7 @@
     {
       "number": 30,
       "id": "PR_kwDOKwWQEM539bDZ",
-      "title": "Add RPKI Signed Checklist Auth",
+      "title": "Add RPKI Signed Message Authentication",
       "url": "https://github.com/bgp/draft-ietf-peering-api/pull/30",
       "state": "OPEN",
       "author": "TheEnbyperor",
@@ -2196,13 +2204,13 @@
       "labels": [],
       "body": "The PR adds a definition for how RPKI Signed Checklists can be used to authenticate to a Peering API. \r\n\r\nI've also reorganized some parts to fit this in, and made the graphs render as SVGs using `aasvg`.\r\n\r\nSome more general comments on other bits of the draft from reading through it whilst working on it:\r\n\r\nThe PeeringDB Auth is woefully underspecified, and maybe even broken. I tried to follow it and made a `client_credentials` application owned by my organization. When I used the access token to query `https://auth.peeringdb.com/profile/v1` this returned a 500 Internal Server Error so this doesn't appear to be the correct way to go about things. The draft talks about OAuth Authorization Code Exchange grant type, but that is (to my understanding) for interactive login sessions with a human present. This draft defines a machine to machine API so the Client Credentials grant type should be used instead.\r\n\r\nI'm also not a fan of defining the API only in an OpenAPI document. This is fine to have in addition but were this document to end up as an RFC it should be a self contained document that doesn't include a file in GitHub as a core part of its functionality. I'm happy to rewrite the API definition into a format that fits into an I-D.\r\n\r\nFinally I think the example API flow could do with rewriting to make it easier to follow. It's also lacking in BCP14 terms so its unclear what is a hard requirement and what is a recommendation.",
       "createdAt": "2024-08-09T15:08:06Z",
-      "updatedAt": "2024-10-31T20:22:52Z",
+      "updatedAt": "2025-07-01T20:05:21Z",
       "baseRepository": "bgp/draft-ietf-peering-api",
       "baseRefName": "main",
-      "baseRefOid": "a2abe671e0a1a4b09e787ec12be673e4ba4b50d6",
+      "baseRefOid": "d8ea22a3e0d54f517645902356a43958eb185b56",
       "headRepository": "TheEnbyperor/draft-ietf-peering-api",
       "headRefName": "main",
-      "headRefOid": "1247b281fb56bbee977cabccceb47004e97b0ec8",
+      "headRefOid": "a3e41e0994a600ecc3614986b51f65b7cf28862e",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -2305,6 +2313,13 @@
           "body": "@job @TheEnbyperor Thanks for the update, I will wait to merge this PR.\r\n\r\nWe plan to post a new version to the IETF on Monday.  If this one is ready, I'll include it.  If not, we can leave this one out and include it in a later version.  Thanks!",
           "createdAt": "2024-10-31T20:22:50Z",
           "updatedAt": "2024-10-31T20:22:50Z"
+        },
+        {
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "body": "I'm now happy with this draft, and that its secure against the issues previously raised.",
+          "createdAt": "2025-03-26T14:55:38Z",
+          "updatedAt": "2025-03-26T14:55:38Z"
         }
       ],
       "reviews": [
@@ -2447,6 +2462,491 @@
               "updatedAt": "2024-10-22T08:55:00Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6ancpq",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-04T20:46:37Z",
+          "updatedAt": "2025-02-04T20:46:38Z",
+          "comments": [
+            {
+              "originalPosition": 313,
+              "body": "I missed the requirement, why don't we want an OIDC/OAuth2 provider to carry identity information?\r\n\r\nExample, wouldn't the operator of a peering API endpoint want to attribute an incoming request not only to a given ASN but also the concrete identity within it? If the concern is using a privacy preserving protocol across peering API instances, wouldn't a regular JWT access token used as bearer with the Oauth2 token endpoint provide such privacy?",
+              "createdAt": "2025-02-04T20:46:37Z",
+              "updatedAt": "2025-02-04T20:46:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6andC6",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-04T20:47:20Z",
+          "updatedAt": "2025-02-04T20:47:20Z",
+          "comments": [
+            {
+              "originalPosition": 325,
+              "body": "Typo `Metata`",
+              "createdAt": "2025-02-04T20:47:20Z",
+              "updatedAt": "2025-02-04T20:47:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6aniIH",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-02-04T20:58:49Z",
+          "updatedAt": "2025-02-04T20:58:49Z",
+          "comments": [
+            {
+              "originalPosition": 347,
+              "body": "I am missing what the RSC is signing, the nonce?\r\n\r\nThe current proposal is avoiding to create an RSC for every bearer token because that signature requires access to the signing CA on delegated RPKI models, or to the hosted RPKI. Isn't this a concern with this approach?",
+              "createdAt": "2025-02-04T20:58:49Z",
+              "updatedAt": "2025-02-04T20:58:49Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6h7e26",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "job",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T10:55:48Z",
+          "updatedAt": "2025-03-26T10:55:48Z",
+          "comments": [
+            {
+              "originalPosition": 349,
+              "body": "I'd replace all instances of `RSC` with `RSM` ",
+              "createdAt": "2025-03-26T10:55:48Z",
+              "updatedAt": "2025-03-26T10:55:48Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6h7f7Y",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "job",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T10:57:27Z",
+          "updatedAt": "2025-03-26T10:57:28Z",
+          "comments": [
+            {
+              "originalPosition": 319,
+              "body": "I'd replace the reference to RFC9323 with a **normative** reference to `draft-blahaj-sidrops-rsm`",
+              "createdAt": "2025-03-26T10:57:28Z",
+              "updatedAt": "2025-03-26T10:57:28Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6h-bap",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T14:36:40Z",
+          "updatedAt": "2025-03-26T14:36:40Z",
+          "comments": [
+            {
+              "originalPosition": 313,
+              "body": "External OIDC provider in this case refers to PeeringDB. We're not here to be making standards track documents that rely on a corporate third party outside the control of the IETF.",
+              "createdAt": "2025-03-26T14:36:40Z",
+              "updatedAt": "2025-03-26T14:36:40Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6h-cQh",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T14:37:38Z",
+          "updatedAt": "2025-03-26T14:37:38Z",
+          "comments": [
+            {
+              "originalPosition": 347,
+              "body": "I don't see how else this could work securely?",
+              "createdAt": "2025-03-26T14:37:38Z",
+              "updatedAt": "2025-03-26T14:37:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6h-njj",
+          "commit": {
+            "abbreviatedOid": "f22411d"
+          },
+          "author": "job",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T14:48:54Z",
+          "updatedAt": "2025-03-26T14:48:54Z",
+          "comments": [
+            {
+              "originalPosition": 432,
+              "body": "Feel free to remove Fastly as affiliation ",
+              "createdAt": "2025-03-26T14:48:54Z",
+              "updatedAt": "2025-03-26T14:48:54Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6h-pZW",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T14:51:05Z",
+          "updatedAt": "2025-03-26T14:51:06Z",
+          "comments": [
+            {
+              "originalPosition": 319,
+              "body": "Done.",
+              "createdAt": "2025-03-26T14:51:05Z",
+              "updatedAt": "2025-03-26T14:51:06Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6h-pgR",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T14:51:13Z",
+          "updatedAt": "2025-03-26T14:51:13Z",
+          "comments": [
+            {
+              "originalPosition": 349,
+              "body": "Done.",
+              "createdAt": "2025-03-26T14:51:13Z",
+              "updatedAt": "2025-03-26T14:51:13Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6h-rdy",
+          "commit": {
+            "abbreviatedOid": "f22411d"
+          },
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T14:53:32Z",
+          "updatedAt": "2025-03-26T14:53:32Z",
+          "comments": [
+            {
+              "originalPosition": 432,
+              "body": "Done",
+              "createdAt": "2025-03-26T14:53:32Z",
+              "updatedAt": "2025-03-26T14:53:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6iC2Jc",
+          "commit": {
+            "abbreviatedOid": "552b233"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T21:25:44Z",
+          "updatedAt": "2025-03-26T21:25:44Z",
+          "comments": [
+            {
+              "originalPosition": 347,
+              "body": "How so? RSC is used to sign something that has a longer lifetime than a single API request, and that something is used to sign requests for a certain period (1h, 1d, 7d). That's how Oauth2 works with JKCS so why not something similar here?",
+              "createdAt": "2025-03-26T21:25:44Z",
+              "updatedAt": "2025-03-26T21:25:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6iJA74",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-27T08:21:23Z",
+          "updatedAt": "2025-03-27T08:21:23Z",
+          "comments": [
+            {
+              "originalPosition": 347,
+              "body": "That's exactly what this OAuth token exchange does. You sign an RSM once with the nonce from the server, exchange that for an OAuth bearer token, and a refresh token to allow continued access.",
+              "createdAt": "2025-03-27T08:21:23Z",
+              "updatedAt": "2025-03-27T08:21:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6iKRxR",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-27T09:53:54Z",
+          "updatedAt": "2025-03-27T09:53:54Z",
+          "comments": [
+            {
+              "originalPosition": 313,
+              "body": "Nothing of this relies on any corporate party and is all based on IETF documents. The question still stands, why do we need to use a new exchange token format based on RSC, for which we are not documenting distribution of those checklists either, when there is an existing IETF authorization protocol OAuth2?",
+              "createdAt": "2025-03-27T09:53:54Z",
+              "updatedAt": "2025-03-27T09:53:54Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6iKca1",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "job",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-27T10:01:49Z",
+          "updatedAt": "2025-03-27T10:01:50Z",
+          "comments": [
+            {
+              "originalPosition": 313,
+              "body": "(in RPKI-parlance) the two sides of the peering relationship are \"Relying Parties\", and those entities are relying on  so-called Trust Anchors which are operated by the 5 RIRs. So there are corporate parties involved: ARIN, APNIC, RIPE NCC, AfriNIC.\r\n\r\nHaving cryptographic guarantees tied to the RIR-system is a very strong assurance. Stronger than PeeringDB, because in turn PeeringDB itself has dependencies on the RIR databases.",
+              "createdAt": "2025-03-27T10:01:49Z",
+              "updatedAt": "2025-03-27T10:01:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6iKl62",
+          "commit": {
+            "abbreviatedOid": "552b233"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-27T10:14:34Z",
+          "updatedAt": "2025-03-27T11:42:46Z",
+          "comments": [
+            {
+              "originalPosition": 437,
+              "body": "I don't agree with this statement as it does not invalidate the reasoning already provided with the text it replaces yet removes all the nuance of why OAuth2 is still the vehicle to convey API authorization, not RPKI.\r\n\r\nAs an peering API resource provider, I want to offer every other ASNs to use whichever means of OAuth2 authorization they already use to now also be able to call my API. This remains on IETF standards based and not forcing any third party (PeeringDB used as an ubiquitous example), because these ASNs already use their own OAuth2 providers (Keycloack, Jensen, MS ADFS, Okta, ForgeRock, ... or any other from a long list). And the use case in the text replaced above allows them to keep doing so when calling my peeringDB API by now adding a mechanism to bind the holdership of the ASN to those authZ infrastuctures in use by every ASN that may be a client of my API.\r\n\r\nIf we feel that RSCs don't include enough scoping of context and audience to bind ASN to the OAuth2 AS, and the new RSM includes that, perfect! But the paragraph replaced is removing a lot of the nuance of the use case and I want to make sure that a reader will understand the operational scope and expectations of consuming identity for authorization (XY problem).",
+              "createdAt": "2025-03-27T10:14:34Z",
+              "updatedAt": "2025-03-27T11:42:46Z"
+            },
+            {
+              "originalPosition": 301,
+              "body": "I agree this approach as we discussed it during calls early on but opted not to go the OAuth2 standardization path in this draft and leave it for cross-wg collaboration with the OAuth2 WG.\r\n\r\nTwo questions I still have:\r\n- why we think is better to sign with an one-time end certificate every bearer token through a dedicated grant type than the OAuth2 AS/Issuer or JKCS (as they contain crypto keys used for bearer tokens)? The lifecycle an access to the signing CA are not the same.\r\n- seeing a new proposal on RSM that supersede RSC, why don't we standardize the content of this discovery endpoint to contain the RSM signature and scope proposed there?",
+              "createdAt": "2025-03-27T10:30:47Z",
+              "updatedAt": "2025-03-27T11:42:46Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6iL_Lw",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-27T11:53:56Z",
+          "updatedAt": "2025-03-27T11:53:56Z",
+          "comments": [
+            {
+              "originalPosition": 313,
+              "body": "I totally agree with the notion of proof of holdership via RPKI. What I still don't think I agree with is the notion that we want to introduce a mechanism to sign every request bearer token with an end certificate, specially when we are already implying that those bearer tokens are produced as a result of an OAuth2 flow.\r\n\r\nSo what is the protection we are seeking by binding RPKI's relying parties to the OAuth2 Authorization Server artifacts (the bearer tokens or a new nonce to acquire them) instead of the OAuth2 Authorization Servers themselves e.g. via their published cryptographic keys (JKCS)?",
+              "createdAt": "2025-03-27T11:53:56Z",
+              "updatedAt": "2025-03-27T11:53:56Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6iMjOI",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-27T12:16:39Z",
+          "updatedAt": "2025-03-27T12:16:39Z",
+          "comments": [
+            {
+              "originalPosition": 313,
+              "body": "I'm really struggling to understand what you mean.\r\n\r\nHow this is supposed to work is: \r\n\r\n- AS1 wants to talk to AS2's Peering API\r\n- AS1 goes to AS2's OAuth server 'hi I'd like to authenticate'\r\n- AS1 generates and provides an RSM over the nonce from AS2's OAuth server, with attested resources of its AS\r\n- AS2's OAuth server returns a bearer token (details of what's in such a token implementation dependent)\r\n- The Peering API flow can continue with the bearer token as auth, instead of signing every HTTP request with RPKI certificates ",
+              "createdAt": "2025-03-27T12:16:39Z",
+              "updatedAt": "2025-03-27T12:16:39Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6iMkg3",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "job",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-27T12:17:23Z",
+          "updatedAt": "2025-03-27T12:17:23Z",
+          "comments": [
+            {
+              "originalPosition": 313,
+              "body": "My understanding of OAuth2 is quite limited, but I think the hoped-for user story is that RPKI is mostly (perhaps only) used to bootstrap the relationship. ",
+              "createdAt": "2025-03-27T12:17:23Z",
+              "updatedAt": "2025-03-27T12:17:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6iTpko",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-27T18:29:19Z",
+          "updatedAt": "2025-03-27T18:29:19Z",
+          "comments": [
+            {
+              "originalPosition": 313,
+              "body": "Yes that\u2019s exactly how it\u2019s intended to work.",
+              "createdAt": "2025-03-27T18:29:19Z",
+              "updatedAt": "2025-03-27T18:29:19Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6ia8lA",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "caguado",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-28T10:12:02Z",
+          "updatedAt": "2025-03-28T10:12:02Z",
+          "comments": [
+            {
+              "originalPosition": 313,
+              "body": "The security section includes a threat model to explictly model the use cases and substantiate _why_ the standard OAuth2, without additional flows, can be extended for the decentralized authorization of a given claim, _and_ for any flow (human-to-API and API-to-API use cases). We have got previous feedback not to extend Oauth2 itself in this draft but do as a separate one.\r\n\r\nThe draft keeps the usual expectation that API owners _authorize_ access just like any other Oauth2 Resource Server (RS) do today for non-peering APIs they may have. The discovery method of which API endpoint maps to what ASN is _deliberately_ left out too (feedback). A consequence is that it does not prescribe how API consumers or owners mutually authenticate themselves either, after all neither OAuth2 nor RPKI are authentication protocols.\r\n\r\nThe amended flow using your example:\r\n- Someone or something at AS1 wants to establish peering with AS2 via AS2's Peering API (note AS1 does not have a way to authenticate AS2's API endpoint represents AS2, deliberately omitted in draft).\r\n- AS2 does not need to authenticate AS1, only needs to authorize the request _but_ AS2 still wants to provide AS1 with visibility (via auditable logs/APIs, etc out of scope in draft) as to who did what on their behalf whilst respecting AS1 authentication procedures (user/pass, MFA, machine creds, PKI, etc).\r\n- AS1 goes to AS1 Oauth2 server and acquires a bearer token through whichever grant flows AS1 uses in its own practices (note that Oauth2 expects to have a prior trust with the RS to emit _scoped bearer tokens_ as per standard OAuth2 an this is also deliberately left out of the draft and may possibly be implemented with another RPKI RSC/RSM or AS1 side).\r\n- AS1 presents the token to AS2's peering API.\r\n- AS2's peering API validates the bearer token using the crypto materials of the bearer issuer (JWT/JKCS, etc). This is standard Oauth2.\r\n- As part of this authorization, AS2 _also_ validates that an OAuth2 _claim_ inside the bearer token containing the ASN _or_ the ASN of the API request (left deliberately out) are bound together with the issuer of the bearer token via an RSC. The discovery of where such RSC is store is also left out of the draft and reason why I mention above that using the standard well-known discovery methods (also IETF standard) looks very nice to me.\r\n- Once AS2 has asserted that the bearer token is valid _and_ that the issuer is authorized by the ASN holder, the request proceeds.\r\n\r\nWhy do I insist on this detached and offline signing method for RSCs? because it decouples API usage from access to the private crypto materials used to create the RSCs and in standard OAuth2 is already not needed today. The detached signature produced in the RSC can follow the same processes ROAs follow today, which in some organizations is not even owned by the same teams.\r\n\r\nSorry if this may be a wall of text but there is a lot of nuance I want to cover to remain as close as possible to how Oauth2 is already in use today with every API, and still introduce the decentralized identifier notion RPKI helps us bring to this space. If you prefer to speak on a call, I'd be more than happy as we've been doing biweekly meetings all the authors to coordinate and address questions and we could cover this there if you'd like.",
+              "createdAt": "2025-03-28T10:12:02Z",
+              "updatedAt": "2025-03-28T10:19:32Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6ic14V",
+          "commit": {
+            "abbreviatedOid": "1247b28"
+          },
+          "author": "TheEnbyperor",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-28T13:11:49Z",
+          "updatedAt": "2025-03-28T13:11:49Z",
+          "comments": [
+            {
+              "originalPosition": 313,
+              "body": "Right, I think I understand how you expect it to work now. This is a little more complicated but I'm not entirely opposed to it.\r\n\r\nI'd really appreciate joining the biweekly meeting, thanks for the offer. Please send details to qmisell@mpi-inf.mpg.de",
+              "createdAt": "2025-03-28T13:11:49Z",
+              "updatedAt": "2025-03-28T13:11:49Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6xbh1n",
+          "commit": {
+            "abbreviatedOid": "a3e41e0"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-01T19:57:13Z",
+          "updatedAt": "2025-07-01T20:02:48Z",
+          "comments": [
+            {
+              "originalPosition": 116,
+              "body": "nit: OAUth -> OAuth",
+              "createdAt": "2025-07-01T19:57:13Z",
+              "updatedAt": "2025-07-01T20:02:48Z"
+            },
+            {
+              "originalPosition": 5,
+              "body": "Seems reasonable to me, assuming IETF is ok with six authors.  Thank you very much for all of your work on the authentication.",
+              "createdAt": "2025-07-01T20:02:43Z",
+              "updatedAt": "2025-07-01T20:02:48Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOKwWQEM6xblwp",
+          "commit": {
+            "abbreviatedOid": "a3e41e0"
+          },
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-07-01T20:05:21Z",
+          "updatedAt": "2025-07-01T20:05:21Z",
+          "comments": []
         }
       ]
     },
@@ -2614,6 +3114,133 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 35,
+      "id": "PR_kwDOKwWQEM6cE_FY",
+      "title": "Update acknowledgements",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/35",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In the event that we publish a new version for the next meeting, without having merged in https://github.com/bgp/draft-ietf-peering-api/pull/30, we should update the acknowledgements anyway.\r\n\r\nI checked the latest build, and it looks like everything is working, so we should be ok to post a new version.\r\n\r\nReordered the acknowledgements to bring it closer to alphabetical",
+      "createdAt": "2025-06-25T15:10:22Z",
+      "updatedAt": "2025-07-01T19:52:49Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "c0fbba18b15ae334b2e1cf5d10a5cddbfd3b903d",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-patch-3-ack",
+      "headRefOid": "133d9e8c89f0978a1fe6d8e88630fffb3381282e",
+      "closedAt": "2025-07-01T19:52:42Z",
+      "mergedAt": "2025-07-01T19:52:42Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "97d309c557784d3c17a87e7a8ef1a60050c5ba9e"
+      },
+      "comments": [
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Nope, the build fails, let me fix it.",
+          "createdAt": "2025-06-25T15:11:07Z",
+          "updatedAt": "2025-06-25T15:11:07Z"
+        },
+        {
+          "author": "jramseyer",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Build will be fixed by https://github.com/bgp/draft-ietf-peering-api/pull/36",
+          "createdAt": "2025-06-27T21:13:33Z",
+          "updatedAt": "2025-06-27T21:13:33Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM6xItts",
+          "commit": {
+            "abbreviatedOid": "f881954"
+          },
+          "author": "grizz",
+          "authorAssociation": "MEMBER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-06-30T16:05:33Z",
+          "updatedAt": "2025-07-01T19:40:12Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 36,
+      "id": "PR_kwDOKwWQEM6cFMWt",
+      "title": "Update workflow files for build",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/36",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I copied over the changes from https://github.com/martinthomson/internet-draft-template\r\n\r\nOur version of artifact actions was deprecated: https://github.blog/changelog/2024-04-16-deprecation-notice-v3-of-the-artifact-actions/ so the build was breaking",
+      "createdAt": "2025-06-25T15:29:05Z",
+      "updatedAt": "2025-07-01T19:36:23Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "main",
+      "baseRefOid": "d8ea22a3e0d54f517645902356a43958eb185b56",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "jramseyer-patch-build",
+      "headRefOid": "8f41f3f1065611d63d42872d0b9cce9ecc052c1c",
+      "closedAt": "2025-07-01T19:36:19Z",
+      "mergedAt": "2025-07-01T19:36:19Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "c0fbba18b15ae334b2e1cf5d10a5cddbfd3b903d"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOKwWQEM6xIuBo",
+          "commit": {
+            "abbreviatedOid": "8f41f3f"
+          },
+          "author": "grizz",
+          "authorAssociation": "MEMBER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-06-30T16:05:57Z",
+          "updatedAt": "2025-06-30T16:05:57Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 37,
+      "id": "PR_kwDOKwWQEM6c94fR",
+      "title": "update branch",
+      "url": "https://github.com/bgp/draft-ietf-peering-api/pull/37",
+      "state": "MERGED",
+      "author": "jramseyer",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-07-01T19:40:00Z",
+      "updatedAt": "2025-07-01T19:40:10Z",
+      "baseRepository": "bgp/draft-ietf-peering-api",
+      "baseRefName": "jramseyer-patch-3-ack",
+      "baseRefOid": "1df5bb5c7cac7cf369840c4f546fc1a84ed6f304",
+      "headRepository": "bgp/draft-ietf-peering-api",
+      "headRefName": "main",
+      "headRefOid": "c0fbba18b15ae334b2e1cf5d10a5cddbfd3b903d",
+      "closedAt": "2025-07-01T19:40:10Z",
+      "mergedAt": "2025-07-01T19:40:10Z",
+      "mergedBy": "jramseyer",
+      "mergeCommit": {
+        "oid": "f8819547e32036095d3a56ed80da06928c6783e7"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
