@@ -678,7 +678,7 @@ expected when making authorization business decisions such as listing resources 
 ASNs are Internet Number Resources assigned by RIRs and that the OAuth2 Authorization Server in use may not be operated
 by any of those RIRs, as it is the case of PeeringDB or any other commercial OAuth2 service, JWT claims that contain an
 ASN need be proved to be legitimately used by the initiator. This document proposes to attest ASN resource holdership
-using a mechanism based on RPKI ({{?RFC6480}}) and in particular with the use of RPKI Attested OAUth
+using a mechanism based on RPKI ({{?RFC6480}}) and in particular with the use of RPKI Attested OAuth
 ({{draft-blahaj-grow-rpki-oauth}}).
 
 Request integrity and proof of possession     {#integrity-and-possession}
